@@ -1,0 +1,16 @@
+logging:
+  level:
+    sql: debug
+
+spring:
+  datasource:
+    url: jdbc:postgresql://endava-marketplace-db.postgres.database.azure.com:5432/endava_marketplace
+    username: marketplace_admin
+    password: x2P-eB7rsY3MbaJr
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
