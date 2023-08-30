@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	h1 {
+		@apply font-roboto-condensed text-4xl font-bold uppercase;
+	}
+	h2 {
+		@apply font-roboto-condensed text-2xl font-bold uppercase;
+	}
+	h3 {
+		@apply font-roboto-condensed text-lg font-bold uppercase;
+	}
+	p {
+		@apply font-roboto font-light;
+	}
+
+	.button {
+		@apply bg-endava-orange hover:bg-light-orange active:bg-dark-orange rounded-lg text-white;
+	}
+}
