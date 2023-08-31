@@ -8,7 +8,7 @@ export const cardsInfo = [
 	{
 		id: 2,
 		price: "$2.000.000",
-		title: "Televisor LG 4k 55 pulgadas",
+		title: "Clóset RTA Muebles Bariloche color wengue con 6 puertas ",
 		image: "https://http2.mlstatic.com/D_Q_NP_646594-MLA52222972077_102022-W.webp",
 	},
 	{
@@ -38,7 +38,7 @@ export const cardsInfo = [
 	{
 		id: 7,
 		price: "$2.649.900",
-		title: "Xbox Series X Standard",
+		title: "Xbox Series X Standard  500GB 12GB Ram",
 		image: "https://http2.mlstatic.com/D_Q_NP_718831-MLA70799537227_072023-W.webp",
 	},
 	{
