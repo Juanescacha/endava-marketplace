@@ -7,9 +7,10 @@ const makePostRequest = async (route, data) => {
 		const { status } = response;
 		const msg =
 			status === 201 || status === 200
-				? "Succesfully created"
-				: "Failed connection with the server";
-		return { msg };
+				? "Succesfully operation"
+				: "Failed operation";
+		return { response, msg };
+
 	} catch (error) {
 		const {
 			response: { status },

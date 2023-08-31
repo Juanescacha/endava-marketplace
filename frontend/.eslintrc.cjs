@@ -21,4 +21,7 @@ module.exports = {
 	},
 	plugins: ["vue"],
 	rules: {},
+	settings: {
+		"import/core-modules": ["jose"],
+	},
 };
