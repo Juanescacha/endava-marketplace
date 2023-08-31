@@ -1,8 +1,49 @@
 /** @type {import('tailwindcss').Config} */
+
+const preline = require("preline/plugin");
+const headlessui = require("@headlessui/tailwindcss");
+const twforms = require("@tailwindcss/forms");
+const typography = require("@tailwindcss/typography");
+
 export default {
-	content: ["index.html", "./src/**/*.{js,jsx,ts,tsx,vue,html}"],
+	content: [
+		"index.html",
+		"./src/**/*.{js,jsx,ts,tsx,vue,html}",
+		"node_modules/preline/dist/*.js",
+	],
+	darkMode: "class",
 	theme: {
-		extend: {},
+		fontFamily: {
+			sans: ["Roboto", "sans-serif"],
+			roboto: ["Roboto", "sans-serif"],
+			"roboto-condensed": ["'Roboto Condensed'", "sans-serif"],
+		},
+		extend: {
+			colors: {
+				transparent: "transparent",
+				endava: {
+					// 400: "#ea5925",
+					// 50: "#f0f3f3",
+					// 100: "#9bb4be",
+					// 200: "#48545b",
+					// 400: "#f7481e",
+					// 500: "#de411b",
+					// 600: "#ad3315",
+
+					50: "#fef5ee",
+					100: "#fce8d8",
+					200: "#f8ccb0",
+					300: "#f4a87d",
+					400: "#ee7b49",
+					500: "#ea5925",
+					600: "#de411b",
+					700: "#b62f18",
+					800: "#91271b",
+					900: "#752219",
+					950: "#3f0e0b",
+				},
+			},
+		},
 	},
-	plugins: [],
+	plugins: [twforms, preline, headlessui({ prefix: "ui" }), typography],
 };

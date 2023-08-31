@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	h1 {
+		@apply font-roboto-condensed text-4xl font-bold uppercase;
+	}
+	h2 {
+		@apply font-roboto-condensed text-2xl font-bold uppercase;
+	}
+	h3 {
+		@apply font-roboto-condensed text-lg font-bold uppercase;
+	}
+	p {
+		@apply font-roboto font-light;
+	}
+
+	.endava {
+		@apply active:bg-endava-700 rounded-lg bg-endava-500 text-white hover:bg-endava-600;
+	}
+}

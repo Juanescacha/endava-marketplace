@@ -3,7 +3,8 @@ module.exports = {
 		browser: true,
 		es2021: true,
 	},
-	extends: ["airbnb-base", "plugin:vue/vue3-essential", "prettier"],
+	// extends: ["airbnb-base", "plugin:vue/vue3-essential", "prettier"],
+	extends: ["plugin:vue/vue3-essential", "prettier"],
 	overrides: [
 		{
 			env: {
