@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/test")
 public class AuthController {
-    @GetMapping("/message")
+    @GetMapping("/public")
     public String test(){
-        return "This is a test endpoint protected by azure ad.";
+        return "This is a public test endpoint and its NOT protected by azure ad.";
+    }
+    @GetMapping("/private")
+    public String testPrivate(){
+        return "This is a private test endpoint and is protected by azure ad";
     }
 }

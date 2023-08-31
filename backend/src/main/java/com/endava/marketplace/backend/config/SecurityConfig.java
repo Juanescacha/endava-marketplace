@@ -16,7 +16,9 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authz) -> authz
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/test/private").authenticated()
+                        .requestMatchers("/api/test/public").permitAll()
+                        .requestMatchers("/api/listings/**").permitAll()
                 )
                 .httpBasic(withDefaults())
                 .apply(AadResourceServerHttpSecurityConfigurer.aadResourceServer());
