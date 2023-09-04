@@ -16,7 +16,7 @@
 		@apply font-roboto font-light;
 	}
 
-	.button {
-		@apply bg-endava-orange hover:bg-light-orange active:bg-dark-orange rounded-lg text-white;
+	.endava {
+		@apply rounded-lg bg-endava-500 text-white hover:bg-endava-600 active:bg-endava-700;
 	}
 }
