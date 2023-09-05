@@ -16,12 +16,17 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/api/test/private").authenticated()
                         .requestMatchers("/api/test/public").permitAll()
-                        .requestMatchers("/api/listings/**").permitAll()
+                        .requestMatchers("/api/test/private").authenticated()
+                        .requestMatchers("/api/listings/**").authenticated()
+                        .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
                 .apply(AadResourceServerHttpSecurityConfigurer.aadResourceServer());
+
+        //http.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+        //http.csrf((csrf) -> csrf.disable());
+
         return http.build();
     }
 }
