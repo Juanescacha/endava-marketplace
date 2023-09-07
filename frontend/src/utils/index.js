@@ -12,7 +12,4 @@ const capitalizeFirstLetter = word => {
 	return firstLetter + remainingLetters;
 };
 
-// TODO update with secrets vault
-const getEnvVariable = name => import.meta.env[name];
-
-export { capitalizeFirstLetter, getEnvVariable };
+export { capitalizeFirstLetter };

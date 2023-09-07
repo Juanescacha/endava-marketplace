@@ -7,15 +7,15 @@
 			aria-label="Global"
 		>
 			<div class="mr-5 md:mr-8">
-				<a
+				<router-link
 					class="flex-none text-xl font-semibold"
-					href="#"
+					to="/"
 					aria-label="Brand"
 					><img
 						src="../assets/endava-logo.png"
 						alt="logo"
 						class="w-28"
-				/></a>
+				/></router-link>
 			</div>
 			<div
 				class="ml-auto flex w-full items-center justify-end sm:order-3 sm:justify-end sm:gap-x-3"
@@ -57,18 +57,11 @@
 					>
 						<option selected>Categories</option>
 						<option>Clothes</option>
-						<option>Technoloy</option>
+						<option>Technology</option>
 						<option>Vehicles</option>
 					</select>
 				</div>
 				<div class="flex gap-4">
-					<!-- <button
-						type="button"
-						class="inline-flex items-center justify-center gap-2 rounded-md border bg-endava-400 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-endava-500 active:bg-endava-600"
-					>
-						Buy
-						<ShoppingBagIcon class="h-4 w-4 text-current" />
-					</button> -->
 					<button
 						type="button"
 						class="inline-flex items-center justify-center gap-2 rounded-md border bg-endava-400 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-endava-500 active:bg-endava-600"

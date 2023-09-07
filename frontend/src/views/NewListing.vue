@@ -1,7 +1,6 @@
 <script setup>
 import { reactive, onMounted } from "vue";
 import { makePostRequest } from "../utils/axios";
-import { getEnvVariable } from "../utils";
 import useNotification from "../composables/useNotification";
 import useForm from "../composables/useForm";
 import SelectInput from "../components/Inputs/SelectInput.vue";
@@ -67,7 +66,7 @@ const organizePostPetition = () => {
 const handleFormSubmit = () => {
 	if (isValidForm(formData)) {
 		const postData = organizePostPetition();
-		let url = getEnvVariable("VITE_API_URL");
+		let url = import.meta.env.VITE_API_URL;
 		url += "/api/listings/post";
 		makePostRequest(url, postData).then(response => {
 			if (response.err) {

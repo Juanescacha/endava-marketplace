@@ -1,9 +1,8 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { decodeJwt } from "jose";
-import { getEnvVariable } from "../utils";
-import { createCookie, getCookie } from "../utils/cookies";
+import { createCookie } from "../utils/cookies";
 
 // TODO remove temporary state
 const state = ref(`${Math.random() * 100}`);
@@ -43,16 +42,16 @@ const logInUser = token => {
 };
 
 const buildMicrosoftLoginURL = () => {
-	const microsoftURL = getEnvVariable("VITE_MICROSOFT_LOGIN_URL");
-	const tenantId = `/${getEnvVariable("VITE_TENANT_ID")}`;
-	const microsoftURL2 = `/${getEnvVariable(
-		"VITE_MICROSOFT_LOGIN_URL_END"
-	)}/authorize`;
-	const clientId = `?client_id=${getEnvVariable("VITE_CLIENT_ID")}`;
-	const redirectURI = `&redirect_uri=${getEnvVariable(
-		"VITE_URL_REDIRECT_URI"
-	)}`;
-	const otherParams = getEnvVariable("VITE_MICROSOFT_LOGIN_PARAMS");
+	const microsoftURL = import.meta.env.VITE_MICROSOFT_LOGIN_URL;
+	const tenantId = `/${import.meta.env.VITE_TENANT_ID}`;
+	const microsoftURL2 = `/${
+		import.meta.env.VITE_MICROSOFT_LOGIN_URL_END
+	}/authorize`;
+	const clientId = `?client_id=${import.meta.env.VITE_CLIENT_ID}`;
+	const redirectURI = `&redirect_uri=${
+		import.meta.env.VITE_URL_REDIRECT_URI
+	}`;
+	const otherParams = import.meta.env.VITE_MICROSOFT_LOGIN_PARAMS;
 
 	const stateParam = `&state=${state.value}`;
 	const nonce = `&nonce=12345`;
@@ -74,14 +73,8 @@ const redirectToMicrosoftLogin = () => {
 	window.location.href = microsoftURL;
 };
 
-onMounted(() => {
+onBeforeMount(() => {
 	const router = useRouter();
-	const isLoged = getCookie(LOGIN_TOKEN_NAME);
-
-	if (isLoged) {
-		router.push("/");
-		return;
-	}
 
 	const params = extractParamsFromURLHash(extractHashFromURL());
 	if (!params.code && !params.id_token) {
@@ -92,7 +85,3 @@ onMounted(() => {
 	router.push("/");
 });
 </script>
-
-<template>
-	<div></div>
-</template>
