@@ -27,11 +27,16 @@ const handleOptionChange = $ev => {
 		@input="handleOptionChange"
 	>
 		<option
-			v-for="(item, idx) in options"
+			disabled
+			selected
+		>
+			{{ title }}
+		</option>
+		<option
+			v-for="item in options"
 			:key="item.id + item.name"
 			:value="item.name"
-			:disabled="idx === 0 ? true : false"
-			:selected="idx === 0 ? true : false"
+			:data-id="item.id"
 		>
 			{{ capitalizeFirstLetter(item.name) }}
 		</option>

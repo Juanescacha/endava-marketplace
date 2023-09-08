@@ -21,7 +21,7 @@ const props = defineProps({
 	},
 });
 
-const BASE_SIZE = 25;
+const BASE_SIZE = 20;
 const dimentions = BASE_SIZE * props.size;
 
 const handleMouseMove = $ev => {

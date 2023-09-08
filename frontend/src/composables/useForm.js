@@ -34,7 +34,14 @@ export default function useForms() {
 	};
 
 	const handleSelectUpdate = ($event, formData) => {
-		handleInputUpdate($event, formData);
+		const optionId =
+			$event.target.options[$event.target.selectedIndex].dataset.id;
+
+		const modifiedEvent = {
+			target: { id: $event.target.id, value: Number(optionId) },
+		};
+		handleInputUpdate(modifiedEvent, formData);
+
 		const form = formData;
 		form[$event.target.id].valid = true;
 	};

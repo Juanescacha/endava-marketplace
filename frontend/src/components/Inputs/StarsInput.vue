@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import StarSvg from "./StarSVG.vue";
 
 const emit = defineEmits(["ratingUpdated"]);
@@ -14,19 +14,33 @@ const props = defineProps({
 	},
 	color: {
 		type: String,
+		default: "#000000",
 	},
 	label: {
 		type: String,
-		required: true,
 	},
 	dynamicClasses: {
 		type: String,
 	},
+	disabled: {
+		type: Boolean,
+		default: false,
+	},
+	defaultRating: {
+		type: Number,
+		default: 0,
+	},
 });
 
-const rating = ref(0);
+const rating = ref(props.defaultRating);
 const valueOfEachStar = 1 / props.increment;
 const starsFilling = reactive(Array(props.starCount).fill("empty"));
+
+onMounted(() => {
+	if (props.disabled) {
+		syncFillingsWithRatig();
+	}
+});
 
 const updateFillings = ({ starId, mousePosition }) => {
 	starsFilling.fill("full", 0, starId - 1);
@@ -35,6 +49,8 @@ const updateFillings = ({ starId, mousePosition }) => {
 };
 
 const handleStarClick = payload => {
+	if (props.disabled) return;
+
 	const { starId, mousePosition } = payload;
 	if (mousePosition === "r" || props.increment === 1) {
 		rating.value = starId * valueOfEachStar;
@@ -47,6 +63,7 @@ const handleStarClick = payload => {
 };
 
 const handleStarHover = payload => {
+	if (props.disabled) return;
 	updateFillings(payload);
 };
 
@@ -72,9 +89,9 @@ const syncFillingsWithRatig = () => {
 
 <template>
 	<div>
-		<span>{{ label }}: {{ rating }}</span>
+		<span v-if="!!label">{{ label }}: {{ rating }}</span>
 		<div
-			class="flex"
+			class="flex gap-1"
 			@mouseleave="syncFillingsWithRatig"
 		>
 			<star-svg

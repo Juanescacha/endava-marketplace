@@ -1,8 +1,36 @@
 import axios from "axios";
+import { getCookie } from "./cookies";
+
+const makeGetRequest = async route => {
+	try {
+		const config = {
+			headers: {
+				Authorization: `Bearer ${getCookie("access_token")}`,
+			},
+		};
+
+		const response = await axios.get(route, config);
+		return response;
+	} catch (error) {
+		const status = error.response?.status;
+
+		const msg =
+			status === 500
+				? "An internal error in the server has ocurred"
+				: "Failed connection with the server";
+
+		return { error, msg };
+	}
+};
 
 const makePostRequest = async (route, data) => {
 	try {
-		const response = await axios.post(route, data);
+		const config = {
+			headers: {
+				Authorization: `Bearer ${getCookie("access_token")}`,
+			},
+		};
+		const response = await axios.post(route, data, config);
 
 		const { status } = response;
 		const msg =
@@ -10,19 +38,16 @@ const makePostRequest = async (route, data) => {
 				? "Succesfully operation"
 				: "Failed operation";
 		return { response, msg };
-
 	} catch (error) {
-		const {
-			response: { status },
-		} = error;
+		const status = error.response?.status;
 
 		const msg =
 			status === 500
 				? "An internal error in the server has ocurred"
 				: "Failed connection with the server";
 
-		return { err: msg };
+		return { error, msg };
 	}
 };
 
-export { makePostRequest };
+export { makeGetRequest, makePostRequest };

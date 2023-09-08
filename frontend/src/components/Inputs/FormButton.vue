@@ -14,7 +14,7 @@ defineProps({
 <template>
 	<button
 		:type="btnType"
-		class="button mt-4 h-12 w-48"
+		class="endava mt-4 h-12 w-48"
 	>
 		{{ text }}
 	</button>

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import MainPage from "../views/MainPage.vue";
 import Login from "../views/LoginPage.vue";
+import ListingDetail from "../views/ListingDetail.vue";
 import NewListing from "../views/NewListing.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
 import { getCookie } from "../utils/cookies";
@@ -18,7 +19,12 @@ const routes = [
 		name: "Login",
 	},
 	{
-		path: "/products/new",
+		path: "/listings/:id",
+		component: ListingDetail,
+		name: "Listing detail",
+	},
+	{
+		path: "/listings/new",
 		component: NewListing,
 		name: "NewListing",
 	},
