@@ -1,0 +1,11 @@
+---
+  backend:
+    hosts:
+      20.127.146.197:
+  frontend:
+    hosts:
+      20.127.146.197:
+# TODO Add production hosts
+#  production:
+#    hosts:
+      
