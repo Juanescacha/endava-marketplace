@@ -15,6 +15,7 @@
     <description>backend</description>
     <properties>
         <java.version>17</java.version>
+        <spring-cloud-azure.version>5.5.0</spring-cloud-azure.version>
     </properties>
     <dependencies>
         <dependency>
@@ -58,6 +59,10 @@
             <groupId>com.azure.spring</groupId>
             <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-storage</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -65,7 +70,7 @@
             <dependency>
                 <groupId>com.azure.spring</groupId>
                 <artifactId>spring-cloud-azure-dependencies</artifactId>
-                <version>5.5.0</version>
+                <version>${spring-cloud-azure.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

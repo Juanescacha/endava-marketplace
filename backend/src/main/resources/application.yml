@@ -17,6 +17,14 @@ spring:
           client-id: c9e3e5e0-69cb-4162-b5d8-f0481f55cd93
           client-secret: ~et8Q~S5BKAyqUjhyNZtOhFVXkKyqyoVwaqsSbTs
         app-id-uri: api://c9e3e5e0-69cb-4162-b5d8-f0481f55cd93
+      storage:
+        account-name: endavamarketplaceimages
+        account-key: pUfUBcbTFTbXKJpv0mVqkx0IaKw6NxJ+0TUqd79PolxzfQ7BGdbk2AqFuKo3UjoMgY6HrJzjX1UV+ASt2A5ECg==
+        endpoint: https://endavamarketplaceimages.blob.core.windows.net
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
 
   jpa:
     hibernate:
