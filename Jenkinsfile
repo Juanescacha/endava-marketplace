@@ -40,9 +40,6 @@ pipeline {
                 stage('Deploy to development environment') {
                     steps {
                         echo 'Deploying backend to development environment...'
-                        sh '''pwd
-                            ls
-                        '''
                         ansiblePlaybook disableHostKeyChecking: true, credentialsId: '4366c78a-21a5-4351-828b-786d769290e9', inventory: './devops/ansible/dev-inventory.yml', playbook: './devops/ansible/deploy-backend.yml'
                     }
                 }
@@ -52,6 +49,7 @@ pipeline {
                     }
                     steps {
                         echo 'Deploying backend to production environment...'
+                        ansiblePlaybook disableHostKeyChecking: true, credentialsId: '4366c78a-21a5-4351-828b-786d769290e9', inventory: './devops/ansible/prod-inventory.yml', playbook: './devops/ansible/deploy-backend.yml'
                     }
                 }
             }
