@@ -51,7 +51,7 @@ const organizePostPetition = () => {
 			id: 1, // TODO load dinamically
 		},
 		category: {
-			id: formData.category.value,
+			id: 1,
 		},
 		status: {
 			id: 1, // TODO load dinamically

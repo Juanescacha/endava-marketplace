@@ -1,18 +1,42 @@
 <script setup>
-import { onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { onBeforeMount, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import {
+	Dialog,
+	DialogPanel,
+	DialogTitle,
+	DialogDescription,
+} from "@headlessui/vue";
 import StarsInput from "../components/Inputs/StarsInput.vue";
 import ImageSelector from "../components/ImageSelector.vue";
+import useModal from "../composables/useModal";
 import { makeGetRequest } from "../utils/axios";
 
 const route = useRoute();
-onMounted(async () => {
+const router = useRouter();
+const listing = ref(null);
+const { isModalOpen, setModalOpen } = useModal();
+
+const handleModalClose = () => {
+	router.go(-1);
+};
+
+onBeforeMount(async () => {
 	const productId = route.params.id;
 	const url = `${import.meta.env.VITE_API_URL}/api/listings/get/${productId}`;
-	const response = await makeGetRequest(url);
-	console.log(response);
+	const { data } = await makeGetRequest(url);
+
+	if (typeof data === "undefined") {
+		setModalOpen(true);
+	}
+	if (!data) {
+		router.push("/404");
+	}
+
+	listing.value = data;
 });
 
+// TODO Load dinamically
 const images = [
 	"https://cdn.pixabay.com/photo/2015/12/12/15/24/amsterdam-1089646_1280.jpg",
 	"https://cdn.pixabay.com/photo/2016/02/17/23/03/usa-1206240_1280.jpg",
@@ -26,24 +50,32 @@ const images = [
 			:images="images"
 			styles="col-span-3 lg:col-span-4"
 		/>
-		<div class="col-span-3 lg:col-span-3">
-			<h1 class="">Product name</h1>
-			<div class="text-lg font-semibold text-endava-600">$5000</div>
-			<StarsInput
-				color="#DE411B"
-				:increment="0.5"
-				:default-rating="5"
-				:disabled="true"
-			/>
+		<div
+			class="col-span-3 lg:col-span-3"
+			v-if="listing"
+		>
+			<h1>{{ listing.name }}</h1>
+			<div class="text-lg font-semibold text-endava-600">
+				${{ listing.price }}
+			</div>
+			<div class="flex gap-2">
+				<span>
+					<StarsInput
+						color="#DE411B"
+						:increment="0.5"
+						:default-rating="listing.condition"
+						:disabled="true"
+					/>
+				</span>
+				<span>(Condition)</span>
+			</div>
 			<p class="my-8 pr-16 text-gray-500">
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-				eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-				enim ad minim veniam, quis nostrud exercitation ullamco laboris
-				nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-				in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-				nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-				sunt in culpa qui officia deserunt mollit anim id est laborum.
-				Lorem ipsum dolor sit amet, consectetur adipiscing.
+				{{ listing.detail }}
+			</p>
+
+			<p class="my-8">
+				Sold by:
+				<span class="font-bold">{{ listing.seller.name }}</span>
 			</p>
 			<button
 				type="button"
@@ -53,4 +85,27 @@ const images = [
 			</button>
 		</div>
 	</main>
+	<Dialog
+		:open="isModalOpen"
+		@close="setModalOpen"
+	>
+		<div
+			class="fixed inset-0 flex w-screen items-center justify-center bg-white/70 p-4"
+		>
+			<div class="w-30 rounded-2xl bg-white p-5">
+				<DialogPanel>
+					<DialogTitle>Error 500</DialogTitle>
+					<DialogDescription>
+						There was an error connecting with the server
+					</DialogDescription>
+					<button
+						class="endava mt-2 border-0 px-3 py-2"
+						@click="handleModalClose"
+					>
+						Close
+					</button>
+				</DialogPanel>
+			</div>
+		</div>
+	</Dialog>
 </template>
