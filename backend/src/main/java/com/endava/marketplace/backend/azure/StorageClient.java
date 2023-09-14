@@ -8,10 +8,15 @@ import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.PublicAccessType;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import jakarta.annotation.PostConstruct;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -52,13 +57,23 @@ public class StorageClient {
         for(MultipartFile image: images) {
             String contentType = image.getContentType();
             String extension = contentType.split("/")[1];
+
             InputStream data = image.getInputStream();
-            BlobHttpHeaders imageHeaders = new BlobHttpHeaders().setContentType(contentType);
+            BlobHttpHeaders imageHeaders = new BlobHttpHeaders()
+                    .setContentType(contentType)
+                    .setContentDisposition("inline");
 
             BlobClient blob = containerClient.getBlobClient(String.format("%s_%d.%s", containerClient.getBlobContainerName(), count, extension));
 
             blob.upload(data, image.getSize(), true);
             blob.setHttpHeaders(imageHeaders);
+
+            if(count == 1) {
+                data = createThumbnail(image, extension);
+                BlobClient thumbnailBlob = containerClient.getBlobClient(String.format("%s_thumb.%s", containerClient.getBlobContainerName(), extension));
+                thumbnailBlob.upload(data, true);
+                thumbnailBlob.setHttpHeaders(imageHeaders);
+            }
 
             count++;
         }
@@ -72,5 +87,13 @@ public class StorageClient {
         containerClient.listBlobs().forEach(blobItem -> imageUrls.add(containerClient.getBlobClient(blobItem.getName()).getBlobUrl()));
 
         return imageUrls;
+    }
+
+    private InputStream createThumbnail(MultipartFile image, String extension) throws IOException {
+        ByteArrayOutputStream thumbnailOutput = new ByteArrayOutputStream();
+        BufferedImage originalImage = ImageIO.read(image.getInputStream());
+        BufferedImage thumbnailImage = Scalr.resize(originalImage, Scalr.Method.QUALITY, 400);
+        ImageIO.write(thumbnailImage, extension, thumbnailOutput);
+        return new ByteArrayInputStream(thumbnailOutput.toByteArray());
     }
 }
