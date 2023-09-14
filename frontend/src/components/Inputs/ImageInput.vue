@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 
+const MAX_FILE_SIZE = 4000000;
 const imageObj = ref(null);
 const imagePreview = ref(null);
 
@@ -10,7 +11,7 @@ const props = defineProps({
 		required: true,
 	},
 });
-const emit = defineEmits(["imageUploaded"]);
+const emit = defineEmits(["imageUploaded", "imageTooLargeUploaded"]);
 
 const extractIndexFromMediaString = mediaStr => mediaStr.slice(5);
 
@@ -32,6 +33,11 @@ const handleImageUpload = $ev => {
 
 	if (Number.isNaN(idx)) {
 		throw new Error("Please format the media input ids as 'media<idx>'");
+	}
+
+	if ($ev.target.files[0].size > MAX_FILE_SIZE) {
+		emit("imageTooLargeUploaded");
+		return;
 	}
 
 	[imageObj.value] = $ev.target.files;

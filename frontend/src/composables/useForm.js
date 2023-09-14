@@ -46,20 +46,21 @@ export default function useForms() {
 		form[$event.target.id].valid = true;
 	};
 
-	const validateProductDetail = ($event, formData, displayMsg) => {
-		if ($event.target.value.length > 500) {
-			displayMsg("The detail can't have more than 500 characters", "red");
-		} else {
-			validateTextInput($event, formData);
-		}
-	};
-
 	const handleConditionUpdate = ({ rating }, formData) => {
 		if (rating > 0) {
 			const form = formData;
 			form.condition.value = rating;
 			form.condition.valid = true;
 		}
+	};
+
+	const removeNullsFromImages = images => {
+		let auxMedia = images;
+		if (images.includes(null)) {
+			auxMedia = images.slice(0, images.indexOf(null));
+		}
+
+		return auxMedia;
 	};
 
 	const isValidForm = formData => {
@@ -76,8 +77,8 @@ export default function useForms() {
 		handleNumericInputUpdate,
 		handleMediaUpdate,
 		handleSelectUpdate,
-		validateProductDetail,
 		handleConditionUpdate,
+		removeNullsFromImages,
 		isValidForm,
 	};
 }

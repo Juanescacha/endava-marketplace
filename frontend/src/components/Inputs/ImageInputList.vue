@@ -4,7 +4,7 @@ import ImageInput from "./ImageInput.vue";
 
 const amountOfInputs = ref(1);
 const media = reactive([null]);
-const emit = defineEmits(["updateMediaList"]);
+const emit = defineEmits(["updateMediaList", "imageTooLargeUploaded"]);
 
 const props = defineProps({
 	maxAmountOfInputs: {
@@ -32,6 +32,10 @@ const handleMediaInput = ({ idx, imageObj }) => {
 	emit("updateMediaList", media);
 	updateAmountOfInputs(idx);
 };
+
+const handleLargeFile = () => {
+	emit("imageTooLargeUploaded");
+};
 </script>
 
 <template>
@@ -49,6 +53,7 @@ const handleMediaInput = ({ idx, imageObj }) => {
 				<image-input
 					:id="'media' + i"
 					@image-uploaded="handleMediaInput"
+					@image-too-large-uploaded="handleLargeFile"
 				/>
 			</li>
 		</ul>
