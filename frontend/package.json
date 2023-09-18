@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"serve" : "serve -s dist"
 	},
 	"dependencies": {
 		"@headlessui/tailwindcss": "^0.2.0",

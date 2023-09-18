@@ -1,13 +1,9 @@
 pipeline {
-    agent { label "Slave06" }
+    agent { label "Slave08" }
     environment {
-        development_server_ip = '20.127.146.197'
-        production_server_ip = ''
         //Add envars here
         backend_docker_image = 'maven:latest'
         backend_docker_args = '-u root'
-        backend_artifact_name = 'backend-0.0.1-SNAPSHOT.jar'
-        foo = 'bar'
     }
     stages {
         stage('Backend') {
@@ -43,7 +39,7 @@ pipeline {
                     }
                     steps {
                         echo 'Deploying backend to development environment...'
-                        ansiblePlaybook disableHostKeyChecking: true, credentialsId: '4366c78a-21a5-4351-828b-786d769290e9', inventory: './devops/ansible/dev-inventory.yml', playbook: './devops/ansible/deploy-backend.yml'
+                        ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'marketplace-servers-key', inventory: './devops/ansible/dev-inventory.yml', playbook: './devops/ansible/deploy-backend.yml'
                     }
                 }
                 stage('Deploy to production environment') {
@@ -52,7 +48,7 @@ pipeline {
                     }
                     steps {
                         echo 'Deploying backend to production environment...'
-                        ansiblePlaybook disableHostKeyChecking: true, credentialsId: '4366c78a-21a5-4351-828b-786d769290e9', inventory: './devops/ansible/prod-inventory.yml', playbook: './devops/ansible/deploy-backend.yml'
+                        ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'marketplace-servers-key', inventory: './devops/ansible/prod-inventory.yml', playbook: './devops/ansible/deploy-backend.yml'
                     }
                 }
             }
