@@ -1,3 +1,72 @@
+<script setup>
+	import { ref } from "vue";
+	import { useRouter } from "vue-router";
+	import { suggestions } from "../constants";
+	import {
+		BellIcon,
+		MagnifyingGlassIcon,
+		BookOpenIcon,
+		ListBulletIcon,
+		Cog8ToothIcon,
+	} from "@heroicons/vue/24/outline";
+	import { CreditCardIcon } from "@heroicons/vue/24/solid";
+
+	const router = useRouter();
+
+	const searchInput = ref("");
+	const categoryInput = ref("");
+	const suggestionList = ref([]);
+	const suggestionListBox = ref(false);
+	const activeIndex = ref(-1);
+
+	const handleEsc = () => {
+		suggestionListBox.value = false;
+	};
+
+	const handleEnter = () => {
+		if (activeIndex.value !== -1) {
+			// acceder a product page
+		} else {
+			// realizar busqueda completa
+		}
+	};
+
+	const handleArrowDown = () => {
+		const suggestionItems = suggestionList.value.querySelectorAll("li");
+
+		if (activeIndex.value < suggestionItems.length - 1) {
+			activeIndex.value++;
+			focusSuggestion(activeIndex.value);
+		} else {
+			activeIndex.value = -1;
+			focusSuggestion(activeIndex.value);
+		}
+	};
+
+	const handleArrowUp = () => {
+		const suggestionItems = suggestionList.value.querySelectorAll("li");
+
+		if (activeIndex.value > -1) {
+			activeIndex.value--;
+			focusSuggestion(activeIndex.value);
+		} else {
+			activeIndex.value = suggestionItems.length - 1;
+			focusSuggestion(activeIndex.value);
+		}
+	};
+
+	const focusSuggestion = index => {
+		const suggestionItems = suggestionList.value.querySelectorAll("li");
+		suggestionItems.forEach((item, i) => {
+			if (i === index) {
+				item.classList.add("bg-[#efefef]");
+			} else {
+				item.classList.remove("bg-[#efefef]");
+			}
+		});
+	};
+</script>
+
 <template>
 	<header
 		class="fixed top-0 z-50 flex w-full flex-wrap border-b bg-white/70 py-2.5 text-sm backdrop-blur-md sm:flex-nowrap sm:justify-start sm:py-4"
@@ -14,7 +83,7 @@
 					><img
 						src="../assets/endava-logo.png"
 						alt="logo"
-						class="w-28"
+						class="w-32"
 				/></router-link>
 			</div>
 			<div
@@ -45,26 +114,66 @@
 						<input
 							type="text"
 							id="icon"
-							name="icon"
-							class="block w-96 rounded-md border-gray-200 bg-white/70 px-4 py-2 pl-11 text-sm shadow-sm focus:z-10 focus:border-endava-400 focus:ring-endava-400"
-							placeholder="Search"
+							name="searchbox"
+							class="peer block w-96 rounded-md border-gray-200 bg-white/70 px-4 py-2 pl-11 text-sm font-normal shadow-sm placeholder:italic placeholder:text-gray-500 focus:z-10 focus:border-gray-200 focus:bg-white focus:ring-0"
+							placeholder="Search..."
+							@keydown.down="handleArrowDown"
+							@keydown.up="handleArrowUp"
+							@keydown.esc="handleEsc"
+							@keydown.enter="handleEnter"
+							v-model="searchInput"
+							@focusin="suggestionListBox = true"
+							@focusout="suggestionListBox = false"
+							autocomplete="off"
 						/>
+						<ul
+							class="peer-focus:border-3 absolute top-[33px] flex w-full cursor-default list-none flex-col items-center divide-y rounded-b-md border-b border-l border-r border-gray-200 bg-white px-2 py-2 font-light shadow-2xl peer-focus:border-t-gray-200"
+							ref="suggestionList"
+							:class="{
+								block: suggestionListBox,
+								hidden: !suggestionListBox,
+							}"
+						>
+							<li
+								v-for="(item, index) in suggestions"
+								:key="index"
+								class="w-full rounded-sm px-10 py-1 first:border-t last:rounded-b-md hover:bg-[#efefef]"
+							>
+								{{ item.title }}
+							</li>
+						</ul>
 					</div>
 				</div>
 				<div class="">
 					<select
-						class="hidden w-52 rounded-md border-gray-200 bg-white/20 py-2 pl-6 pr-11 text-sm shadow-sm focus:z-10 focus:border-gray-200 focus:ring-gray-200 sm:block"
+						id="categories"
+						class="hidden w-52 rounded-md border-gray-200 py-2 pl-6 pr-11 text-sm font-light shadow-sm focus:z-10 focus:border-gray-200 focus:ring-gray-200 sm:block"
+						:class="{
+							'text-gray-500': categoryInput === '',
+							'bg-white/20': categoryInput === '',
+							'text-black': categoryInput !== '',
+							'bg-white': categoryInput !== '',
+						}"
+						v-model="categoryInput"
 					>
-						<option selected>Categories</option>
-						<option>Clothes</option>
-						<option>Technology</option>
-						<option>Vehicles</option>
+						<option
+							value=""
+							disabled
+							selected
+							hidden
+						>
+							Categories
+						</option>
+						<option value="1">Clothes</option>
+						<option value="2">Technology</option>
+						<option value="3">Vehicles</option>
 					</select>
 				</div>
+				<div class=""></div>
 				<div class="flex gap-4">
 					<button
 						type="button"
-						class="inline-flex items-center justify-center gap-2 rounded-md border bg-endava-400 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-endava-500 active:bg-endava-600"
+						class="endava inline-flex items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all"
 					>
 						Sell
 						<CreditCardIcon class="h-5 w-5" />
@@ -150,15 +259,3 @@
 		</nav>
 	</header>
 </template>
-
-<script setup>
-import {
-	BellIcon,
-	MagnifyingGlassIcon,
-	BookOpenIcon,
-	ListBulletIcon,
-	Cog8ToothIcon,
-} from "@heroicons/vue/24/outline";
-
-import { CreditCardIcon } from "@heroicons/vue/24/solid";
-</script>

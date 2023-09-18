@@ -1,5 +1,5 @@
 <template>
-	<div class="max-w-[13rem]">
+	<div class="h-64 w-52">
 		<a
 			class="group flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition hover:shadow-lg"
 			href="#"
@@ -9,7 +9,7 @@
 			>
 				<img
 					class="absolute left-0 top-0 h-full w-full rounded-t-xl object-contain transition-transform duration-500 ease-in-out group-hover:scale-110"
-					:src="cardInfo.image"
+					:src="cardInfo.media"
 					alt="Image Description"
 				/>
 			</div>
@@ -18,18 +18,18 @@
 					cardInfo.price
 				}}</span>
 				<p class="truncate text-xs text-gray-800">
-					{{ cardInfo.title }}
+					{{ cardInfo.name }}
 				</p>
 			</div>
 		</a>
 	</div>
 </template>
 <script setup>
-defineProps({
-	cardInfo: {
-		price: String,
-		title: String,
-		image: String,
-	},
-});
+	defineProps({
+		cardInfo: {
+			price: String,
+			name: String,
+			media: String,
+		},
+	});
 </script>

@@ -1,47 +1,54 @@
 <script setup>
-import { onBeforeMount } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import {
-	logInUser,
-	redirectToMicrosoftLogin,
-	userIsLogedIn,
-} from "../utils/userSession";
+	import { onBeforeMount } from "vue";
+	import { useRoute, useRouter } from "vue-router";
+	import {
+		logInUser,
+		redirectToMicrosoftLogin,
+		userIsLogedIn,
+	} from "../utils/userSession";
 
-const extractHashFromURL = () => {
-	const route = useRoute();
-	return route.hash;
-};
+	const extractHashFromURL = () => {
+		const route = useRoute();
+		return route.hash;
+	};
 
-const extractParamsFromURLHash = hash => {
-	const params = {};
-	let tempHash = hash;
-	if (hash.charAt(0) === "#") {
-		tempHash = hash.slice(1);
-	}
+	const extractParamsFromURLHash = hash => {
+		const params = {};
+		let tempHash = hash;
+		if (hash.charAt(0) === "#") {
+			tempHash = hash.slice(1);
+		}
 
-	const urlParams = tempHash.split("&");
-	urlParams.forEach(param => {
-		const [key, value] = param.split("=");
-		params[key] = value;
-	});
+		const urlParams = tempHash.split("&");
+		urlParams.forEach(param => {
+			const [key, value] = param.split("=");
+			params[key] = value;
+		});
 
-	return params;
-};
+		return params;
+	};
 
-onBeforeMount(() => {
-	const router = useRouter();
+	onBeforeMount(() => {
+		const router = useRouter();
 
-	if (userIsLogedIn()) {
+		const params = extractParamsFromURLHash(extractHashFromURL());
+		if (!params.code && !params.id_token) {
+			redirectToMicrosoftLogin();
+		}
+		logInUser(params.id_token);
+		// TODO validate state
 		router.push("/");
-		return;
-	}
-
-	const params = extractParamsFromURLHash(extractHashFromURL());
-	if (!params.code && !params.id_token) {
-		redirectToMicrosoftLogin();
-	}
-	logInUser(params.id_token);
-	// TODO validate state
-	router.push("/");
-});
+	});
 </script>
+
+<template>
+	<div class="flex h-screen w-screen items-center justify-center">
+		<div
+			class="inline-block h-6 w-6 animate-spin rounded-full border-[3px] border-current border-t-transparent text-orange-600"
+			role="status"
+			aria-label="loading"
+		>
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+</template>
