@@ -1,0 +1,39 @@
+---
+- name: Deploy and start frontend
+  remote_user: mpAdmin
+  become: yes
+  hosts: frontend
+  tasks:
+  - name: Stop nginx server
+    shell:
+      cmd: sudo systemctl stop nginx
+  - name: Remove app folder
+    shell:
+      cmd: rm -rf /home/mpAdmin/frontend
+  - name: Create clean app folder
+    shell:
+      cmd: mkdir -p /home/mpAdmin/frontend
+  - name: Copy dev artifact file
+    ansible.builtin.copy:
+      src: ../../dist.zip
+      dest: /home/mpAdmin/frontend
+    when: dev
+  - name: Unzip dev artifact file
+    shell:
+      cmd: unzip /home/mpAdmin/frontend/dist.zip
+    when: dev
+  - name: Copy prod artifact file
+    ansible.builtin.copy:
+      src: ../../prod_dist.zip
+      dest: /home/mpAdmin/frontend
+    when: prod
+  - name: Unzip dev artifact file
+    shell:
+      cmd: unzip /home/mpAdmin/frontend/prod_dist.zip
+    when: prod
+  - name: Start nginx server
+    shell:
+      cmd: sudo systemctl start nginx
+  - name: Reload nginx server
+    shell:
+      cmd: sudo systemctl reload nginx

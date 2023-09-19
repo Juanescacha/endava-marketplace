@@ -1,14 +1,11 @@
 #-----------------------------------------
-# Build Server Image
+# Backend Build Server Image
 #-----------------------------------------
 
-FROM maven:latest
+FROM maven:3.9.4-eclipse-temurin-17-focal
 
 # Install ansible
 RUN apt update 
 RUN apt install -y software-properties-common 
 RUN add-apt-repository --yes --update ppa:ansible/ansible 
 RUN apt install ansible -y
-
-# Install node
-RUN apt install nodejs -y
