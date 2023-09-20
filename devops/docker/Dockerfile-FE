@@ -4,16 +4,11 @@
 
 FROM node:20
 
-# Install Python and Pipx
+# Install ansible
+RUN echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu focal main" >> /etc/apt/sources.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
 RUN apt update
-RUN apt install python3 -y
-RUN apt install python3-pip -y
-RUN python3 -m pip install --user pipx --break-system-packages
-RUN python3 -m pipx ensurepath
-RUN apt install python3.11-venv -y
+RUN apt install ansible -y
 
 # Install zip
 RUN apt install zip -y
-
-# Install Ansible
-RUN python3 -m pipx install --include-deps ansible
