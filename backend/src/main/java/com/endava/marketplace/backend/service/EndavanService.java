@@ -36,7 +36,10 @@ public class EndavanService {
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         Jwt principal = (Jwt) auth.getPrincipal();
         String name  = principal.getClaim("name");
-        String email = principal.getClaim("upn");
+        String email = principal.getClaim("preferred_username");
+        if (email == null){
+            email = principal.getClaim("upn");
+        }
 
         Endavan endavan = new Endavan(null, name, email, false, null, null, null);
         return endavan;
