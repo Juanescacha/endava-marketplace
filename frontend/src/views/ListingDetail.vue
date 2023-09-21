@@ -1,47 +1,65 @@
 <script setup>
-import { onBeforeMount, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import {
-	Dialog,
-	DialogPanel,
-	DialogTitle,
-	DialogDescription,
-} from "@headlessui/vue";
-import StarsInput from "../components/Inputs/StarsInput.vue";
-import ImageSelector from "../components/ImageSelector.vue";
-import useModal from "../composables/useModal";
-import { makeGetRequest } from "../utils/axios";
+	import { onMounted, ref } from "vue";
+	import { useRoute, useRouter } from "vue-router";
+	import {
+		Dialog,
+		DialogPanel,
+		DialogTitle,
+		DialogDescription,
+	} from "@headlessui/vue";
+	import StarsInput from "../components/Inputs/StarsInput.vue";
+	import ImageSelector from "../components/ImageSelector.vue";
+	import useModal from "../composables/useModal";
+	import { makeGetRequest } from "../utils/axios";
 
-const route = useRoute();
-const router = useRouter();
-const listing = ref(null);
-const { isModalOpen, setModalOpen } = useModal();
+	const route = useRoute();
+	const router = useRouter();
+	const listing = ref(null);
+	const { isModalOpen, setModalOpen } = useModal();
 
-const handleModalClose = () => {
-	router.go(-1);
-};
+	const handleModalClose = () => {
+		router.go(-1);
+	};
 
-onBeforeMount(async () => {
-	const productId = route.params.id;
-	const url = `${import.meta.env.VITE_API_URL}/api/listings/get/${productId}`;
-	const { data } = await makeGetRequest(url);
+	onMounted(async () => {
+		const productId = route.params.id;
+		const url = `${
+			import.meta.env.VITE_API_URL
+		}/api/listings/get/${productId}`;
+		const response = await makeGetRequest(url);
 
-	if (typeof data === "undefined") {
-		setModalOpen(true);
-	}
-	if (!data) {
-		router.push("/404");
-	}
+		console.log(response);
+		if (response.error) {
+			//error
+			setModalOpen(true);
+		} else {
+			// no error
+			if (response.data === null) {
+				setModalOpen(true);
+			} else {
+				listing.value = response.data;
+			}
+		}
+	});
 
-	listing.value = data;
-});
+	// onMounted(async () => {
+	// 	const url = `${import.meta.env.VITE_API_URL}/api/listings/get/all`;
+	// 	const response = await makeGetRequest(url);
+	// 	if (response.error) {
+	// 		// error
+	// 	} else {
+	// 		productCards.value = response.data.content;
+	// 		isLoading.value = false;
+	// 	}
+	// 	productCards.value = cardsInfo;
+	// });
 
-// TODO Load dinamically
-const images = [
-	"https://cdn.pixabay.com/photo/2015/12/12/15/24/amsterdam-1089646_1280.jpg",
-	"https://cdn.pixabay.com/photo/2016/02/17/23/03/usa-1206240_1280.jpg",
-	"https://cdn.pixabay.com/photo/2016/12/04/19/30/berlin-cathedral-1882397_1280.jpg",
-];
+	// TODO Load dynamically
+	const images = [
+		"https://cdn.pixabay.com/photo/2015/12/12/15/24/amsterdam-1089646_1280.jpg",
+		"https://cdn.pixabay.com/photo/2016/02/17/23/03/usa-1206240_1280.jpg",
+		"https://cdn.pixabay.com/photo/2016/12/04/19/30/berlin-cathedral-1882397_1280.jpg",
+	];
 </script>
 
 <template>

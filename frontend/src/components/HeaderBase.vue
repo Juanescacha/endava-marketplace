@@ -1,7 +1,8 @@
 <script setup>
-	import { ref } from "vue";
+	import { ref, watch } from "vue";
 	import { useRouter } from "vue-router";
-	import { suggestions } from "../constants";
+	import { makeGetRequest } from "../utils/axios";
+	// import { suggestions } from "../constants";
 	import {
 		BellIcon,
 		MagnifyingGlassIcon,
@@ -10,24 +11,40 @@
 		Cog8ToothIcon,
 	} from "@heroicons/vue/24/outline";
 	import { CreditCardIcon } from "@heroicons/vue/24/solid";
+	import { useProductStore } from "../stores/products";
+	const productsList = useProductStore();
 
 	const router = useRouter();
 
 	const searchInput = ref("");
 	const categoryInput = ref("");
+	const suggestions = ref([]);
 	const suggestionList = ref([]);
 	const suggestionListBox = ref(false);
 	const activeIndex = ref(-1);
+	let searchTimeout;
 
 	const handleEsc = () => {
 		suggestionListBox.value = false;
 	};
 
-	const handleEnter = () => {
+	const handleEnter = async () => {
 		if (activeIndex.value !== -1) {
-			// acceder a product page
+			searchInput.value = "";
+			router.push(`/listings/${suggestions.value[activeIndex.value].id}`);
 		} else {
-			// realizar busqueda completa
+			const url = `${
+				import.meta.env.VITE_API_URL
+			}/api/listings/search/get?name=${searchInput.value}`;
+			const response = await makeGetRequest(url);
+			searchInput.value = "";
+			if (response.error) {
+				// error
+			} else {
+				//funcion de main para cambiar el array de productos
+				// searchUpdate(response.data.content);
+				productsList.update(response.data.content);
+			}
 		}
 	};
 
@@ -65,6 +82,33 @@
 			}
 		});
 	};
+
+	const getSuggestions = async query => {
+		const url = `${
+			import.meta.env.VITE_API_URL
+		}/api/listings/search/quick?name=${query}`;
+		const response = await makeGetRequest(url);
+		if (response.error) {
+			// error
+		} else {
+			suggestions.value = response.data;
+		}
+	};
+
+	const onSearchInput = () => {
+		clearTimeout(searchTimeout);
+		searchTimeout = setTimeout(() => {
+			getSuggestions(searchInput.value);
+		}, 1000);
+	};
+
+	watch(searchInput, () => {
+		if (searchInput.value.length > 0) {
+			onSearchInput();
+		} else {
+			suggestions.value = [];
+		}
+	});
 </script>
 
 <template>
@@ -76,15 +120,15 @@
 			aria-label="Global"
 		>
 			<div class="mr-5 md:mr-8">
-				<router-link
+				<a
 					class="flex-none text-xl font-semibold"
-					to="/"
+					href="/"
 					aria-label="Brand"
 					><img
 						src="../assets/endava-logo.png"
 						alt="logo"
 						class="w-32"
-				/></router-link>
+				/></a>
 			</div>
 			<div
 				class="ml-auto flex w-full items-center justify-end sm:order-3 sm:justify-end sm:gap-x-3"
@@ -127,19 +171,22 @@
 							autocomplete="off"
 						/>
 						<ul
-							class="peer-focus:border-3 absolute top-[33px] flex w-full cursor-default list-none flex-col items-center divide-y rounded-b-md border-b border-l border-r border-gray-200 bg-white px-2 py-2 font-light shadow-2xl peer-focus:border-t-gray-200"
+							class="peer-focus:border-3 absolute top-[33px] w-full cursor-default list-none flex-col items-center rounded-b-md border-b border-l border-r border-gray-200 bg-white px-1 py-1 font-light shadow-2xl peer-focus:border-t-gray-200"
 							ref="suggestionList"
-							:class="{
-								block: suggestionListBox,
-								hidden: !suggestionListBox,
-							}"
+							v-if="suggestionListBox && suggestions.length > 0"
 						>
 							<li
 								v-for="(item, index) in suggestions"
 								:key="index"
-								class="w-full rounded-sm px-10 py-1 first:border-t last:rounded-b-md hover:bg-[#efefef]"
+								class="w-full truncate rounded-sm first:border-t hover:bg-[#efefef]"
 							>
-								{{ item.title }}
+								<router-link
+									class="block h-full w-full px-10 py-1"
+									:to="'/listings/' + item.id"
+									@click="searchInput = ''"
+								>
+									{{ item.name }}
+								</router-link>
 							</li>
 						</ul>
 					</div>
@@ -171,13 +218,13 @@
 				</div>
 				<div class=""></div>
 				<div class="flex gap-4">
-					<button
-						type="button"
-						class="endava inline-flex items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all"
+					<router-link
+						to="/listings/new"
+						class="endava inline-flex items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-endava-600 focus:ring-offset-2 focus:ring-offset-white"
 					>
 						Sell
 						<CreditCardIcon class="h-5 w-5" />
-					</button>
+					</router-link>
 				</div>
 
 				<div class="flex flex-row items-center justify-end gap-2">

@@ -1,18 +1,45 @@
 <script setup>
-	import { ref } from "vue";
+	import { ref, onMounted } from "vue";
+	import { makeGetRequest } from "../utils/axios";
 	import ProductCard from "../components/ProductCard.vue";
 	import SkeletonCard from "../components/SkeletonCard.vue";
-	import { cardsInfo } from "../constants";
-	import {
-		ChevronDoubleRightIcon,
-		ChevronDoubleLeftIcon,
-	} from "@heroicons/vue/20/solid";
+	import { useProductStore } from "../stores/products";
+	const productsList = useProductStore();
+	// const productCards = ref([]);
 
-	const productCards = ref(cardsInfo);
-	/* funcion () {
-	request === fetch('{{URL}}/api/listings/get/all')
-	productCards = ref(request.content)
-	} */
+	// import { cardsInfo } from "../constants";
+
+	const isLoading = ref(true);
+	const page = ref(1);
+
+	let Baseurl = `${import.meta.env.VITE_API_URL}/api/listings/get/all?page=`;
+
+	onMounted(async () => {
+		const url = `${Baseurl}${page.value}`;
+		const response = await makeGetRequest(url);
+		if (response.error) {
+			// error
+		} else {
+			// ***
+			// productCards.value = response.data.content;
+			productsList.update(response.data.content);
+			setTimeout(() => {
+				isLoading.value = false;
+			}, 500);
+		}
+	});
+
+	const handleLoadMore = async () => {
+		page.value += 1;
+		const url = `${Baseurl}${page.value}`;
+		const response = await makeGetRequest(url);
+
+		// productCards.value = [...productCards.value, ...response.data.content];
+		productsList.update([
+			...productsList.products,
+			...response.data.content,
+		]);
+	};
 </script>
 
 <template>
@@ -22,25 +49,32 @@
 		class="mx-auto mt-28 w-fit"
 	>
 		<h1 class="py-2">Latest Products</h1>
+
 		<div
-			v-if="productCards.length === 0"
+			:class="isLoading ? 'hidden' : 'block'"
+			class="mx-auto my-5 flex max-w-6xl flex-wrap justify-center gap-6"
+		>
+			<!-- ** -->
+			<!-- EN EL v-for es "card in productCards" -->
+			<ProductCard
+				v-for="card in productsList.productCards"
+				:cardInfo="card"
+				:key="card.id"
+			/>
+		</div>
+		<div
+			:class="isLoading ? 'block' : 'hidden'"
 			class="mx-auto my-5 flex max-w-6xl flex-wrap justify-center gap-6"
 		>
 			<SkeletonCard
-				v-for="index in 20"
+				v-for="index in 10"
 				:key="index"
-			/>
-		</div>
-		<div class="mx-auto my-5 flex max-w-6xl flex-wrap justify-center gap-6">
-			<ProductCard
-				v-for="card in productCards"
-				:cardInfo="card"
-				:key="card.id"
 			/>
 		</div>
 	</main>
 	<button
 		type="button"
+		@click="handleLoadMore"
 		class="endava mx-auto block items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all"
 	>
 		Load More
