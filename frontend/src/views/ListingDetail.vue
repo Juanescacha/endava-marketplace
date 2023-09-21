@@ -1,5 +1,5 @@
 <script setup>
-	import { onMounted, ref } from "vue";
+	import { onBeforeMount, ref } from "vue";
 	import { useRoute, useRouter } from "vue-router";
 	import {
 		Dialog,
@@ -21,56 +21,56 @@
 		router.go(-1);
 	};
 
-	onMounted(async () => {
+	onBeforeMount(async () => {
 		const productId = route.params.id;
 		const url = `${
 			import.meta.env.VITE_API_URL
 		}/api/listings/get/${productId}`;
-		const response = await makeGetRequest(url);
+		const imgUrl = `${
+			import.meta.env.VITE_API_URL
+		}/api/listings/get/images/${productId}`;
 
-		console.log(response);
-		if (response.error) {
-			//error
-			setModalOpen(true);
-		} else {
-			// no error
-			if (response.data === null) {
+		makeGetRequest(url).then(dataResponse => {
+			const { data } = dataResponse;
+			if (typeof data === "undefined") {
 				setModalOpen(true);
-			} else {
-				listing.value = response.data;
 			}
-		}
+			if (!data) {
+				router.push("/404");
+			}
+
+			if (!listing.value) listing.value = data;
+			else listing.value = { ...listing.value, ...data };
+		});
+
+		makeGetRequest(imgUrl).then(imgResponse => {
+			const { data } = imgResponse;
+
+			const thumbnails = [];
+
+			const images = data.filter(img => {
+				if (img.includes("thumb")) {
+					thumbnails.push(img);
+				}
+				return !img.includes("thumb");
+			});
+
+			if (!listing.value) listing.value = { images };
+			else listing.value.images = data;
+		});
 	});
-
-	// onMounted(async () => {
-	// 	const url = `${import.meta.env.VITE_API_URL}/api/listings/get/all`;
-	// 	const response = await makeGetRequest(url);
-	// 	if (response.error) {
-	// 		// error
-	// 	} else {
-	// 		productCards.value = response.data.content;
-	// 		isLoading.value = false;
-	// 	}
-	// 	productCards.value = cardsInfo;
-	// });
-
-	// TODO Load dynamically
-	const images = [
-		"https://cdn.pixabay.com/photo/2015/12/12/15/24/amsterdam-1089646_1280.jpg",
-		"https://cdn.pixabay.com/photo/2016/02/17/23/03/usa-1206240_1280.jpg",
-		"https://cdn.pixabay.com/photo/2016/12/04/19/30/berlin-cathedral-1882397_1280.jpg",
-	];
 </script>
 
 <template>
 	<main class="mx-14 mb-12 mt-32 grid grid-cols-1 gap-x-4 lg:grid-cols-7">
 		<image-selector
-			:images="images"
+			v-if="listing && listing.images"
+			:images="listing.images"
 			styles="col-span-3 lg:col-span-4"
 		/>
 		<div
 			class="col-span-3 lg:col-span-3"
-			v-if="listing"
+			v-if="listing && listing.name"
 		>
 			<h1>{{ listing.name }}</h1>
 			<div class="text-lg font-semibold text-endava-600">
