@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface EndavanRepository extends JpaRepository<Endavan, Integer> {
-    Optional<Endavan> findEndavanByEmail(String email);
+    Optional<Endavan> findEndavanByEmailIgnoreCase(String email);
 }

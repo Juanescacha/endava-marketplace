@@ -19,7 +19,7 @@ public class EndavanService {
 
     public Endavan saveEndavan() {
         Endavan endavan = getEndavanInfo();
-        Optional<Endavan> savedEndavan = endavanRepository.findEndavanByEmail(endavan.getEmail());
+        Optional<Endavan> savedEndavan = endavanRepository.findEndavanByEmailIgnoreCase(endavan.getEmail());
         if (savedEndavan.isEmpty()){
             return endavanRepository.save(endavan);
         }
