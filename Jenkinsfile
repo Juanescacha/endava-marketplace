@@ -122,6 +122,9 @@ pipeline {
                     }
                 }
                 stage('Deploy to development environment') {
+                    when {
+                        branch 'development'
+                    }
                     steps {
                         echo 'Deploying frontend to development environment...'
                         ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'marketplace-servers-key', inventory: './devops/ansible/dev-inventory.yml', playbook: './devops/ansible/deploy-frontend.yml'
@@ -133,6 +136,7 @@ pipeline {
                     }
                     steps {
                         echo 'Deploying frontend to production environment...'
+                        ansiblePlaybook disableHostKeyChecking: true, credentialsId: 'marketplace-servers-key', inventory: './devops/ansible/prod-inventory.yml', playbook: './devops/ansible/deploy-frontend.yml'
                     }
                 }
             }
