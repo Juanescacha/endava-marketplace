@@ -1,0 +1,34 @@
+logging:
+  level:
+    sql: debug
+
+spring:
+  datasource:
+    url: jdbc:postgresql://endava-marketplace-db.postgres.database.azure.com:5432/endava_marketplace
+    username: marketplace_admin
+    password: x2P-eB7rsY3MbaJr
+  cloud:
+    azure:
+      active-directory:
+        enabled: true
+        profile:
+          tenant-id: 0b3fc178-b730-4e8b-9843-e81259237b77
+        credential:
+          client-id: c9e3e5e0-69cb-4162-b5d8-f0481f55cd93
+          client-secret: ~et8Q~S5BKAyqUjhyNZtOhFVXkKyqyoVwaqsSbTs
+        app-id-uri: api://c9e3e5e0-69cb-4162-b5d8-f0481f55cd93
+      storage:
+        account-name: endavamarketplaceimages
+        account-key: pUfUBcbTFTbXKJpv0mVqkx0IaKw6NxJ+0TUqd79PolxzfQ7BGdbk2AqFuKo3UjoMgY6HrJzjX1UV+ASt2A5ECg==
+        endpoint: https://endavamarketplaceimages.blob.core.windows.net
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

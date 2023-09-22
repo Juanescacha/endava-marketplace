@@ -1,0 +1,23 @@
+---
+- name: Deploy and start backend
+  remote_user: mpAdmin
+  become: yes
+  hosts: backend
+  tasks:
+  - name: Stop previous executions
+    shell:
+      cmd: sudo systemctl stop backend.service
+  - name: Remove app folder
+    shell:
+      cmd: rm -rf /home/mpAdmin/backend
+  - name: Create clean app folder
+    shell:
+      cmd: mkdir -p /home/mpAdmin/backend
+  - name: Copy artifact file
+    ansible.builtin.copy:
+      src: ../../backend/target/backend.jar
+      dest: /home/mpAdmin/backend
+  - name: Start program
+    become: yes
+    become_user: mpAdmin
+    shell: sudo systemctl start backend.service
