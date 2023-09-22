@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('Backend') {
             when {
-                changeset '**/backend/*.*'
+                beforeAgent true
+                changeset '**/backend/**'
             }
             agent {
                 dockerfile {
@@ -55,7 +56,8 @@ pipeline {
         }
         stage('Frontend') {
             when {
-                changeset '**/frontend/*.*'
+                beforeAgent true
+                changeset '**/frontend/**'
             }
             agent {
                 dockerfile {
