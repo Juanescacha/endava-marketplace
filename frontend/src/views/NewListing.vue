@@ -1,120 +1,129 @@
 <script setup>
-import { reactive, onMounted } from "vue";
-import {
-	postNewListing,
-	postImagesOfListing,
-	deleteListing,
-} from "../utils/axios";
-import useNotification from "../composables/useNotification";
-import useForm from "../composables/useForm";
-import SelectInput from "../components/Inputs/SelectInput.vue";
-import StarsInput from "../components/Inputs/StarsInput.vue";
-import ImageInputList from "../components/Inputs/ImageInputList.vue";
-import FormButton from "../components/Inputs/FormButton.vue";
-import NotificationBox from "../components/NotificationBox.vue";
+	import { reactive, onMounted } from "vue";
+	import { useUserStore } from "../stores/user";
+	import {
+		postNewListing,
+		postImagesOfListing,
+		deleteListing,
+	} from "../utils/axios";
+	import useNotification from "../composables/useNotification";
+	import useForm from "../composables/useForm";
+	import SelectInput from "../components/Inputs/SelectInput.vue";
+	import StarsInput from "../components/Inputs/StarsInput.vue";
+	import ImageInputList from "../components/Inputs/ImageInputList.vue";
+	import FormButton from "../components/Inputs/FormButton.vue";
+	import NotificationBox from "../components/NotificationBox.vue";
 
-const categories = reactive([]);
-const formData = reactive({
-	name: { value: "", valid: false },
-	detail: { value: "", valid: false },
-	category: { value: "", valid: false },
-	price: { value: 0, valid: false },
-	condition: { value: 0, valid: false },
-	stock: { value: 0, valid: false },
-	media: { value: "", valid: false },
-});
+	const categories = reactive([]);
+	const formData = reactive({
+		name: { value: "", valid: false },
+		detail: { value: "", valid: false },
+		category: { value: "", valid: false },
+		price: { value: 0, valid: false },
+		condition: { value: 0, valid: false },
+		stock: { value: 0, valid: false },
+		media: { value: "", valid: false },
+	});
 
-const { showMsg, msgColor, displayMsg } = useNotification();
-const {
-	validateTextInput,
-	validateNumerciInput,
-	handleInputUpdate,
-	handleNumericInputUpdate,
-	handleMediaUpdate,
-	handleSelectUpdate,
-	handleConditionUpdate,
-	removeNullsFromImages,
-	isValidForm,
-} = useForm();
+	const user = useUserStore();
+	const { showMsg, msgColor, displayMsg } = useNotification();
+	const {
+		validateTextInput,
+		validateNumerciInput,
+		handleInputUpdate,
+		handleNumericInputUpdate,
+		handleMediaUpdate,
+		handleSelectUpdate,
+		handleConditionUpdate,
+		removeNullsFromImages,
+		isValidForm,
+	} = useForm();
 
-onMounted(() => {
-	// TODO load dinamically
-	categories.push({ id: 1, name: "technology" });
-	categories.push({ id: 1, name: "appliances" });
-	categories.push({ id: 1, name: "clothing" });
-});
+	onMounted(() => {
+		// TODO load dinamically
+		categories.push({ id: 1, name: "technology" });
+		categories.push({ id: 1, name: "appliances" });
+		categories.push({ id: 1, name: "clothing" });
+	});
 
-const validateProductDetail = $event => {
-	if ($event.target.value.length > 500) {
-		displayMsg("The detail can't have more than 500 characters", "red");
-	} else {
-		validateTextInput($event, formData);
-	}
-};
-
-const handleFormSubmit = async () => {
-	if (!isValidForm(formData)) {
-		displayMsg("All fields are obligatory", "red");
-		return;
-	}
-
-	const { error, msg, newListingId } = await createNewListing();
-	if (error) {
-		displayMsg(msg, "red");
-		return;
-	}
-
-	const { error: imgError, msg: imgMsg } = await postImages(newListingId);
-	if (imgError) {
-		displayMsg(imgMsg, "red");
-		return;
-	}
-
-	displayMsg("Successfull operation", "green");
-	// TODO redirect to other page
-};
-
-const organizePostPetition = () => {
-	const postData = {
-		seller: {
-			id: 1, // TODO load dinamically
-		},
-		category: {
-			id: 1,
-		},
-		status: {
-			id: 1, // TODO load dinamically
-		},
-		name: formData.name.value,
-		detail: formData.detail.value,
-		condition: formData.condition.value,
-		price: formData.price.value,
-		stock: formData.stock.value,
+	const validateProductDetail = $event => {
+		if ($event.target.value.length > 500) {
+			displayMsg("The detail can't have more than 500 characters", "red");
+		} else {
+			validateTextInput($event, formData);
+		}
 	};
-	return postData;
-};
 
-const createNewListing = async () => {
-	const data = organizePostPetition();
-	const { response, error, msg } = await postNewListing(data);
+	const handleFormSubmit = async () => {
+		if (!isValidForm(formData)) {
+			displayMsg("All fields are obligatory", "red");
+			return;
+		}
 
-	if (error) return { msg, error };
+		const { error, msg, newListingId } = await createNewListing();
+		if (error) {
+			displayMsg(msg, "red");
+			return;
+		}
 
-	return { newListingId: response.data.id };
-};
+		const { error: imgError, msg: imgMsg } = await postImages(newListingId);
+		if (imgError) {
+			displayMsg(imgMsg, "red");
+			return;
+		}
 
-const postImages = async id => {
-	const images = removeNullsFromImages(formData.media.value);
+		displayMsg("Successfull operation", "green");
+		// TODO redirect to other page
+	};
 
-	const { error, msg } = await postImagesOfListing(id, images);
+	const organizePostPetition = () => {
+		const postData = {
+			seller: {
+				id: user.id,
+			},
+			category: {
+				id: formData.category.value,
+			},
+			status: {
+				id: 1, // TODO load dinamically
+			},
+			name: formData.name.value,
+			detail: formData.detail.value,
+			condition: formData.condition.value,
+			price: formData.price.value,
+			stock: formData.stock.value,
+		};
+		return postData;
+	};
 
-	if (error) {
-		await deleteListing(id);
-		return { msg, error };
-	}
+	const createNewListing = async () => {
+		const data = organizePostPetition();
+		if (!data.seller.id) {
+			return {
+				error: true,
+				msg: "There's an error in the session. Try later.",
+			};
+		}
 
-	return {};
-};
+		const { response, error, msg } = await postNewListing(data);
+
+		if (error) return { msg, error };
+
+		return { newListingId: response.data.id };
+	};
+
+	const postImages = async id => {
+		const images = removeNullsFromImages(formData.media.value);
+
+		const { error, msg } = await postImagesOfListing(id, images);
+
+		if (error) {
+			await deleteListing(id);
+			return { msg, error };
+		}
+
+		return {};
+	};
 </script>
 
 <template>

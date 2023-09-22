@@ -1,5 +1,7 @@
 import { decodeJwt } from "jose";
+import { useUserStore } from "../stores/user";
 import { createCookie, getCookie } from "../utils/cookies";
+import { postUser } from "./axios";
 
 const LOGIN_TOKEN_NAME = "access_token";
 // TODO remove temporary state
@@ -33,11 +35,15 @@ const buildMicrosoftLoginURL = () => {
 };
 
 const redirectToMicrosoftLogin = () => {
-	const microsoftURL = buildMicrosoftLoginURL();
-	window.location.href = microsoftURL;
+	window.location.href = buildMicrosoftLoginURL();
 };
 
 const logInUser = token => {
+	createSessionCookie(token);
+	saveUserInfoToStore();
+};
+
+const createSessionCookie = token => {
 	const { iat, exp } = decodeJwt(token);
 	const tokenLifeSeconds = exp - iat;
 	const currentDate = new Date();
@@ -49,6 +55,22 @@ const logInUser = token => {
 	});
 };
 
+const saveUserInfoToStore = async () => {
+	const user = useUserStore();
+	const { id, name, email, admin } = await postUser();
+	user.$patch({
+		id,
+		name,
+		email,
+		isAdmin: admin,
+	});
+};
+
 const userIsLogedIn = () => !!getCookie(LOGIN_TOKEN_NAME);
 
-export { logInUser, redirectToMicrosoftLogin, userIsLogedIn };
+export {
+	logInUser,
+	redirectToMicrosoftLogin,
+	userIsLogedIn,
+	saveUserInfoToStore,
+};

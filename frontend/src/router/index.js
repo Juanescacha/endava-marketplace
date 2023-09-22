@@ -5,7 +5,8 @@ import Login from "../views/LoginPage.vue";
 import ListingDetail from "../views/ListingDetail.vue";
 import NewListing from "../views/NewListing.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
-import { getCookie } from "../utils/cookies";
+import { userIsLogedIn, saveUserInfoToStore } from "../utils/userSession";
+import { useUserStore } from "../stores/user";
 
 const routes = [
 	{
@@ -45,13 +46,17 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-	const isAuthenticated = getCookie("access_token");
+	const isAuthenticated = userIsLogedIn();
 	if (!isAuthenticated && to.name !== "Login") {
 		return { name: "Login" };
 	}
 	if (to.name == "Login" && isAuthenticated) {
 		return { name: "MainPage" };
 	}
+
+	const user = useUserStore();
+
+	if (isAuthenticated && user.id === 0) saveUserInfoToStore();
 });
 
 export default router;

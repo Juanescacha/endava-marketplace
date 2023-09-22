@@ -103,4 +103,23 @@ const deleteListing = async id => {
 	}
 };
 
-export { makeGetRequest, postNewListing, postImagesOfListing, deleteListing };
+const postUser = async () => {
+	try {
+		const url = `${getAPIURL()}/api/user/post`;
+		const config = {
+			headers: getHeadersForRequest(),
+		};
+		const response = await axios.post(url, {}, config);
+		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+export {
+	makeGetRequest,
+	postNewListing,
+	postImagesOfListing,
+	deleteListing,
+	postUser,
+};

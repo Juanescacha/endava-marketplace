@@ -1,11 +1,7 @@
 <script setup>
 	import { onBeforeMount } from "vue";
 	import { useRoute, useRouter } from "vue-router";
-	import {
-		logInUser,
-		redirectToMicrosoftLogin,
-		userIsLogedIn,
-	} from "../utils/userSession";
+	import { logInUser, redirectToMicrosoftLogin } from "../utils/userSession";
 
 	const extractHashFromURL = () => {
 		const route = useRoute();
@@ -34,6 +30,7 @@
 		const params = extractParamsFromURLHash(extractHashFromURL());
 		if (!params.code && !params.id_token) {
 			redirectToMicrosoftLogin();
+			return;
 		}
 		logInUser(params.id_token);
 		// TODO validate state
