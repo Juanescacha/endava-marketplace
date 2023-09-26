@@ -1,11 +1,14 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -14,10 +17,10 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Listing {
+public class  Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
@@ -31,21 +34,33 @@ public class Listing {
     @JoinColumn(name = "status_id")
     private ListingStatus status;
 
+    @Column()
+    @NotNull
     private String name;
 
+    @Column(length = 500)
+    @Size(max = 500)
+    @NotNull
     private String detail;
 
+    @Column()
+    @NotNull
     private Double price;
 
+    @Column()
+    @NotNull
     private Integer stock;
 
+    @Column()
+    @NotNull
     private Integer condition;
 
-    private String media;
+    @Column()
+    private LocalDate date = LocalDate.now();
 
-    @OneToMany(mappedBy = "listing")
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     private Set<Question> questions;
 
-    @OneToMany(mappedBy = "listing")
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.PERSIST)
     private Set<Sale> sales;
 }

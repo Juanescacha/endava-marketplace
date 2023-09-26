@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "sale")
@@ -17,7 +17,7 @@ import java.util.Date;
 public class Sale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "buyer_id")
@@ -31,5 +31,6 @@ public class Sale {
     @JoinColumn(name = "status_id")
     private SaleStatus status;
 
-    private Date date;
+    @Column()
+    private LocalDate date = LocalDate.now();
 }

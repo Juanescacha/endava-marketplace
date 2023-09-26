@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +18,16 @@ import java.util.Set;
 public class ListingCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private String name;
+    @Column()
+    @NotNull
+    private String category;
 
+    @Column(columnDefinition = "boolean default true")
+    @NotNull
     private Boolean active;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
     private Set<Listing> listings;
 }
