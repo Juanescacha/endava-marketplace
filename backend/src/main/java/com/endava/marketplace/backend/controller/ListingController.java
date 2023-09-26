@@ -43,15 +43,6 @@ public class ListingController {
     }
 
     @Operation(
-            summary = "Get all listings",
-            description = "Gets all the listings present in the database",
-            tags = {"Listing"}
-    )
-    @GetMapping("get/all")
-    public Page<Listing> getAllListings(@RequestParam(required = false) String page){
-        return listingService.findAllListings(page);
-    }
-    @Operation(
             summary = "Search bar suggestions",
             description = "Gets the top 5 most recent listings that contain the name provided",
             tags = {"Listing"}
@@ -64,16 +55,18 @@ public class ListingController {
     @Operation(
             summary = "Filtered search",
             description = "Gets all the listings according to the provided parameters. " +
-                    "The search can be done by name, category (id) or both and contains multiple pages",
+                    "The search can be done by name, category (id) or both and contains multiple pages." +
+                    "The search can also be done without parameters to get all the listings in the database.",
             tags = {"Listing"}
     )
     @GetMapping("/search/get")
     public Page<Listing> getListingByCategoryAndName(
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Integer category,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String page){
-        return listingService.findListingByCategoryAndName(category, name, page);
+            @RequestParam(required = false) Integer page){
+        return listingService.findListings(category, name, page);
     }
+
     @Operation(
             summary = "Delete Listing",
             description = "Deletes a listing from the database that matches the id provided",

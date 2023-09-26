@@ -40,8 +40,8 @@ public class EndavanService {
         if (email == null){
             email = principal.getClaim("upn");
         }
+        System.out.println(email);
 
-        Endavan endavan = new Endavan(null, name, email, false, null, null, null);
-        return endavan;
+        return new Endavan(null, name, email, false, null, null, null);
     }
 }

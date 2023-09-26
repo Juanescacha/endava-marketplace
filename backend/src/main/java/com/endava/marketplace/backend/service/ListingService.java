@@ -2,11 +2,13 @@ package com.endava.marketplace.backend.service;
 
 import com.endava.marketplace.backend.azure.StorageClient;
 import com.endava.marketplace.backend.model.Listing;
-import com.endava.marketplace.backend.model.ListingCategory;
 import com.endava.marketplace.backend.repository.ListingRepository;
+import com.endava.marketplace.backend.specification.ListingSpecification;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,29 +20,15 @@ import java.util.Set;
 @Service
 public class ListingService {
     private final ListingRepository listingRepository;
-    private final ListingCategoryService listingCategoryService;
 
     private final StorageClient storageClient;
 
-    public ListingService(ListingRepository listingRepository, ListingCategoryService listingCategoryService, StorageClient storageClient) {
+    public ListingService(ListingRepository listingRepository, StorageClient storageClient) {
         this.listingRepository = listingRepository;
-        this.listingCategoryService = listingCategoryService;
         this.storageClient = storageClient;
     }
 
     public Listing saveListing(Listing listing) {return listingRepository.save(listing);}
-
-    public Page<Listing> findAllListings(String page){
-        int actualPage;
-        if (page == null){
-            actualPage = 0;
-        }
-        else{
-            actualPage = Integer.parseInt(page) - 1;
-        }
-        Pageable pageWithTenElements = PageRequest.of(actualPage, 10);
-        return listingRepository.findAll(pageWithTenElements);
-    }
 
     public Optional<Listing> findListingById(Integer listingId) {return listingRepository.findById(listingId);}
 
@@ -48,44 +36,21 @@ public class ListingService {
         return listingRepository.findTop5ByNameContainsIgnoreCaseOrderByIdDesc(listingName);
     }
 
-    public Page<Listing> findListingByCategoryAndName(String category, String name, String page) {
-        int actualPage;
-        if (page == null){
-            actualPage = 0;
-        }
-        else{
-            actualPage = Integer.parseInt(page) - 1;
-        }
-        Pageable pageWithTenElements = PageRequest.of(actualPage, 10);
+    public Page<Listing> findListings(Integer category, String name, Integer page) {
+        int actualPage = (page == null) ? 0: page - 1;
+        Sort.Order orderById = new Sort.Order(Sort.Direction.DESC, "id");
+        Pageable pageWithTenElements = PageRequest.of(actualPage, 10, Sort.by(orderById));
 
-        // Search with name and category
-        if (name != null && category != null){
-            // Get the values from the params
-            Integer categoryId =  Integer.parseInt(category);
-
-            // Get the category to search for the listings
-            Optional<ListingCategory> listingCategory = listingCategoryService.findListingCategoryById(categoryId);
-            if(listingCategory.isPresent()){
-                return listingRepository.findListingsByNameContainsIgnoreCaseAndCategoryOrderByIdDesc(name, listingCategory.get(), pageWithTenElements);
+        return listingRepository.findAll((root, query, builder) -> {
+            Predicate predicate = builder.conjunction();
+            if (category != null) {
+                predicate = builder.and(predicate, ListingSpecification.withCategoryId(category).toPredicate(root, query, builder));
             }
-            return null;
-        }
-        // Search with name only
-        else if(category == null && name != null){
-            return listingRepository.findListingsByNameContainsIgnoreCaseOrderByIdDesc(name, pageWithTenElements);
-        }
-        // Search with category only
-        else if(category != null){
-            Integer categoryId =  Integer.parseInt(category);
-            Optional<ListingCategory> listingCategory = listingCategoryService.findListingCategoryById(categoryId);
-            if(listingCategory.isPresent()){
-                return listingRepository.findListingsByCategoryOrderByIdDesc(listingCategory.get(), pageWithTenElements);
+            if (name != null && !name.isEmpty()) {
+                predicate = builder.and(predicate, ListingSpecification.withName(name).toPredicate(root, query, builder));
             }
-            return null;
-        }
-        else {
-            return findAllListings(page);
-        }
+            return predicate;
+        }, pageWithTenElements);
     }
 
     public void deleteListingById(Integer listingId) {listingRepository.deleteById(listingId);}
