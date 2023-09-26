@@ -1,0 +1,17 @@
+[Unit]
+Description=Backend service for Endava Marketplace
+After=syslog.target network.target
+
+[Service]
+SuccessExitStatus=143
+
+User=mpAdmin
+
+Type=simple
+
+WorkingDirectory=/home/mpAdmin/backend
+ExecStart=/usr/bin/java -jar backend.jar
+ExecStop=/bin/kill -15 $MAINPID
+
+[Install]
+WantedBy=multi-user.target

@@ -10,6 +10,10 @@
   - name: Remove app folder
     shell:
       cmd: rm -rf /home/mpAdmin/backend
+  - name: Remove service file
+    ansible.builtin.file:
+      path: /etc/systemd/system/backend.service
+      state: absent
   - name: Create clean app folder
     shell:
       cmd: mkdir -p /home/mpAdmin/backend
@@ -17,7 +21,11 @@
     ansible.builtin.copy:
       src: ../../backend/target/backend.jar
       dest: /home/mpAdmin/backend
+  - name: Copy service file
+    ansible.builtin.copy:
+      src: ../../backend/backend.service
+      dest: /etc/systemd/system
+  - name: Reload service definitions
+    shell: sudo systemctl daemon-reload
   - name: Start program
-    become: yes
-    become_user: mpAdmin
     shell: sudo systemctl start backend.service
