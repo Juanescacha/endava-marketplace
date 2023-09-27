@@ -22,7 +22,7 @@ public class SaleStatus {
 
     @Column()
     @NotNull
-    private String status;
+    private String name;
 
     @OneToMany(mappedBy = "status", cascade = CascadeType.PERSIST)
     private Set<Sale> sales;

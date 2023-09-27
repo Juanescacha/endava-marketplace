@@ -22,7 +22,7 @@ public class ListingStatus {
 
     @Column()
     @NotNull
-    private String status;
+    private String name;
 
     @OneToMany(mappedBy = "status", cascade = CascadeType.PERSIST)
     private Set<Listing> listings;

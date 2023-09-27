@@ -22,7 +22,7 @@ public class ListingCategory {
 
     @Column()
     @NotNull
-    private String category;
+    private String name;
 
     @Column(columnDefinition = "boolean default true")
     @NotNull
