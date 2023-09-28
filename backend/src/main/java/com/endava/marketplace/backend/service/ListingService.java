@@ -55,18 +55,15 @@ public class ListingService {
 
     public void deleteListingById(Integer listingId) {listingRepository.deleteById(listingId);}
 
-    private String createListingImagesContainer(Integer id) {
-        String containerName = "em" + id;
-        return storageClient.createContainer(containerName);
+    public void saveListingImages(List<MultipartFile> images, Long listingId) throws IOException {
+        storageClient.uploadImages(images, listingId);
     }
 
-    public void saveListingImagesToContainer(List<MultipartFile> images, Integer id) throws IOException {
-        String containerName = createListingImagesContainer(id);
-        storageClient.uploadImagesToContainer(images, containerName);
+    public List<String> retrieveListingImages(Long listingId) {
+        return storageClient.fetchImagesURLS(listingId);
     }
 
-    public List<String> findListingImagesUrls(Integer id) {
-        String containerName = "em" + id;
-        return storageClient.getAllImageUrlsFromContainer(containerName);
+    public String retrieveListingThumbnail(Long listingId) {
+        return storageClient.fetchThumbnailURL(listingId);
     }
 }

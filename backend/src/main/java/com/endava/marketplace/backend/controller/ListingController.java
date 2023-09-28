@@ -81,17 +81,27 @@ public class ListingController {
             tags = {"Listing"}
     )
     @PostMapping("/post/images/{id}")
-    public void postListingImages(@RequestParam("images") List<MultipartFile> images, @PathVariable Integer id) throws IOException {
-        listingService.saveListingImagesToContainer(images, id);
+    public void postListingImages(@RequestParam("images") List<MultipartFile> images, @PathVariable Long id) throws IOException {
+        listingService.saveListingImages(images, id);
     }
 
     @Operation(
-            summary = "Get listing images endpoints from storage account",
-            description = "Get a list of endpoints redirecting to the desired listing images saved in the project's storage account",
+            summary = "Get listing images URLS from storage account",
+            description = "Get a list of URLS redirecting to the desired listing images saved in the project's storage account",
             tags = {"Listing"}
     )
     @GetMapping("/get/images/{id}")
-    public List<String> getBlobs(@PathVariable Integer id) {
-        return listingService.findListingImagesUrls(id);
+    public List<String> getListingImages(@PathVariable Long id) {
+        return listingService.retrieveListingImages(id);
+    }
+
+    @Operation(
+            summary = "Get listing thumbnail URL from storage account",
+            description = "Gets an URL redirecting to the desired listing thumbnail saved in the project's storage account",
+            tags = {"Listing"}
+    )
+    @GetMapping("/get/images/thumb/{id}")
+    public String getListingThumbnail(@PathVariable Long id) {
+        return listingService.retrieveListingThumbnail(id);
     }
 }
