@@ -84,6 +84,27 @@ const postImagesOfListing = async (listingId, images = []) => {
 	}
 };
 
+const postSale = async data => {
+	try {
+		const url = `${getAPIURL()}/api/sales/post`;
+		const config = {
+			headers: getHeadersForRequest(),
+		};
+
+		const { status } = await axios.post(url, data, config);
+
+		if (status !== 200) {
+			return {
+				msg: "An internal error in the server has ocurred",
+				error: true,
+			};
+		}
+		return {};
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
 const deleteListing = async id => {
 	try {
 		const url = `${getAPIURL()}/api/listings/delete/${id}`;
@@ -98,6 +119,7 @@ const deleteListing = async id => {
 				error: true,
 			};
 		}
+		return {};
 	} catch (error) {
 		return handleCatch(error);
 	}
@@ -120,6 +142,7 @@ export {
 	makeGetRequest,
 	postNewListing,
 	postImagesOfListing,
+	postSale,
 	deleteListing,
 	postUser,
 };

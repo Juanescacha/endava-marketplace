@@ -23,4 +23,8 @@
 	.endava {
 		@apply rounded-lg bg-endava-500 text-white hover:bg-endava-600 active:bg-endava-700;
 	}
+
+	.endava-gray {
+		@apply rounded-lg bg-gray-500 text-white hover:bg-gray-600 active:bg-gray-700;
+	}
 }

@@ -1,50 +1,55 @@
 <script setup>
-	import { onBeforeMount, ref } from "vue";
+	import { computed, onBeforeMount, reactive, ref } from "vue";
 	import { useRoute, useRouter } from "vue-router";
-	import {
-		Dialog,
-		DialogPanel,
-		DialogTitle,
-		DialogDescription,
-	} from "@headlessui/vue";
+	import { useUserStore } from "../stores/user";
 	import StarsInput from "../components/Inputs/StarsInput.vue";
-	import ImageSelector from "../components/ImageSelector.vue";
-	import useModal from "../composables/useModal";
-	import { makeGetRequest } from "../utils/axios";
+	import ImageSelector from "../components/Images/ImageSelector.vue";
+	import GenericModal from "../components/GenericModal.vue";
+	import { makeGetRequest, postSale } from "../utils/axios";
+	import { getArticleOfSentence } from "../utils/index";
 
 	const route = useRoute();
 	const router = useRouter();
 	const listing = ref(null);
-	const { isModalOpen, setModalOpen } = useModal();
-
-	const handleModalClose = () => {
-		router.go(-1);
-	};
+	const desiredQuantity = ref(1);
+	const isUserSure = ref(false);
+	const modal = reactive({ title: "", description: null, open: false });
+	const user = useUserStore();
+	const isUserTheSeller = computed(() => listing.value.seller.id === user.id);
 
 	onBeforeMount(async () => {
-		const productId = route.params.id;
-		const url = `${
-			import.meta.env.VITE_API_URL
-		}/api/listings/get/${productId}`;
-		const imgUrl = `${
-			import.meta.env.VITE_API_URL
-		}/api/listings/get/images/${productId}`;
+		if (Number.isNaN(Number(route.params.id))) {
+			router.push("/404");
+			return;
+		}
+		getListingData();
+		getListingImages();
+	});
 
-		makeGetRequest(url).then(dataResponse => {
-			const { data } = dataResponse;
-			if (typeof data === "undefined") {
-				setModalOpen(true);
-			}
-			if (!data) {
-				router.push("/404");
-			}
+	const getListingData = () => {
+		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/${
+			route.params.id
+		}`;
+
+		makeGetRequest(url).then(response => {
+			const { data } = response;
+			const isValid = validateListingFetch(data);
+			if (!isValid) return;
 
 			if (!listing.value) listing.value = data;
 			else listing.value = { ...listing.value, ...data };
 		});
+	};
 
-		makeGetRequest(imgUrl).then(imgResponse => {
-			const { data } = imgResponse;
+	const getListingImages = () => {
+		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/images/${
+			route.params.id
+		}`;
+
+		makeGetRequest(url).then(response => {
+			const { data } = response;
+			const isValid = validateListingFetch(data);
+			if (!isValid) return;
 
 			const thumbnails = [];
 
@@ -58,15 +63,115 @@
 			if (!listing.value) listing.value = { images };
 			else listing.value.images = data;
 		});
-	});
+	};
+
+	const validateListingFetch = data => {
+		if (typeof data === "undefined") {
+			modal.title = "Error 500";
+			modal.description = "There was an error connecting with the server";
+			modal.open = true;
+			return false;
+		}
+		if (!data) {
+			router.push("/404");
+			return false;
+		}
+		return true;
+	};
+
+	const handleModalClose = () => {
+		modal.title = "";
+		modal.description = null;
+		modal.open = false;
+		isUserSure.value = false;
+	};
+
+	const handleQuantityUpdate = $event => {
+		const userInput = Number($event.target.value);
+		desiredQuantity.value = userInput;
+
+		if (userInput < 1) {
+			desiredQuantity.value = 1;
+		}
+		if (userInput > listing.value.stock) {
+			desiredQuantity.value = listing.value.stock;
+		}
+	};
+
+	const makePurchase = async () => {
+		const data = {
+			buyer: {
+				id: user.id,
+			},
+			listing: {
+				id: listing.value.id,
+			},
+			status: {
+				id: 1, // TODO load dinamically
+			},
+			quantity: desiredQuantity,
+		};
+		const result = await postSale(data);
+		if (result.error) {
+			modal.title = "Error";
+			modal.description = "An error has ocurred, please try again later";
+			modal.open = true;
+			return;
+		}
+		isUserSure.value = true;
+	};
 </script>
 
 <template>
-	<main class="mx-14 mb-12 mt-32 grid grid-cols-1 gap-x-4 lg:grid-cols-7">
+	<generic-modal
+		:title="modal.title"
+		:description="modal.description"
+		:open="modal.open"
+		@modal-closed="handleModalClose"
+	>
+		<div v-if="!isUserSure">
+			<h2>Are you sure?</h2>
+			<div class="my-3 flex gap-4">
+				<button
+					class="endava h-10 w-20 px-5 py-2"
+					@click="makePurchase"
+				>
+					Yes!
+				</button>
+				<button
+					class="endava-gray h-10 w-20 px-5 py-2"
+					@click="handleModalClose"
+				>
+					No
+				</button>
+			</div>
+		</div>
+
+		<div v-else>
+			<h2>Your purchase is almost complete!😎</h2>
+			<p class="my-2">
+				To buy
+				{{
+					getArticleOfSentence(
+						desiredQuantity,
+						listing.name.charAt(0)
+					)
+				}}
+				"{{ listing.name }}" from <b>{{ listing.seller.name }}</b
+				>, use the contact information bellow
+			</p>
+			<h3>Seller contact Information:</h3>
+			<ul>
+				<li>{{ listing.seller.email }}</li>
+			</ul>
+		</div>
+	</generic-modal>
+
+	<main class="gah3-x-4 mx-14 mb-12 mt-32 grid grid-cols-1 lg:grid-cols-7">
 		<image-selector
 			v-if="listing && listing.images"
 			:images="listing.images"
-			styles="col-span-3 lg:col-span-4"
+			styles="col-span-3 lg:col-span-4 pr-2"
 		/>
 		<div
 			class="col-span-3 lg:col-span-3"
@@ -87,43 +192,38 @@
 				</span>
 				<span>(Condition)</span>
 			</div>
+			<div>Stock: {{ listing.stock }}</div>
 			<p class="my-8 pr-16 text-gray-500">
 				{{ listing.detail }}
 			</p>
 
-			<p class="my-8">
+			<p class="my-4">
 				Sold by:
-				<span class="font-bold">{{ listing.seller.name }}</span>
+				<span class="font-bold">{{
+					isUserTheSeller ? "You" : listing.seller.name
+				}}</span>
 			</p>
+			<div
+				class="my-4"
+				v-if="!isUserTheSeller"
+			>
+				<span class="mr-4">Quantity</span>
+				<input
+					type="number"
+					:value="desiredQuantity"
+					:disabled="listing.stock === 1"
+					class="h-8 w-12 pr-0"
+					@change="handleQuantityUpdate"
+				/>
+			</div>
 			<button
+				v-if="!isUserTheSeller"
 				type="button"
 				class="endava h-10 w-2/4"
+				@click="modal.open = true"
 			>
 				Purchase
 			</button>
 		</div>
 	</main>
-	<Dialog
-		:open="isModalOpen"
-		@close="setModalOpen"
-	>
-		<div
-			class="fixed inset-0 flex w-screen items-center justify-center bg-white/70 p-4"
-		>
-			<div class="w-30 rounded-2xl bg-white p-5">
-				<DialogPanel>
-					<DialogTitle>Error 500</DialogTitle>
-					<DialogDescription>
-						There was an error connecting with the server
-					</DialogDescription>
-					<button
-						class="endava mt-2 border-0 px-3 py-2"
-						@click="handleModalClose"
-					>
-						Close
-					</button>
-				</DialogPanel>
-			</div>
-		</div>
-	</Dialog>
 </template>

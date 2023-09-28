@@ -12,4 +12,16 @@ const capitalizeFirstLetter = word => {
 	return firstLetter + remainingLetters;
 };
 
-export { capitalizeFirstLetter };
+const getArticleOfSentence = (number, nextLetter) => {
+	const VOWELS = ["a", "e", "i", "o", "u"];
+	const num = Number(number);
+
+	if (num === 1) {
+		if (VOWELS.includes(nextLetter)) return "an";
+		else return "a";
+	}
+
+	return num.toString();
+};
+
+export { capitalizeFirstLetter, getArticleOfSentence };

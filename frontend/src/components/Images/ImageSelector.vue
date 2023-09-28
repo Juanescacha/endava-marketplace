@@ -1,22 +1,22 @@
 <script setup>
-import { ref } from "vue";
-import ImageSelectorList from "./Images/ImageSelectorList.vue";
+	import { ref } from "vue";
+	import ImageSelectorList from "./ImageSelectorList.vue";
 
-const props = defineProps({
-	images: {
-		type: Array,
-		required: true,
-	},
-	styles: {
-		type: String,
-	},
-});
+	const props = defineProps({
+		images: {
+			type: Array,
+			required: true,
+		},
+		styles: {
+			type: String,
+		},
+	});
 
-const currentImage = ref(props.images[0]);
+	const currentImage = ref(props.images[0]);
 
-const handleThumbnailClick = image => {
-	currentImage.value = image;
-};
+	const handleThumbnailClick = image => {
+		currentImage.value = image;
+	};
 </script>
 
 <template>
