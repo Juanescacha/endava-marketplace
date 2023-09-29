@@ -7,7 +7,6 @@ public class ListingSpecification {
     public static Specification<Listing> withName(String name) {
         return (root, query, builder) -> builder.like(builder.lower(root.get("name")), "%" + name.toLowerCase() + "%");
     }
-
     public static Specification<Listing> withCategoryId(Integer categoryId) {
         return (root, query, builder) -> builder.equal(root.get("category").get("id"), categoryId);
     }

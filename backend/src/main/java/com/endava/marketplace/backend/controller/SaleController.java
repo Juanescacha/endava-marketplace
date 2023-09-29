@@ -60,4 +60,14 @@ public class SaleController {
     public Optional<Set<Sale>> getSalesBySellerId(@PathVariable Long id) {
         return saleService.findSalesBySellerId(id);
     }
+
+    @Operation(
+            summary = "Updates the status of a sale",
+            description = "Updates the status of a sale with one that matches the id specified in the parameters",
+            tags = {"Sale"}
+    )
+    @PatchMapping("/status/{id}")
+    public void updateStatus(@PathVariable Long id, @RequestParam Long statusId) {
+        saleService.updateSaleStatus(id, statusId);
+    }
 }
