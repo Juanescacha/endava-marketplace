@@ -24,4 +24,50 @@ const getArticleOfSentence = (number, nextLetter) => {
 	return num.toString();
 };
 
-export { capitalizeFirstLetter, getArticleOfSentence };
+const trimTextToLength = (text, length) => {
+	if (typeof text !== "string" || typeof length !== "number" || length < 1) {
+		return;
+	}
+	if (text.length < length) return text;
+
+	const index = length + 1;
+	const shortText = text.slice(0, index);
+	const shortTextArray = shortText.split(" ");
+	let lastWord = shortTextArray[shortTextArray.length - 1];
+
+	if (lastWord === "") {
+		shortTextArray.pop();
+		lastWord = shortTextArray[shortTextArray.length - 1];
+	}
+
+	if (lastWord.length <= 3) {
+		shortTextArray.pop();
+	} else {
+		shortTextArray[shortTextArray.length - 1] = lastWord.slice(0, -3);
+	}
+
+	return `${shortTextArray.join(" ")}...`;
+};
+
+const extractFirstWordsFromText = (text, n) => {
+	if (typeof text !== "string" || typeof n !== "number" || n < 1) {
+		return;
+	}
+
+	const textArray = text.split(" ");
+
+	if (textArray.length <= n) return text;
+
+	for (let index = textArray.length; index > n; index--) {
+		textArray.pop();
+	}
+
+	return textArray.join(" ");
+};
+
+export {
+	capitalizeFirstLetter,
+	getArticleOfSentence,
+	trimTextToLength,
+	extractFirstWordsFromText,
+};

@@ -4,6 +4,8 @@ import MainPage from "../views/MainPage.vue";
 import Login from "../views/LoginPage.vue";
 import ListingDetail from "../views/ListingDetail.vue";
 import NewListing from "../views/NewListing.vue";
+import UserDashboard from "../views/UserDashboard.vue";
+import SalesHistory from "../views/SalesHistory.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
 import { userIsLogedIn, saveUserInfoToStore } from "../utils/userSession";
 import { useUserStore } from "../stores/user";
@@ -28,6 +30,18 @@ const routes = [
 		path: "/listings/new",
 		component: NewListing,
 		name: "NewListing",
+	},
+	{
+		path: "/users/me",
+		component: UserDashboard,
+		name: "User Dashboard",
+		children: [
+			{
+				path: "sales-history",
+				component: SalesHistory,
+				name: "Sales History",
+			},
+		],
 	},
 	{
 		path: "/:catchAll(.*)",

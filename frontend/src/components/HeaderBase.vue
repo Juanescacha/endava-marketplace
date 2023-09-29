@@ -1,6 +1,6 @@
 <script setup>
 	import { ref, watch } from "vue";
-	import { useRouter } from "vue-router";
+	import { RouterLink, useRouter } from "vue-router";
 	import { makeGetRequest } from "../utils/axios";
 	// import { suggestions } from "../constants";
 	import {
@@ -9,10 +9,14 @@
 		BookOpenIcon,
 		ListBulletIcon,
 		Cog8ToothIcon,
+		CurrencyDollarIcon,
 	} from "@heroicons/vue/24/outline";
 	import { CreditCardIcon } from "@heroicons/vue/24/solid";
 	import { useProductStore } from "../stores/products";
+	import { useUserStore } from "../stores/user";
+
 	const productsList = useProductStore();
+	const user = useUserStore();
 
 	const router = useRouter();
 
@@ -269,7 +273,7 @@
 									Signed in as
 								</p>
 								<p class="text-sm font-medium text-gray-800">
-									Juan Esteban Camargo
+									{{ user.name }}
 								</p>
 							</div>
 							<div class="mt-2 py-2 first:pt-0 last:pb-0">
@@ -282,6 +286,15 @@
 									/>
 									Notifications
 								</a>
+								<router-link
+									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+									to="/users/me/sales-history"
+								>
+									<CurrencyDollarIcon
+										class="h-5 w-5 flex-none text-current"
+									/>
+									My sales history
+								</router-link>
 								<a
 									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
 									href="#"

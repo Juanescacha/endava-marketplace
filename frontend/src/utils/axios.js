@@ -138,11 +138,33 @@ const postUser = async () => {
 	}
 };
 
+const getSellerSales = async id => {
+	try {
+		const url = `${getAPIURL()}/api/sales/get/seller/${id}`;
+		const config = {
+			headers: getHeadersForRequest(),
+		};
+		const { status, data } = await axios.get(url, config);
+
+		if (status !== 200) {
+			return {
+				msg: "An internal error in the server has ocurred",
+				error: true,
+			};
+		}
+
+		return { data };
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
 export {
 	makeGetRequest,
 	postNewListing,
 	postImagesOfListing,
-	postSale,
 	deleteListing,
 	postUser,
+	postSale,
+	getSellerSales,
 };
