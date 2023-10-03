@@ -5,6 +5,7 @@ import Login from "../views/LoginPage.vue";
 import ListingDetail from "../views/ListingDetail.vue";
 import NewListing from "../views/NewListing.vue";
 import UserDashboard from "../views/UserDashboard.vue";
+import UserProfile from "../views/UserProfile.vue";
 import SalesHistory from "../views/SalesHistory.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
 import { userIsLogedIn, saveUserInfoToStore } from "../utils/userSession";
@@ -36,6 +37,11 @@ const routes = [
 		component: UserDashboard,
 		name: "User Dashboard",
 		children: [
+			{
+				path: "profile",
+				component: UserProfile,
+				name: "Profile Section",
+			},
 			{
 				path: "sales-history",
 				component: SalesHistory,

@@ -8,7 +8,7 @@
 		MagnifyingGlassIcon,
 		BookOpenIcon,
 		ListBulletIcon,
-		Cog8ToothIcon,
+		UserIcon,
 		CurrencyDollarIcon,
 	} from "@heroicons/vue/24/outline";
 	import { CreditCardIcon } from "@heroicons/vue/24/solid";
@@ -304,13 +304,13 @@
 									/>
 									Publications
 								</a>
-								<a
+								<router-link
 									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-									href="#"
+									to="/users/me/profile"
 								>
-									<Cog8ToothIcon class="h-5 w-5 flex-none" />
+									<UserIcon class="h-5 w-5 flex-none" />
 									Profile
-								</a>
+								</router-link>
 							</div>
 						</div>
 					</div>

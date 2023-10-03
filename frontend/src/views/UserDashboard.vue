@@ -4,7 +4,7 @@
 		ShoppingBagIcon,
 		ListBulletIcon,
 		CurrencyDollarIcon,
-		Cog8ToothIcon,
+		UserIcon,
 	} from "@heroicons/vue/24/outline";
 </script>
 
@@ -14,6 +14,15 @@
 	>
 		<nav class="bg-gray-100 lg:w-[30vw] lg:rounded-r-2xl lg:border-l-0">
 			<ul class="mt-2">
+				<li class="h-12">
+					<link-list-item
+						redirects-to="profile"
+						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
+					>
+						<UserIcon class="h-5 w-5 flex-none" />
+						Profile
+					</link-list-item>
+				</li>
 				<li class="h-12">
 					<link-list-item
 						redirects-to=""
@@ -45,15 +54,6 @@
 							class="h-5 w-5 flex-none text-current"
 						/>
 						Purchase history
-					</link-list-item>
-				</li>
-				<li class="h-12">
-					<link-list-item
-						redirects-to=""
-						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
-					>
-						<Cog8ToothIcon class="h-5 w-5 flex-none" />
-						Settings
 					</link-list-item>
 				</li>
 			</ul>
