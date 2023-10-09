@@ -6,7 +6,7 @@
 	import ImageSelector from "../components/Images/ImageSelector.vue";
 	import GenericModal from "../components/GenericModal.vue";
 	import { makeGetRequest, postSale } from "../utils/axios";
-	import { getArticleOfSentence } from "../utils/index";
+	import { getArticleOfSentence } from "@/utils/strings";
 
 	const route = useRoute();
 	const router = useRouter();

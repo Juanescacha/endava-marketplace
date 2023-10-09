@@ -1,21 +1,21 @@
 <script setup>
-import { capitalizeFirstLetter } from "../../utils";
+	import { capitalizeFirstLetter } from "@/utils/strings";
 
-defineProps({
-	id: {
-		type: String,
-		required: true,
-	},
-	title: String,
-	options: Array,
-	dynamicClass: String,
-});
+	defineProps({
+		id: {
+			type: String,
+			required: true,
+		},
+		title: String,
+		options: Array,
+		dynamicClass: String,
+	});
 
-const emit = defineEmits(["selectionChanged"]);
+	const emit = defineEmits(["selectionChanged"]);
 
-const handleOptionChange = $ev => {
-	emit("selectionChanged", $ev);
-};
+	const handleOptionChange = $ev => {
+		emit("selectionChanged", $ev);
+	};
 </script>
 
 <template>

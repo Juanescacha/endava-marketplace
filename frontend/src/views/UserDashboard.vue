@@ -47,7 +47,7 @@
 				</li>
 				<li class="h-12">
 					<link-list-item
-						redirects-to=""
+						redirects-to="purchase-history"
 						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
 					>
 						<ShoppingBagIcon

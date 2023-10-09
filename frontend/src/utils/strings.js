@@ -55,7 +55,6 @@ const extractFirstWordsFromText = (text, n) => {
 	}
 
 	const textArray = text.split(" ");
-
 	if (textArray.length <= n) return text;
 
 	for (let index = textArray.length; index > n; index--) {
@@ -65,9 +64,25 @@ const extractFirstWordsFromText = (text, n) => {
 	return textArray.join(" ");
 };
 
+const getSaleStatusColor = status => {
+	switch (status) {
+		case "Pending":
+			return "text-orange-400";
+
+		case "Fulfilled":
+			return "text-green-400";
+
+		case "Canceled":
+			return "text-red-400";
+		default:
+			break;
+	}
+};
+
 export {
 	capitalizeFirstLetter,
 	getArticleOfSentence,
 	trimTextToLength,
 	extractFirstWordsFromText,
+	getSaleStatusColor,
 };

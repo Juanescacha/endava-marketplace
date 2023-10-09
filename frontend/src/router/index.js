@@ -7,6 +7,7 @@ import NewListing from "../views/NewListing.vue";
 import UserDashboard from "../views/UserDashboard.vue";
 import UserProfile from "../views/UserProfile.vue";
 import SalesHistory from "../views/SalesHistory.vue";
+import PurchaseHistory from "../views/PurchaseHistory.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
 import { userIsLogedIn, saveUserInfoToStore } from "../utils/userSession";
 import { useUserStore } from "../stores/user";
@@ -46,6 +47,11 @@ const routes = [
 				path: "sales-history",
 				component: SalesHistory,
 				name: "Sales History",
+			},
+			{
+				path: "purchase-history",
+				component: PurchaseHistory,
+				name: "Purchase History",
 			},
 		],
 	},
