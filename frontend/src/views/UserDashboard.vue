@@ -16,7 +16,7 @@
 			<ul class="mt-2">
 				<li class="h-12">
 					<link-list-item
-						redirects-to="profile"
+						redirects-to="/users/me/profile"
 						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
 					>
 						<UserIcon class="h-5 w-5 flex-none" />
@@ -36,7 +36,7 @@
 				</li>
 				<li class="h-12">
 					<link-list-item
-						redirects-to="sales-history"
+						redirects-to="/users/me/sales-history"
 						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
 					>
 						<CurrencyDollarIcon
@@ -47,7 +47,7 @@
 				</li>
 				<li class="h-12">
 					<link-list-item
-						redirects-to="purchase-history"
+						redirects-to="/users/me/purchase-history"
 						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
 					>
 						<ShoppingBagIcon

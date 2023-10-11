@@ -7,9 +7,16 @@ import NewListing from "../views/NewListing.vue";
 import UserDashboard from "../views/UserDashboard.vue";
 import UserProfile from "../views/UserProfile.vue";
 import SalesHistory from "../views/SalesHistory.vue";
-import PurchaseHistory from "../views/PurchaseHistory.vue";
+import PurchaseHistory from "@/views/PurchaseHistory.vue";
+import PurchasedItem from "@/views/PurchasedItem.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
-import { userIsLogedIn, saveUserInfoToStore } from "../utils/userSession";
+import {
+	userIsLogedIn,
+	saveUserInfoToStore,
+	saveUserInfoFromStoreToCookies,
+	saveUserInfoFromCookiesToStore,
+	userInfoIsInCookies,
+} from "../utils/userSession";
 import { useUserStore } from "../stores/user";
 
 const routes = [
@@ -53,6 +60,11 @@ const routes = [
 				component: PurchaseHistory,
 				name: "Purchase History",
 			},
+			{
+				path: "purchase/:id",
+				component: PurchasedItem,
+				name: "Purchased Item",
+			},
 		],
 	},
 	{
@@ -82,7 +94,17 @@ router.beforeEach((to, from) => {
 
 	const user = useUserStore();
 
-	if (isAuthenticated && user.id === 0) saveUserInfoToStore();
+	if (user.id === 0) {
+		if (userInfoIsInCookies()) saveUserInfoFromCookiesToStore();
+		else saveUserInfoToStore();
+	}
+});
+
+router.afterEach((to, from) => {
+	addEventListener("beforeunload", () => {
+		// This code is only executed on page reload
+		saveUserInfoFromStoreToCookies();
+	});
 });
 
 export default router;

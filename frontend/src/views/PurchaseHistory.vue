@@ -1,5 +1,6 @@
 <script setup>
 	import { onBeforeMount, ref, watch } from "vue";
+	import { RouterLink } from "vue-router";
 	import { useUserStore } from "@/stores/user";
 	import { getUserPurchases } from "@/utils/axios";
 	import {
@@ -36,45 +37,51 @@
 				:key="product.id"
 				class="w-full max-w-[1100px] rounded-2xl bg-gray-100"
 			>
-				<product-list-item>
-					<template v-slot:left-side>
-						<img
-							:src="'https://ps.w.org/replace-broken-images/assets/icon-256x256.png?rev=2561727'"
-							:alt="`${extractFirstWordsFromText(
-								product.listing.name,
-								2
-							)} thumbnail`"
-							class="h-auto w-12 rounded-xl"
-						/>
-						<h2
-							:title="product.listing.name"
-							class="text-lg"
-						>
-							{{ trimTextToLength(product.listing.name, 15) }}
-						</h2>
-					</template>
-					<template v-slot:right-side>
-						<div class="grid grid-cols-2 gap-x-4 gap-y-2">
-							<p :title="product.listing.seller.name">
-								Seller:
-								<span class="font-bold">
-									{{
-										extractFirstWordsFromText(
-											product.listing.seller.name,
-											2
-										)
-									}}
-								</span>
-							</p>
-							<p>Qty: 1</p>
-							<p>Date: {{ product.date }}</p>
-							<p :class="getSaleStatusColor(product.status.name)">
-								{{ product.status.name }}
-							</p>
-						</div>
-						<h3>${{ product.listing.price }}</h3>
-					</template>
-				</product-list-item>
+				<router-link :to="`purchase/${product.id}`">
+					<product-list-item>
+						<template v-slot:left-side>
+							<img
+								:src="'https://ps.w.org/replace-broken-images/assets/icon-256x256.png?rev=2561727'"
+								:alt="`${extractFirstWordsFromText(
+									product.listing.name,
+									2
+								)} thumbnail`"
+								class="h-auto w-12 rounded-xl"
+							/>
+							<h2
+								:title="product.listing.name"
+								class="text-lg"
+							>
+								{{ trimTextToLength(product.listing.name, 15) }}
+							</h2>
+						</template>
+						<template v-slot:right-side>
+							<div class="grid grid-cols-2 gap-x-4 gap-y-2">
+								<p :title="product.listing.seller.name">
+									Seller:
+									<span class="font-bold">
+										{{
+											extractFirstWordsFromText(
+												product.listing.seller.name,
+												2
+											)
+										}}
+									</span>
+								</p>
+								<p>Qty: 1</p>
+								<p>Date: {{ product.date }}</p>
+								<p
+									:class="
+										getSaleStatusColor(product.status.name)
+									"
+								>
+									{{ product.status.name }}
+								</p>
+							</div>
+							<h3>${{ product.listing.price }}</h3>
+						</template>
+					</product-list-item>
+				</router-link>
 			</li>
 		</ul>
 		<p v-else>Nothing here yet. 😕</p>

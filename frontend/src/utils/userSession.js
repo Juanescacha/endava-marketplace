@@ -4,6 +4,7 @@ import { createCookie, getCookie } from "../utils/cookies";
 import { postUser } from "./axios";
 
 const LOGIN_TOKEN_NAME = "access_token";
+const USER_COOKIE_NAME = "user";
 // TODO remove temporary state
 const state = `${Math.random() * 1000}`;
 
@@ -66,11 +67,42 @@ const saveUserInfoToStore = async () => {
 	});
 };
 
+const saveUserInfoFromStoreToCookies = () => {
+	const user = useUserStore();
+	if (user.id === 0) return;
+
+	const { id, name, email, isAdmin } = user;
+	const currentDate = new Date();
+	currentDate.setSeconds(currentDate.getSeconds() + 15);
+
+	createCookie({
+		key: USER_COOKIE_NAME,
+		value: JSON.stringify({
+			id,
+			name,
+			email,
+			isAdmin,
+		}),
+		expiration: currentDate.toUTCString(),
+	});
+};
+
+const saveUserInfoFromCookiesToStore = () => {
+	const user = useUserStore();
+	const userInfo = JSON.parse(getCookie(USER_COOKIE_NAME));
+	user.$patch(userInfo);
+};
+
 const userIsLogedIn = () => !!getCookie(LOGIN_TOKEN_NAME);
+
+const userInfoIsInCookies = () => !!getCookie(USER_COOKIE_NAME);
 
 export {
 	logInUser,
 	redirectToMicrosoftLogin,
-	userIsLogedIn,
 	saveUserInfoToStore,
+	saveUserInfoFromStoreToCookies,
+	saveUserInfoFromCookiesToStore,
+	userInfoIsInCookies,
+	userIsLogedIn,
 };
