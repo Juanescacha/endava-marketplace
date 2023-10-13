@@ -2,6 +2,14 @@ logging:
   level:
     sql: debug
 
+server:
+  ssl:
+    key-store: ../certificates/springboot.jks
+    key-store-password: password
+    key-store-type: jks
+    key-alias: certificatex509
+    key-password: password
+  port: 8443
 spring:
   datasource:
     url: jdbc:postgresql://endava-marketplace-db.postgres.database.azure.com:5432/endava_marketplace
