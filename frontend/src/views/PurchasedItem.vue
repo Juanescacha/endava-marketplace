@@ -101,7 +101,7 @@
 		:open="modal.open"
 		@modal-closed="handleModalClose"
 	/>
-	<div class="mt-6 flex w-full flex-col items-center">
+	<div class="mb-3 mt-6 flex w-full flex-col items-center overflow-y-auto">
 		<image-selector
 			v-if="purchase && purchase.images && purchase.images.length > 0"
 			:images="purchase.images"

@@ -56,15 +56,15 @@
 						/>
 						<h2
 							:title="product.listing.name"
-							class="text-lg"
+							class="line-clamp-2 max-w-[70%] text-ellipsis text-lg"
 						>
-							{{ trimTextToLength(product.listing.name, 15) }}
+							{{ product.listing.name }}
 						</h2>
 					</template>
 					<template v-slot:right-side>
 						<div class="grid grid-cols-2 gap-x-4 gap-y-2">
 							<p :title="product.buyer.name">
-								Buyer:
+								<span class="hidden sm:inline">Buyer: </span>
 								<span class="font-bold">{{
 									extractFirstWordsFromText(
 										product.buyer.name,
@@ -72,7 +72,10 @@
 									)
 								}}</span>
 							</p>
-							<p>Date: {{ product.date }}</p>
+							<p>
+								<span class="hidden sm:inline">Date: </span>
+								{{ product.date }}
+							</p>
 							<p>Qty: 1</p>
 							<p :class="getSaleStatusColor(product.status.name)">
 								{{ product.status.name }}

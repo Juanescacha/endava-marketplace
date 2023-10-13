@@ -41,7 +41,7 @@
 					<product-list-item>
 						<template v-slot:left-side>
 							<img
-								:src="'https://ps.w.org/replace-broken-images/assets/icon-256x256.png?rev=2561727'"
+								src="https://ps.w.org/replace-broken-images/assets/icon-256x256.png?rev=2561727"
 								:alt="`${extractFirstWordsFromText(
 									product.listing.name,
 									2
@@ -50,15 +50,17 @@
 							/>
 							<h2
 								:title="product.listing.name"
-								class="text-lg"
+								class="line-clamp-2 max-w-[70%] text-ellipsis text-lg"
 							>
-								{{ trimTextToLength(product.listing.name, 15) }}
+								{{ product.listing.name }}
 							</h2>
 						</template>
 						<template v-slot:right-side>
 							<div class="grid grid-cols-2 gap-x-4 gap-y-2">
 								<p :title="product.listing.seller.name">
-									Seller:
+									<span class="hidden sm:inline">
+										Seller:
+									</span>
 									<span class="font-bold">
 										{{
 											extractFirstWordsFromText(
@@ -69,7 +71,12 @@
 									</span>
 								</p>
 								<p>Qty: 1</p>
-								<p>Date: {{ product.date }}</p>
+								<p>
+									<span class="hidden sm:inline">
+										Date:
+									</span>
+									{{ product.date }}
+								</p>
 								<p
 									:class="
 										getSaleStatusColor(product.status.name)
