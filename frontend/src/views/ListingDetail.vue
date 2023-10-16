@@ -1,6 +1,6 @@
 <script setup>
-	import { computed, onBeforeMount, reactive, ref } from "vue";
-	import { useRoute, useRouter } from "vue-router";
+	import { computed, onBeforeMount, reactive, ref, watch } from "vue";
+	import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 	import { useUserStore } from "../stores/user";
 	import StarsInput from "../components/Inputs/StarsInput.vue";
 	import ImageSelector from "../components/Images/ImageSelector.vue";
@@ -10,6 +10,7 @@
 
 	const route = useRoute();
 	const router = useRouter();
+	const listingId = ref(route.params.id);
 	const listing = ref(null);
 	const desiredQuantity = ref(1);
 	const isUserSure = ref(false);
@@ -18,7 +19,7 @@
 	const isUserTheSeller = computed(() => listing.value.seller.id === user.id);
 
 	onBeforeMount(async () => {
-		if (Number.isNaN(Number(route.params.id))) {
+		if (Number.isNaN(Number(listingId.value))) {
 			router.push("/404");
 			return;
 		}
@@ -26,9 +27,16 @@
 		getListingImages();
 	});
 
+	onBeforeRouteUpdate((to, from, next) => {
+		listingId.value = to.params.id;
+		getListingData();
+		getListingImages();
+		next();
+	});
+
 	const getListingData = () => {
 		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/${
-			route.params.id
+			listingId.value
 		}`;
 
 		makeGetRequest(url).then(response => {
@@ -43,13 +51,13 @@
 
 	const getListingImages = () => {
 		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/images/${
-			route.params.id
+			listingId.value
 		}`;
 
 		makeGetRequest(url).then(response => {
 			const { data } = response;
 			const isValid = validateListingFetch(data);
-			if (!isValid) return;
+			if (!isValid || data.length === 0) listing.value.images = [];
 
 			const thumbnails = [];
 

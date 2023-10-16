@@ -2,7 +2,9 @@ import { decodeJwt } from "jose";
 import { useUserStore } from "../stores/user";
 import { createCookie, getCookie } from "../utils/cookies";
 import { postUser } from "./axios";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const LOGIN_TOKEN_NAME = "access_token";
 const USER_COOKIE_NAME = "user";
 // TODO remove temporary state
@@ -97,10 +99,26 @@ const userIsLogedIn = () => !!getCookie(LOGIN_TOKEN_NAME);
 
 const userInfoIsInCookies = () => !!getCookie(USER_COOKIE_NAME);
 
+const deleteCookie = name => {
+	createCookie({
+		key: name,
+		value: "",
+		expiration: "Thu, 01 Jan 1970 00:00:00 UTC",
+	});
+};
+
+const logoutUser = () => {
+	const user = useUserStore();
+	user.$reset();
+	deleteCookie(LOGIN_TOKEN_NAME);
+	window.location.reload();
+};
+
 export {
 	logInUser,
 	redirectToMicrosoftLogin,
 	saveUserInfoToStore,
+	logoutUser,
 	saveUserInfoFromStoreToCookies,
 	saveUserInfoFromCookiesToStore,
 	userInfoIsInCookies,

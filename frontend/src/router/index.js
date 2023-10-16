@@ -83,20 +83,19 @@ const router = createRouter({
 	routes,
 });
 
-router.beforeEach((to, from) => {
-	const isAuthenticated = userIsLogedIn();
-	if (!isAuthenticated && to.name !== "Login") {
-		return { name: "Login" };
-	}
-	if (to.name == "Login" && isAuthenticated) {
-		return { name: "MainPage" };
-	}
-
+router.beforeEach((to, from, next) => {
 	const user = useUserStore();
-
 	if (user.id === 0) {
 		if (userInfoIsInCookies()) saveUserInfoFromCookiesToStore();
 		else saveUserInfoToStore();
+	}
+	const isAuthenticated = userIsLogedIn();
+	if (!isAuthenticated && to.name !== "Login") {
+		next({ name: "Login" });
+	} else if (to.name == "Login" && isAuthenticated) {
+		next({ name: "MainPage" });
+	} else {
+		next();
 	}
 });
 

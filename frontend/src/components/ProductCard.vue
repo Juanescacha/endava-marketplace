@@ -38,9 +38,9 @@
 		},
 	});
 
-	const url = `${import.meta.env.VITE_API_URL}/api/listings/get/images/${
-		props.cardInfo.id
-	}`;
+	const url = `${
+		import.meta.env.VITE_API_URL
+	}/api/listings/get/images/thumb/${props.cardInfo.id}`;
 
 	const imageSrc = ref("#");
 
@@ -49,18 +49,9 @@
 		if (response.error) {
 			// error
 		} else {
-			imageSrc.value = findThumb(response.data);
-			if (props.cardInfo.id === 56) {
-				imageSrc.value = response.data[0];
-			}
+			imageSrc.value = response.data;
 		}
 	});
-
-	const findThumb = array => {
-		for (let i = 0; i < array.length; i++) {
-			if (array[i].includes("thumb")) return array[i];
-		}
-	};
 
 	const moneyFormat = value => {
 		const numeroFormateado = parseInt(value).toLocaleString("es-ES", {

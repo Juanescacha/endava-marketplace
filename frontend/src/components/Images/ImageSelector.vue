@@ -1,5 +1,5 @@
 <script setup>
-	import { ref } from "vue";
+	import { onUpdated, ref } from "vue";
 	import ImageSelectorList from "./ImageSelectorList.vue";
 
 	const props = defineProps({
@@ -17,6 +17,10 @@
 	const handleThumbnailClick = image => {
 		currentImage.value = image;
 	};
+
+	onUpdated(() => {
+		currentImage.value = props.images[0];
+	});
 </script>
 
 <template>
