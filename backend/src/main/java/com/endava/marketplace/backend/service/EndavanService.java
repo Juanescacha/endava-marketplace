@@ -32,8 +32,7 @@ public class EndavanService {
     public void deleteEndavanById(Integer endavanId) {endavanRepository.deleteById(endavanId);}
 
     private Endavan getEndavanInfo(){
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = getAuthentication();
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
         Jwt principal = (Jwt) auth.getPrincipal();
         String name  = principal.getClaim("name");
@@ -44,5 +43,9 @@ public class EndavanService {
         System.out.println(email);
 
         return new Endavan(null, name, email, false, null, null, null);
+    }
+
+    protected Authentication getAuthentication(){
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 }
