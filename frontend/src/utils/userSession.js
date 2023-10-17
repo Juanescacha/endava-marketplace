@@ -1,10 +1,8 @@
 import { decodeJwt } from "jose";
-import { useUserStore } from "../stores/user";
-import { createCookie, getCookie } from "../utils/cookies";
-import { postUser } from "./axios";
-import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { createCookie, getCookie } from "@/utils/cookies";
+import { postUser } from "@/utils/axios";
 
-const router = useRouter();
 const LOGIN_TOKEN_NAME = "access_token";
 const USER_COOKIE_NAME = "user";
 // TODO remove temporary state

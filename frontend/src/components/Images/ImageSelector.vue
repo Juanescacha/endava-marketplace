@@ -1,5 +1,5 @@
 <script setup>
-	import { onUpdated, ref } from "vue";
+	import { ref, watch } from "vue";
 	import ImageSelectorList from "./ImageSelectorList.vue";
 
 	const props = defineProps({
@@ -18,9 +18,12 @@
 		currentImage.value = image;
 	};
 
-	onUpdated(() => {
-		currentImage.value = props.images[0];
-	});
+	watch(
+		() => props.images,
+		() => {
+			currentImage.value = props.images[0];
+		}
+	);
 </script>
 
 <template>
