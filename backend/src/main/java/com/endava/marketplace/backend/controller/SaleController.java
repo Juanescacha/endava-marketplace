@@ -12,7 +12,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/sales")
-@Tag(name = "Sales", description = "Sales management module")
+@Tag(name = "Sale", description = "Sales management module")
 @SecurityRequirement(name = "Azure AD")
 public class SaleController {
     private final SaleService saleService;
