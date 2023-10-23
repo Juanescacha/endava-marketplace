@@ -2,23 +2,29 @@ package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.service.EndavanService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +38,9 @@ public class EndavanControllerTests {
 
     @MockBean
     private EndavanService endavanService;
+
+    @MockBean
+    private WebClient webClient;
 
     @Test
     public void givenUserLoginCredentials_whenCreateUser_thenReturnsCreatedUser() throws Exception{
@@ -52,7 +61,7 @@ public class EndavanControllerTests {
     }
 
     @Test
-    public void givenEndavanId_whenGetEndavanById_ReturnsEndavan() throws Exception {
+    public void givenEndavanId_whenGetEndavanById_thenReturnsEndavan() throws Exception {
         Long endavanId = 1L;
 
         Endavan endavan = Endavan.builder()
@@ -73,4 +82,18 @@ public class EndavanControllerTests {
                 .andExpect(jsonPath("$.name", is(endavan.getName())))
                 .andExpect(jsonPath("$.email", is(endavan.getEmail())));
     }
+
+    @Test
+    public void givenEndavanId_whenDeleteEndavanById_thenChecksDeletion() throws Exception {
+        Long endavanId = 1L;
+
+        doNothing().when(endavanService).deleteEndavanById(endavanId.intValue());
+
+        ResultActions response = mockMvc.perform(delete("/api/user/delete/{endavanId}", endavanId)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(status().isOk());
+        verify(endavanService, times(1)).deleteEndavanById(endavanId.intValue());
+    }
+
 }

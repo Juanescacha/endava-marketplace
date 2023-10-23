@@ -51,14 +51,11 @@ public class EndavanServiceTests {
 
     @Test
     public void givenEndavanId_whenDeleteEndavanById_thenDeletesUser(){
-        // Arrange
         Integer endavanID = 1;
         doNothing().when(endavanRepository).deleteById(endavanID);
 
-        // Act
         endavanService.deleteEndavanById(endavanID);
 
-        // Assert
         verify(endavanRepository, times(1)).deleteById(endavanID);
     }
 
