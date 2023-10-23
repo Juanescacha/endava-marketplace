@@ -177,7 +177,7 @@
 
 	<main class="gah3-x-4 mx-14 mb-12 mt-32 grid grid-cols-1 lg:grid-cols-7">
 		<image-selector
-			v-if="listing && listing.images"
+			v-if="listing && listing.images && listing.images.length > 0"
 			:images="listing.images"
 			styles="col-span-3 lg:col-span-4 pr-2"
 		/>
