@@ -6,7 +6,7 @@ server:
   tomcat:
     relaxed-query-chars: '|,{,},[,]'
   ssl:
-    key-store: certificates/springboot.jks
+    key-store: ${KEYSTORE_LOCATION:certificates/springboot.jks}
     key-store-password: password
     key-store-type: jks
     key-alias: certificatex509
