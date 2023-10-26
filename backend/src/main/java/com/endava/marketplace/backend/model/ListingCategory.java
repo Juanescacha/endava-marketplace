@@ -20,11 +20,11 @@ public class ListingCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private String name;
 
-    @Column(columnDefinition = "boolean default true")
+    @Column(columnDefinition = "boolean default true", nullable = false)
     @NotNull
     private Boolean active;
 

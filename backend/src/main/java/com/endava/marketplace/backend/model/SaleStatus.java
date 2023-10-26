@@ -20,7 +20,7 @@ public class SaleStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private String name;
 

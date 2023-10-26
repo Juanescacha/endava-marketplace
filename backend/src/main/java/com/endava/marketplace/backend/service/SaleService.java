@@ -23,7 +23,7 @@ public class SaleService {
     }
 
     public Optional<Sale> findSaleById(Long saleId) {
-        return saleRepository.findById(saleId.intValue());
+        return saleRepository.findById(saleId);
     }
 
     public Optional<Set<Sale>> findSalesByBuyerId(Long buyerId) {

@@ -43,7 +43,7 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @GetMapping("/get/{id}")
-    public Optional<Endavan> getEndavanById(@PathVariable Integer id){
+    public Optional<Endavan> getEndavanById(@PathVariable Long id){
         return endavanService.findEndavanById(id);
     }
     @Operation(
@@ -52,7 +52,7 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @DeleteMapping("/delete/{id}")
-    public void deleteEndavanById(@PathVariable Integer id){
+    public void deleteEndavanById(@PathVariable Long id){
         endavanService.deleteEndavanById(id);
     }
 

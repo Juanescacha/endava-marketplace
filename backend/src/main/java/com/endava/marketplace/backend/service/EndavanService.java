@@ -2,7 +2,6 @@ package com.endava.marketplace.backend.service;
 
 import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.repository.EndavanRepository;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -11,7 +10,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
@@ -36,9 +34,9 @@ public class EndavanService {
         return endavan;
     }
 
-    public Optional<Endavan> findEndavanById(Integer endavanId) {return endavanRepository.findById(endavanId);}
+    public Optional<Endavan> findEndavanById(Long endavanId) {return endavanRepository.findById(endavanId);}
 
-    public void deleteEndavanById(Integer endavanId) {endavanRepository.deleteById(endavanId);}
+    public void deleteEndavanById(Long endavanId) {endavanRepository.deleteById(endavanId);}
 
     private Endavan getEndavanInfo(){
         Authentication authentication = getAuthentication();

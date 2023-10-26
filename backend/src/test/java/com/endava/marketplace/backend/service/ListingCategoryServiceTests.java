@@ -45,7 +45,7 @@ public class ListingCategoryServiceTests {
     }
     @Test
     public void givenListingCategoryId_whenFindListingCategoryById_thenReturnsCategory(){
-        Integer categoryId = 1;
+        Long categoryId = 1L;
 
         ListingCategory listingCategory = ListingCategory.builder()
                 .id(1L)
@@ -62,7 +62,7 @@ public class ListingCategoryServiceTests {
     }
     @Test
     public void givenListingId_whenDeleteListings_thenDeletesListing(){
-        Integer categoryID = 1;
+        Long categoryID = 1L;
         doNothing().when(listingCategoryRepository).deleteById(categoryID);
 
         listingCategoryService.deleteListingCategoryById(categoryID);

@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,10 @@ public class Sale {
     @JoinColumn(name = "status_id")
     private SaleStatus status;
 
-    @Column()
+    @Column(nullable = false)
+    @NotNull
+    private Integer quantity;
+
+    @Column(nullable = false)
     private LocalDate date = LocalDate.now();
 }

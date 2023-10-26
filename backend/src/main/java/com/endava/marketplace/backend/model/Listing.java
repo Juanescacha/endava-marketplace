@@ -34,28 +34,29 @@ public class  Listing {
     @JoinColumn(name = "status_id")
     private ListingStatus status;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private String name;
 
-    @Column(length = 500)
+    @Column(length = 500, nullable = false)
     @Size(max = 500)
     @NotNull
     private String detail;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private Double price;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private Integer stock;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private Integer condition;
 
-    @Column()
+    @Column(nullable = false)
+    @NotNull
     private LocalDate date = LocalDate.now();
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)

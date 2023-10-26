@@ -38,7 +38,7 @@ public class SaleStatusServiceTests {
                 .sales(new HashSet<>())
                 .build();
 
-        when(saleStatusRepository.findById(statusId.intValue())).thenReturn(Optional.ofNullable(saleStatus));
+        when(saleStatusRepository.findById(statusId)).thenReturn(Optional.ofNullable(saleStatus));
         Optional<SaleStatus> foundStatus = saleStatusService.findSaleStatusById(statusId);
 
         Assertions.assertThat(foundStatus).isNotNull();

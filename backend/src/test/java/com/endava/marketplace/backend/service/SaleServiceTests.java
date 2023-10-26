@@ -66,7 +66,7 @@ public class SaleServiceTests {
                 .date(LocalDate.of(2023,10,9))
                 .build();
 
-        when(saleRepository.findById(saleId.intValue())).thenReturn(Optional.ofNullable(sale));
+        when(saleRepository.findById(saleId)).thenReturn(Optional.ofNullable(sale));
         Optional<Sale> foundSale = saleService.findSaleById(saleId);
 
         Assertions.assertThat(foundSale).isNotNull();

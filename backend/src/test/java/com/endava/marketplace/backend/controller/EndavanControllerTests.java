@@ -2,19 +2,14 @@ package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.service.EndavanService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Test;;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -71,7 +66,7 @@ public class EndavanControllerTests {
                 .admin(false)
                 .build();
 
-        given(endavanService.findEndavanById(endavanId.intValue())).willReturn(Optional.of(endavan));
+        given(endavanService.findEndavanById(endavanId)).willReturn(Optional.of(endavan));
 
         ResultActions response = mockMvc.perform(get("/api/user/get/{endavanId}", endavanId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -87,13 +82,13 @@ public class EndavanControllerTests {
     public void givenEndavanId_whenDeleteEndavanById_thenChecksDeletion() throws Exception {
         Long endavanId = 1L;
 
-        doNothing().when(endavanService).deleteEndavanById(endavanId.intValue());
+        doNothing().when(endavanService).deleteEndavanById(endavanId);
 
         ResultActions response = mockMvc.perform(delete("/api/user/delete/{endavanId}", endavanId)
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk());
-        verify(endavanService, times(1)).deleteEndavanById(endavanId.intValue());
+        verify(endavanService, times(1)).deleteEndavanById(endavanId);
     }
 
 }

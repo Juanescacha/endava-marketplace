@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface SaleRepository extends JpaRepository<Sale, Integer> {
+public interface SaleRepository extends JpaRepository<Sale, Long> {
     Optional<Set<Sale>> findSalesByBuyer_Id(Long buyerId);
 
     Optional<Set<Sale>> findSalesByListing_Seller_Id(Long sellerId);

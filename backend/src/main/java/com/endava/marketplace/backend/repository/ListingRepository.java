@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 
 @Repository
-public interface ListingRepository extends JpaRepository<Listing, Integer>, JpaSpecificationExecutor<Listing> {
+public interface ListingRepository extends JpaRepository<Listing, Long>, JpaSpecificationExecutor<Listing> {
     Set<Listing> findTop5ByNameContainsIgnoreCaseOrderByIdDesc(String name);
 }

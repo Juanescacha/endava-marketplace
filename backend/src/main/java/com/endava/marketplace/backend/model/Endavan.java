@@ -20,15 +20,15 @@ public class Endavan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @NotNull
     private String email;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default false", nullable = false)
     @NotNull
     private Boolean admin;
 

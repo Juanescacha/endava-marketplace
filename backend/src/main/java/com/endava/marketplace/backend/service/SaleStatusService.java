@@ -19,6 +19,6 @@ public class SaleStatusService {
     }
 
     public Optional<SaleStatus> findSaleStatusById(Long saleStatusId) {
-        return saleStatusRepository.findById(saleStatusId.intValue());
+        return saleStatusRepository.findById(saleStatusId);
     }
 }

@@ -13,8 +13,8 @@ public class ListingCategoryService {
 
     public ListingCategory saveListingCategory(ListingCategory listingCategory) {return listingCategoryRepository.save(listingCategory);}
 
-    public Optional<ListingCategory> findListingCategoryById(Integer listingCategoryId) {return listingCategoryRepository.findById(listingCategoryId);}
+    public Optional<ListingCategory> findListingCategoryById(Long listingCategoryId) {return listingCategoryRepository.findById(listingCategoryId);}
 
 
-    public void deleteListingCategoryById(Integer listingCategoryId) {listingCategoryRepository.deleteById(listingCategoryId);}
+    public void deleteListingCategoryById(Long listingCategoryId) {listingCategoryRepository.deleteById(listingCategoryId);}
 }

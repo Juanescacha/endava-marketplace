@@ -30,7 +30,7 @@ public class ListingService {
 
     public Listing saveListing(Listing listing) {return listingRepository.save(listing);}
 
-    public Optional<Listing> findListingById(Integer listingId) {return listingRepository.findById(listingId);}
+    public Optional<Listing> findListingById(Long listingId) {return listingRepository.findById(listingId);}
 
     public Set<Listing> findListingByName(String listingName) {
         return listingRepository.findTop5ByNameContainsIgnoreCaseOrderByIdDesc(listingName);
@@ -53,7 +53,7 @@ public class ListingService {
         }, pageWithTenElements);
     }
 
-    public void deleteListingById(Integer listingId) {listingRepository.deleteById(listingId);}
+    public void deleteListingById(Long listingId) {listingRepository.deleteById(listingId);}
 
     public void saveListingImages(List<MultipartFile> images, Long listingId) throws IOException {
         storageClient.uploadImages(images, listingId);

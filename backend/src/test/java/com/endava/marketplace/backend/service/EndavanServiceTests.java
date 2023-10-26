@@ -29,7 +29,7 @@ public class EndavanServiceTests {
 
     @Test
     public void givenEndavanId_whenFindEndavanById_thenReturnEndavan(){
-        Integer endavanID = 1;
+        Long endavanID = 1L;
 
         Endavan endavan = Endavan.builder()
                 .id(1L)
@@ -51,7 +51,7 @@ public class EndavanServiceTests {
 
     @Test
     public void givenEndavanId_whenDeleteEndavanById_thenDeletesUser(){
-        Integer endavanID = 1;
+        Long endavanID = 1L;
         doNothing().when(endavanRepository).deleteById(endavanID);
 
         endavanService.deleteEndavanById(endavanID);

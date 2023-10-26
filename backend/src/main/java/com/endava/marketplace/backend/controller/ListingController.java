@@ -38,7 +38,7 @@ public class ListingController {
             tags = {"Listing"}
     )
     @GetMapping("/get/{id}")
-    public Optional<Listing> getListingById(@PathVariable Integer id) {
+    public Optional<Listing> getListingById(@PathVariable Long id) {
         return listingService.findListingById(id);
     }
 
@@ -73,7 +73,7 @@ public class ListingController {
             tags = {"Listing"}
     )
     @DeleteMapping("delete/{id}")
-    public void deleteListingById(@PathVariable Integer id) {listingService.deleteListingById(id);}
+    public void deleteListingById(@PathVariable Long id) {listingService.deleteListingById(id);}
 
     @Operation(
             summary = "Save listing images to storage account",

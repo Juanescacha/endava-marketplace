@@ -73,7 +73,7 @@ public class ListingControllerTests {
                 .date(LocalDate.of(2023,10,12))
                 .build();
 
-        given(listingService.findListingById(listingId.intValue())).willReturn(Optional.of(listing));
+        given(listingService.findListingById(listingId)).willReturn(Optional.of(listing));
 
         ResultActions response = mockMvc.perform(get("/api/listings/get/{listingId}", listingId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -118,13 +118,13 @@ public class ListingControllerTests {
     public void givenListingId_whenDeleteListingById_thenChecksDeletion() throws Exception{
         Long listingId = 1L;
 
-        doNothing().when(listingService).deleteListingById(listingId.intValue());
+        doNothing().when(listingService).deleteListingById(listingId);
 
         ResultActions response = mockMvc.perform(delete("/api/listings/delete/{listingId}", listingId)
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk());
-        verify(listingService, times(1)).deleteListingById(listingId.intValue());
+        verify(listingService, times(1)).deleteListingById(listingId);
     }
 
     // Queda pendiente el test de la multipart file

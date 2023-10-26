@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EndavanRepository extends JpaRepository<Endavan, Integer> {
+public interface EndavanRepository extends JpaRepository<Endavan, Long> {
     Optional<Endavan> findEndavanByEmailIgnoreCase(String email);
 }

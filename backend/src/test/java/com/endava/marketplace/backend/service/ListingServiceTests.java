@@ -56,7 +56,7 @@ public class ListingServiceTests {
 
     @Test
     public void givenListingId_whenFindListingById_thenReturnsListing(){
-        Integer listingId = 1;
+        Long listingId = 1L;
 
         Listing listing = Listing.builder()
                 .id(1L)
@@ -113,7 +113,7 @@ public class ListingServiceTests {
 
     @Test
     public void givenListingId_whenDeleteListings_thenDeletesListing(){
-        Integer listingID = 1;
+        Long listingID = 1L;
         doNothing().when(listingRepository).deleteById(listingID);
 
         listingService.deleteListingById(listingID);

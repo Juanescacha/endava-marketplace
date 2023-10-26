@@ -26,7 +26,7 @@ public class Question {
     @JoinColumn(name = "buyer_id")
     private Endavan buyer;
 
-    @Column()
+    @Column(nullable = false)
     @NotNull
     private String question_detail;
 
