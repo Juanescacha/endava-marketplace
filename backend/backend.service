@@ -8,7 +8,7 @@ SuccessExitStatus=143
 User=mpAdmin
 
 Type=simple
-
+Environment="KEYSTORE_LOCATION=../certificates/springboot.jks"
 WorkingDirectory=/home/mpAdmin/backend
 ExecStart=/usr/bin/java -jar backend.jar
 ExecStop=/bin/kill -15 $MAINPID
