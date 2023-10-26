@@ -10,13 +10,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+
 import java.util.Optional;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
 
 @Service
 public class EndavanService {
-    private static final String GRAPH_ME_ENDPOINT = "https://graph.microsoft.com/v1.0/me";
     private static final String GRAPH_PICTURE_ENDPOINT = "https://graph.microsoft.com/v1.0/me/photo/$value";
     private final EndavanRepository endavanRepository;
 
@@ -38,6 +38,31 @@ public class EndavanService {
 
     public void deleteEndavanById(Long endavanId) {endavanRepository.deleteById(endavanId);}
 
+    public void updateAdminRole(Long endavanId, Boolean isAdmin){
+        Endavan userInfo = getEndavanInfo();
+        Optional<Endavan> user = endavanRepository.findEndavanByEmailIgnoreCase(userInfo.getEmail());
+
+        if (user.isPresent()){
+            if((!user.get().getId().equals(endavanId)) && (user.get().getAdmin())){
+                endavanRepository.updateAdminRole(endavanId, isAdmin);
+            }
+        }
+    }
+
+    public byte[] getGraphPicture(OAuth2AuthorizedClient graph, WebClient webClient) {
+        if (null != graph) {
+            byte[] body = webClient
+                    .get()
+                    .uri(GRAPH_PICTURE_ENDPOINT)
+                    .attributes(oauth2AuthorizedClient(graph))
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .block();
+            return body;
+        }
+        else return null;
+    }
+
     private Endavan getEndavanInfo(){
         Authentication authentication = getAuthentication();
         JwtAuthenticationToken auth = (JwtAuthenticationToken) authentication;
@@ -51,23 +76,7 @@ public class EndavanService {
 
         return new Endavan(null, name, email, false, null, null, null);
     }
-
     protected Authentication getAuthentication(){
         return SecurityContextHolder.getContext().getAuthentication();
-    }
-
-    public byte[] getGraphPicture(OAuth2AuthorizedClient graph, WebClient webClient) {
-        if (null != graph) {
-            byte[] body = webClient
-                    .get()
-                    .uri(GRAPH_PICTURE_ENDPOINT)
-                    .attributes(oauth2AuthorizedClient(graph))
-                    .retrieve()
-                    .bodyToMono(byte[].class)
-                    .block();
-
-            return body;
-        }
-        else return null;
     }
 }

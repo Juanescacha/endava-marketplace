@@ -68,4 +68,14 @@ public class EndavanController {
     public @ResponseBody byte[] getPicture(@RegisteredOAuth2AuthorizedClient("graph") OAuth2AuthorizedClient graph){
         return endavanService.getGraphPicture(graph, webClient);
     }
+
+    @Operation(
+            summary = "Update Admin role",
+            description = "Turns on or off the admin privileges for the other Endavans. Can't be used to turn off my own admin permissions",
+            tags = {"Endavan"}
+    )
+    @PatchMapping("/admin")
+    public void updateAdminRole(@RequestParam Long endavanId, @RequestParam Boolean isAdmin){
+        endavanService.updateAdminRole(endavanId, isAdmin);
+    }
 }
