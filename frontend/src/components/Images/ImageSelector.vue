@@ -36,6 +36,7 @@
 		>
 			<img
 				:src="currentImage"
+				alt="Listing image"
 				class="h-full rounded-lg object-contain"
 			/>
 		</div>

@@ -5,7 +5,7 @@ export default function useForms() {
 		form[input].valid = $event.target.value.length > 0;
 	};
 
-	const validateNumerciInput = ($event, formData) => {
+	const validateNumericInput = ($event, formData) => {
 		const input = $event.target.id;
 		const form = formData;
 		form[input].valid = Number($event.target.value) > 0;
@@ -72,7 +72,7 @@ export default function useForms() {
 
 	return {
 		validateTextInput,
-		validateNumerciInput,
+		validateNumericInput,
 		handleInputUpdate,
 		handleNumericInputUpdate,
 		handleMediaUpdate,

@@ -9,4 +9,10 @@ export default defineConfig({
 			"@": resolve("./src"),
 		},
 	},
+	test: {
+		environment: "jsdom",
+		coverage: {
+			reportsDirectory: "./tests/unit/coverage",
+		},
+	},
 });

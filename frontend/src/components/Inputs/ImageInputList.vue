@@ -1,41 +1,41 @@
 <script setup>
-import { ref, reactive, computed } from "vue";
-import ImageInput from "./ImageInput.vue";
+	import { ref, reactive, computed } from "vue";
+	import ImageInput from "./ImageInput.vue";
 
-const amountOfInputs = ref(1);
-const media = reactive([null]);
-const emit = defineEmits(["updateMediaList", "imageTooLargeUploaded"]);
+	const amountOfInputs = ref(1);
+	const media = reactive([null]);
+	const emit = defineEmits(["updateMediaList", "imageTooLargeUploaded"]);
 
-const props = defineProps({
-	maxAmountOfInputs: {
-		type: Number,
-		default: 5,
-	},
-});
+	const props = defineProps({
+		maxAmountOfInputs: {
+			type: Number,
+			default: 5,
+		},
+	});
 
-const displayMediaLength = computed(() =>
-	media.includes(null) ? media.length - 1 : media.length
-);
+	const displayMediaLength = computed(() =>
+		media.includes(null) ? media.length - 1 : media.length
+	);
 
-const updateAmountOfInputs = idx => {
-	if (
-		idx === media.length - 1 &&
-		amountOfInputs.value < props.maxAmountOfInputs
-	) {
-		amountOfInputs.value += 1;
-		media.push(null);
-	}
-};
+	const updateAmountOfInputs = idx => {
+		if (
+			idx === media.length - 1 &&
+			amountOfInputs.value < props.maxAmountOfInputs
+		) {
+			amountOfInputs.value += 1;
+			media.push(null);
+		}
+	};
 
-const handleMediaInput = ({ idx, imageObj }) => {
-	media[idx] = imageObj;
-	emit("updateMediaList", media);
-	updateAmountOfInputs(idx);
-};
+	const handleMediaInput = ({ idx, imageObj }) => {
+		media[idx] = imageObj;
+		emit("updateMediaList", media);
+		updateAmountOfInputs(idx);
+	};
 
-const handleLargeFile = () => {
-	emit("imageTooLargeUploaded");
-};
+	const handleLargeFile = () => {
+		emit("imageTooLargeUploaded");
+	};
 </script>
 
 <template>
@@ -51,7 +51,7 @@ const handleLargeFile = () => {
 				class="h-20 w-40 overflow-hidden rounded-sm border border-zinc-400"
 			>
 				<image-input
-					:id="'media' + i"
+					:id="i"
 					@image-uploaded="handleMediaInput"
 					@image-too-large-uploaded="handleLargeFile"
 				/>

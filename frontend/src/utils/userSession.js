@@ -1,6 +1,6 @@
 import { decodeJwt } from "jose";
 import { useUserStore } from "@/stores/user";
-import { createCookie, getCookie } from "@/utils/cookies";
+import { createCookie, getCookie, deleteCookie } from "@/utils/cookies";
 import { postUser } from "@/utils/axios";
 
 const LOGIN_TOKEN_NAME = "access_token";
@@ -41,7 +41,7 @@ const redirectToMicrosoftLogin = () => {
 
 const logInUser = token => {
 	createSessionCookie(token);
-	saveUserInfoToStore();
+	saveUserInfoFromServerToStore();
 };
 
 const createSessionCookie = token => {
@@ -56,15 +56,17 @@ const createSessionCookie = token => {
 	});
 };
 
-const saveUserInfoToStore = async () => {
+const saveUserInfoFromServerToStore = async () => {
 	const user = useUserStore();
-	const { id, name, email, admin } = await postUser();
-	user.$patch({
-		id,
-		name,
-		email,
-		isAdmin: admin,
-	});
+	const response = await postUser();
+
+	if (!response?.id) {
+		return;
+	}
+	user.id = response.id;
+	user.name = response.name;
+	user.email = response.email;
+	user.isAdmin = response.admin;
 };
 
 const saveUserInfoFromStoreToCookies = () => {
@@ -89,21 +91,19 @@ const saveUserInfoFromStoreToCookies = () => {
 
 const saveUserInfoFromCookiesToStore = () => {
 	const user = useUserStore();
-	const userInfo = JSON.parse(getCookie(USER_COOKIE_NAME));
-	user.$patch(userInfo);
+	const userCookie = getCookie(USER_COOKIE_NAME);
+	if (userCookie) {
+		const userObj = JSON.parse(userCookie);
+		user.id = userObj.id;
+		user.name = userObj.name;
+		user.email = userObj.email;
+		user.isAdmin = userObj.isAdmin;
+	}
 };
 
 const userIsLogedIn = () => !!getCookie(LOGIN_TOKEN_NAME);
 
 const userInfoIsInCookies = () => !!getCookie(USER_COOKIE_NAME);
-
-const deleteCookie = name => {
-	createCookie({
-		key: name,
-		value: "",
-		expiration: "Thu, 01 Jan 1970 00:00:00 UTC",
-	});
-};
 
 const logoutUser = () => {
 	const user = useUserStore();
@@ -115,7 +115,7 @@ const logoutUser = () => {
 export {
 	logInUser,
 	redirectToMicrosoftLogin,
-	saveUserInfoToStore,
+	saveUserInfoFromServerToStore,
 	logoutUser,
 	saveUserInfoFromStoreToCookies,
 	saveUserInfoFromCookiesToStore,

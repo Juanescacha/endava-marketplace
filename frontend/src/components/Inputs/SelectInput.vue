@@ -6,8 +6,14 @@
 			type: String,
 			required: true,
 		},
-		title: String,
-		options: Array,
+		title: {
+			type: String,
+			required: true,
+		},
+		options: {
+			type: Array,
+			required: true,
+		},
 		dynamicClass: String,
 	});
 

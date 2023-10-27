@@ -29,7 +29,7 @@
 	const { showMsg, msgColor, displayMsg } = useNotification();
 	const {
 		validateTextInput,
-		validateNumerciInput,
+		validateNumericInput,
 		handleInputUpdate,
 		handleNumericInputUpdate,
 		handleMediaUpdate,
@@ -163,7 +163,7 @@
 				title="Product price"
 				class="rounded border border-zinc-400 px-2 py-3"
 				@input="handleNumericInputUpdate($event, formData)"
-				@focusout="validateNumerciInput($event, formData)"
+				@focusout="validateNumericInput($event, formData)"
 			/>
 			<input
 				id="stock"
@@ -172,7 +172,7 @@
 				title="Number of units"
 				class="col-span-1 rounded border border-zinc-400 px-2 py-3"
 				@input="handleNumericInputUpdate($event, formData)"
-				@focusout="validateNumerciInput($event, formData)"
+				@focusout="validateNumericInput($event, formData)"
 			/>
 			<stars-input
 				label="Condition"

@@ -1,7 +1,4 @@
 const capitalizeFirstLetter = word => {
-	if (!Number.isNaN(Number(word))) {
-		return word;
-	}
 	if (typeof word !== "string" || word.length < 2) {
 		throw new Error("Not a valid word to capitalize");
 	}
@@ -12,41 +9,20 @@ const capitalizeFirstLetter = word => {
 	return firstLetter + remainingLetters;
 };
 
-const getArticleOfSentence = (number, nextLetter) => {
-	const VOWELS = ["a", "e", "i", "o", "u"];
-	const num = Number(number);
+const getArticleOfSentence = (numberOfElements, firstLetterOfNextWord) => {
+	const VOWELS = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"];
+	const num = Number(numberOfElements);
+
+	if (numberOfElements === null || Number.isNaN(num)) {
+		throw new Error("A valid number must be provided");
+	}
 
 	if (num === 1) {
-		if (VOWELS.includes(nextLetter)) return "an";
+		if (VOWELS.includes(firstLetterOfNextWord)) return "an";
 		else return "a";
 	}
 
 	return num.toString();
-};
-
-const trimTextToLength = (text, length) => {
-	if (typeof text !== "string" || typeof length !== "number" || length < 1) {
-		return;
-	}
-	if (text.length < length) return text;
-
-	const index = length + 1;
-	const shortText = text.slice(0, index);
-	const shortTextArray = shortText.split(" ");
-	let lastWord = shortTextArray[shortTextArray.length - 1];
-
-	if (lastWord === "") {
-		shortTextArray.pop();
-		lastWord = shortTextArray[shortTextArray.length - 1];
-	}
-
-	if (lastWord.length <= 3) {
-		shortTextArray.pop();
-	} else {
-		shortTextArray[shortTextArray.length - 1] = lastWord.slice(0, -3);
-	}
-
-	return `${shortTextArray.join(" ")}...`;
 };
 
 const extractFirstWordsFromText = (text, n) => {
@@ -82,7 +58,6 @@ const getSaleStatusColor = status => {
 export {
 	capitalizeFirstLetter,
 	getArticleOfSentence,
-	trimTextToLength,
 	extractFirstWordsFromText,
 	getSaleStatusColor,
 };

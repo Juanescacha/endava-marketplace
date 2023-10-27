@@ -17,4 +17,12 @@ const getCookie = name => {
 	return cookies[name];
 };
 
-export { createCookie, getCookie };
+const deleteCookie = name => {
+	createCookie({
+		key: name,
+		value: "",
+		expiration: "Thu, 01 Jan 1970 00:00:00 UTC",
+	});
+};
+
+export { createCookie, getCookie, deleteCookie };

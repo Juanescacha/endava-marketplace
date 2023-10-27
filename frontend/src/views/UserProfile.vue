@@ -1,11 +1,11 @@
 <script setup>
-	import { useUserStore } from "../stores/user";
+	import { useUserStore } from "@/stores/user";
 
 	const user = useUserStore();
 </script>
 
 <template>
-	<main
+	<div
 		class="m-3 flex w-full flex-col items-center justify-center gap-6 lg:flex-row"
 	>
 		<img
@@ -25,5 +25,5 @@
 				Admin panel
 			</button>
 		</div>
-	</main>
+	</div>
 </template>

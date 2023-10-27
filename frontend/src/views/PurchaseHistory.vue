@@ -4,7 +4,6 @@
 	import { useUserStore } from "@/stores/user";
 	import { getUserPurchases } from "@/utils/axios";
 	import {
-		trimTextToLength,
 		extractFirstWordsFromText,
 		getSaleStatusColor,
 	} from "@/utils/strings";

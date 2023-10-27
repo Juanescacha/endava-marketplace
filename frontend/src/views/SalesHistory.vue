@@ -9,7 +9,6 @@
 	import { useUserStore } from "@/stores/user";
 	import { getSellerSales } from "@/utils/axios";
 	import {
-		trimTextToLength,
 		extractFirstWordsFromText,
 		getSaleStatusColor,
 	} from "@/utils/strings";
@@ -36,7 +35,7 @@
 			<h1>Sold products</h1>
 		</div>
 		<ul
-			v-if="soldProducts.length > 0"
+			v-if="soldProducts && soldProducts.length > 0"
 			class="flex w-full flex-col items-center gap-4 px-2"
 		>
 			<li

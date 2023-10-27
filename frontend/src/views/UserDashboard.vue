@@ -1,5 +1,5 @@
 <script setup>
-	import LinkListItem from "../components/Menus/LinkListItem.vue";
+	import LinkListItem from "@/components/Menus/LinkListItem.vue";
 	import {
 		ShoppingBagIcon,
 		ListBulletIcon,
@@ -12,7 +12,7 @@
 	<main
 		class="mt-20 min-w-[470px] lg:flex lg:h-[calc(100vh-4rem)] lg:gap-x-1 lg:rounded-br-xl lg:border lg:border-gray-100"
 	>
-		<nav class="bg-gray-100 lg:w-[30vw] lg:rounded-r-2xl lg:border-l-0">
+		<nav class="bg-gray-200 lg:w-[30vw] lg:rounded-r-2xl lg:border-l-0">
 			<ul class="mt-2">
 				<li class="h-12">
 					<link-list-item

@@ -12,7 +12,7 @@ import PurchasedItem from "@/views/PurchasedItem.vue";
 import NotFoundPage from "../views/NotFoundPage.vue";
 import {
 	userIsLogedIn,
-	saveUserInfoToStore,
+	saveUserInfoFromServerToStore,
 	saveUserInfoFromStoreToCookies,
 	saveUserInfoFromCookiesToStore,
 	userInfoIsInCookies,
@@ -87,7 +87,7 @@ router.beforeEach((to, from, next) => {
 	const user = useUserStore();
 	if (user.id === 0) {
 		if (userInfoIsInCookies()) saveUserInfoFromCookiesToStore();
-		else saveUserInfoToStore();
+		else saveUserInfoFromServerToStore();
 	}
 	const isAuthenticated = userIsLogedIn();
 	if (!isAuthenticated && to.name !== "Login") {
@@ -105,5 +105,7 @@ router.afterEach((to, from) => {
 		saveUserInfoFromStoreToCookies();
 	});
 });
+
+export { routes };
 
 export default router;
