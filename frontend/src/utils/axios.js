@@ -105,6 +105,27 @@ const postSale = async data => {
 	}
 };
 
+const patchSaleStatus = async (saleId, operation) => {
+	try {
+		const url = `${getAPIURL()}/api/sales/status/${operation}/${saleId}`;
+		const config = {
+			headers: getHeadersForRequest(),
+		};
+
+		const { status } = await axios.patch(url, {}, config);
+
+		if (status !== 200) {
+			return {
+				msg: "An internal error in the server has ocurred",
+				error: true,
+			};
+		}
+		return {};
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
 const deleteListing = async id => {
 	try {
 		const url = `${getAPIURL()}/api/listings/delete/${id}`;
@@ -185,6 +206,7 @@ export {
 	deleteListing,
 	postUser,
 	postSale,
+	patchSaleStatus,
 	getSellerSales,
 	getUserPurchases,
 };

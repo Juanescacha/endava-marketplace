@@ -1,7 +1,8 @@
 <script setup>
 	import { onBeforeMount } from "vue";
 	import { useRoute, useRouter } from "vue-router";
-	import { logInUser, redirectToMicrosoftLogin } from "../utils/userSession";
+	import { logInUser, redirectToMicrosoftLogin } from "@/utils/userSession";
+	import BasicSpinner from "@/components/BasicSpinner.vue";
 
 	const extractHashFromURL = () => {
 		const route = useRoute();
@@ -40,12 +41,6 @@
 
 <template>
 	<div class="flex h-screen w-screen items-center justify-center">
-		<div
-			class="inline-block h-6 w-6 animate-spin rounded-full border-[3px] border-current border-t-transparent text-orange-600"
-			role="status"
-			aria-label="loading"
-		>
-			<span class="sr-only">Loading...</span>
-		</div>
+		<basic-spinner />
 	</div>
 </template>

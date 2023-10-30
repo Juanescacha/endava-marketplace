@@ -69,7 +69,7 @@
 										}}
 									</span>
 								</p>
-								<p>Qty: 1</p>
+								<p>Qty: {{ product.quantity }}</p>
 								<p>
 									<span class="hidden sm:inline">
 										Date:

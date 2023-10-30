@@ -1,5 +1,5 @@
 <script setup>
-	import { onBeforeMount, ref, watch } from "vue";
+	import { onBeforeMount, reactive, ref, watch } from "vue";
 	import { MenuItem } from "@headlessui/vue";
 	import {
 		CheckIcon,
@@ -7,25 +7,57 @@
 		EllipsisHorizontalCircleIcon,
 	} from "@heroicons/vue/24/outline";
 	import { useUserStore } from "@/stores/user";
-	import { getSellerSales } from "@/utils/axios";
+	import { getSellerSales, patchSaleStatus } from "@/utils/axios";
 	import {
 		extractFirstWordsFromText,
 		getSaleStatusColor,
 	} from "@/utils/strings";
 	import ProductListItem from "@/components/Menus/ProductListItem.vue";
 	import DropdownMenu from "@/components/Menus/DropdownMenu.vue";
+	import BasicSpinner from "@/components/BasicSpinner.vue";
+	import GenericModal from "../components/GenericModal.vue";
 
 	const user = useUserStore();
+	const itemsBeingProcessed = ref([]);
 	const soldProducts = ref([]);
+	const modal = reactive({ open: false });
+	const update = reactive({ intention: "", onProduct: 0 });
 
 	onBeforeMount(async () => await getPageData());
 
 	watch(user, async () => await getPageData());
 
 	const getPageData = async () => {
-		const { data, error } = await getSellerSales(user.id);
-		if (error) return;
-		if (data) soldProducts.value = data;
+		const { data } = await getSellerSales(user.id);
+		if (data && Array.isArray(data)) soldProducts.value = data;
+	};
+
+	const handleSaleStatusUpdate = (product, intention) => {
+		modal.open = true;
+		update.onProduct = product;
+		update.intention = intention;
+	};
+
+	const handleModalClose = () => {
+		modal.open = false;
+		update.intention = "";
+		update.onProduct = 0;
+	};
+
+	const updateSaleStatus = async () => {
+		itemsBeingProcessed.value.push(update.onProduct);
+		const { error } = await patchSaleStatus(
+			update.onProduct,
+			update.intention
+		);
+
+		if (!error) {
+			getPageData();
+		}
+
+		const i = itemsBeingProcessed.value.indexOf(update.onProduct);
+		itemsBeingProcessed.value.splice(i, 1);
+		handleModalClose();
 	};
 </script>
 
@@ -75,13 +107,18 @@
 								<span class="hidden sm:inline">Date: </span>
 								{{ product.date }}
 							</p>
-							<p>Qty: 1</p>
+							<p>Qty: {{ product.quantity }}</p>
 							<p :class="getSaleStatusColor(product.status.name)">
 								{{ product.status.name }}
 							</p>
 						</div>
 
-						<DropdownMenu v-if="product.status.name === 'Pending'">
+						<basic-spinner
+							v-if="itemsBeingProcessed.includes(product.id)"
+						></basic-spinner>
+						<dropdown-menu
+							v-else-if="product.status.name === 'Pending'"
+						>
 							<template v-slot:menu-button>
 								<EllipsisHorizontalCircleIcon
 									class="h-8 w-8 text-endava-500"
@@ -91,6 +128,12 @@
 								<MenuItem>
 									<button
 										class="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+										@click="
+											handleSaleStatusUpdate(
+												product.id,
+												'fulfill'
+											)
+										"
 									>
 										<CheckIcon class="h-5 w-5 flex-none" />
 										Complete sale
@@ -99,17 +142,44 @@
 								<MenuItem>
 									<button
 										class="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+										@click="
+											handleSaleStatusUpdate(
+												product.id,
+												'cancel'
+											)
+										"
 									>
 										<XMarkIcon class="h-5 w-5 flex-none" />
 										Cancel sale
 									</button>
 								</MenuItem>
 							</template>
-						</DropdownMenu>
+						</dropdown-menu>
 					</template>
 				</product-list-item>
 			</li>
 		</ul>
 		<p v-else>Nothing here yet. 😕</p>
 	</div>
+	<generic-modal
+		title=""
+		:open="modal.open"
+		@modal-closed="handleModalClose"
+	>
+		<h2>Are you sure?</h2>
+		<div class="my-3 flex gap-4">
+			<button
+				class="endava h-10 w-20 px-5 py-2"
+				@click="updateSaleStatus"
+			>
+				Yes!
+			</button>
+			<button
+				class="endava-gray h-10 w-20 px-5 py-2"
+				@click="handleModalClose"
+			>
+				No
+			</button>
+		</div>
+	</generic-modal>
 </template>

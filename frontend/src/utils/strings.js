@@ -48,7 +48,7 @@ const getSaleStatusColor = status => {
 		case "Fulfilled":
 			return "text-green-400";
 
-		case "Canceled":
+		case "Cancelled":
 			return "text-red-400";
 		default:
 			break;
