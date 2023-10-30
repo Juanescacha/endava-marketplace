@@ -21,4 +21,8 @@ public class SaleStatusService {
     public Optional<SaleStatus> findSaleStatusById(Long saleStatusId) {
         return saleStatusRepository.findById(saleStatusId);
     }
+
+    public Optional<SaleStatus> findSaleStatusByName(String saleStatusName) {
+        return saleStatusRepository.findSaleStatusByNameEqualsIgnoreCase(saleStatusName);
+    }
 }

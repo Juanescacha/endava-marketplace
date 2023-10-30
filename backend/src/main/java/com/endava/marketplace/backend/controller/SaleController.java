@@ -23,7 +23,7 @@ public class SaleController {
 
     @Operation(
             summary = "Creates a new sale",
-            description = "Creates a new Sale with all of it's attributes. It will be associated to a listing_id, buyer_id and a sale-status_id",
+            description = "Creates a new Sale with all of it's attributes. It will be associated to a listing_id, buyer_id and a sale-status_id. The sale quantity is going to subtract to the listing stock and, if necessary, change its status",
             tags = {"Sale"}
     )
     @PostMapping("/post")
@@ -62,12 +62,22 @@ public class SaleController {
     }
 
     @Operation(
-            summary = "Updates the status of a sale",
-            description = "Updates the status of a sale with one that matches the id specified in the parameters",
+            summary = "Cancels a sale",
+            description = "Updates the status of a sale to \"Cancelled\", reintegrates its quantity to the listing stock and, if necessary, update the listing status",
             tags = {"Sale"}
     )
-    @PatchMapping("/status/{id}")
-    public void updateStatus(@PathVariable Long id, @RequestParam Long statusId) {
-        saleService.updateSaleStatus(id, statusId);
+    @PatchMapping("/status/cancel/{id}")
+    public void cancelSale(@PathVariable Long id) {
+        saleService.updateSaleStatus(id, "Cancelled");
+    }
+
+    @Operation(
+            summary = "Fulfills a sale",
+            description = "Updates the status of a sale to \"Fulfilled\"",
+            tags = {"Sale"}
+    )
+    @PatchMapping("/status/fulfill/{id}")
+    public void fulfillSale(@PathVariable Long id) {
+        saleService.updateSaleStatus(id, "Fulfilled");
     }
 }

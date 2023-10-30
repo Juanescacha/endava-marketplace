@@ -2,6 +2,7 @@ package com.endava.marketplace.backend.service;
 
 import com.endava.marketplace.backend.azure.StorageClient;
 import com.endava.marketplace.backend.model.Listing;
+import com.endava.marketplace.backend.model.ListingStatus;
 import com.endava.marketplace.backend.repository.ListingRepository;
 import com.endava.marketplace.backend.specification.ListingSpecification;
 import jakarta.persistence.criteria.Predicate;
@@ -21,10 +22,13 @@ import java.util.Set;
 public class ListingService {
     private final ListingRepository listingRepository;
 
+    private final ListingStatusService listingStatusService;
+
     private final StorageClient storageClient;
 
-    public ListingService(ListingRepository listingRepository, StorageClient storageClient) {
+    public ListingService(ListingRepository listingRepository, ListingStatusService listingStatusService, StorageClient storageClient) {
         this.listingRepository = listingRepository;
+        this.listingStatusService = listingStatusService;
         this.storageClient = storageClient;
     }
 
@@ -54,6 +58,52 @@ public class ListingService {
     }
 
     public void deleteListingById(Long listingId) {listingRepository.deleteById(listingId);}
+
+    public boolean updateListingAtSaleCreation(Long listingId, Integer saleQuantity) {
+        Optional<Listing> foundListing = findListingById(listingId);
+
+        if(foundListing.isPresent()) {
+            Listing listing = foundListing.get();
+            Integer listingStock = listing.getStock();
+
+            if(listingStock >= saleQuantity) {
+                listing.setStock(listing.getStock() - saleQuantity);
+
+                if(listingStock.equals(saleQuantity)) {
+                    Optional<ListingStatus> foundListingStatus = listingStatusService.findListingStatusByName("Out of Stock");
+                    foundListingStatus.ifPresent(listing::setStatus);
+                }
+
+                listingRepository.save(listing);
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void updateListingAtSaleCancellation(Long listingId, Integer saleQuantity) {
+        Optional<Listing> foundListing = findListingById(listingId);
+
+        if(foundListing.isPresent()) {
+            Listing listing = foundListing.get();
+
+            listing.setStock(listing.getStock() + saleQuantity);
+
+            if(listing.getStatus().getName().equals("Out of Stock")) {
+                Optional<ListingStatus> foundListingStatus = listingStatusService.findListingStatusByName("Available");
+
+                foundListingStatus.ifPresent(listing::setStatus);
+            }
+
+            listingRepository.save(listing);
+        }
+    }
 
     public void saveListingImages(List<MultipartFile> images, Long listingId) throws IOException {
         storageClient.uploadImages(images, listingId);

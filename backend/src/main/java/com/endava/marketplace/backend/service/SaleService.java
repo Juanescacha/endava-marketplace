@@ -11,15 +11,22 @@ import java.util.Set;
 @Service
 public class SaleService {
     private final SaleRepository saleRepository;
+
+    private final ListingService listingService;
+
     private final SaleStatusService saleStatusService;
 
-    public SaleService(SaleRepository saleRepository, SaleStatusService saleStatusService) {
+    public SaleService(SaleRepository saleRepository, ListingService listingService, SaleStatusService saleStatusService) {
         this.saleRepository = saleRepository;
+        this.listingService = listingService;
         this.saleStatusService = saleStatusService;
     }
 
     public Sale saveSale(Sale sale) {
-        return saleRepository.save(sale);
+        if(listingService.updateListingAtSaleCreation(sale.getListing().getId(), sale.getQuantity())) {
+            return saleRepository.save(sale);
+        }
+        return null;
     }
 
     public Optional<Sale> findSaleById(Long saleId) {
@@ -34,14 +41,21 @@ public class SaleService {
         return saleRepository.findSalesByListing_Seller_Id(sellerId);
     }
 
-    public void updateSaleStatus(Long saleId, Long statusId){
-        Optional<Sale> optionalSale = findSaleById(saleId);
-        Optional<SaleStatus> optionalStatus = saleStatusService.findSaleStatusById(statusId);
-        if(optionalSale.isPresent() && optionalStatus.isPresent()){
-            Sale sale = optionalSale.get();
-            SaleStatus status = optionalStatus.get();
-            sale.setStatus(status);
+    public void updateSaleStatus(Long saleId, String saleStatusName){
+        Optional<Sale> foundSale = findSaleById(saleId);
+        Optional<SaleStatus> foundSaleStatus = saleStatusService.findSaleStatusByName(saleStatusName);
+
+        if(foundSale.isPresent() && foundSaleStatus.isPresent()) {
+            Sale sale = foundSale.get();
+            SaleStatus saleStatus = foundSaleStatus.get();
+
+            if(saleStatus.getName().equals("Cancelled")) {
+                listingService.updateListingAtSaleCancellation(sale.getListing().getId(), sale.getQuantity());
+            }
+
+            sale.setStatus(saleStatus);
             saleRepository.save(sale);
         }
+
     }
 }

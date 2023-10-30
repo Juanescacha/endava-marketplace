@@ -23,6 +23,10 @@ import static org.mockito.Mockito.times;
 public class ListingServiceTests {
     @Mock
     private ListingRepository listingRepository;
+
+    @Mock
+    private ListingStatusService listingStatusService;
+
     @Mock
     private StorageClient storageClient;
 
@@ -30,7 +34,7 @@ public class ListingServiceTests {
 
     @BeforeEach
     void setUp(){
-        listingService = new ListingService(listingRepository, storageClient);
+        listingService = new ListingService(listingRepository, listingStatusService, storageClient);
     }
 
     @Test

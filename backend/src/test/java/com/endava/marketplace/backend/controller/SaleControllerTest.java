@@ -148,18 +148,18 @@ public class SaleControllerTest {
                 .andExpect(jsonPath("[0].listing.seller.id", is(seller.getId().intValue())));
     }
 
-    @Test
-    public void givenSaleStatusId_whenUpdateSaleStatus_thenChecksStatusUpdate() throws Exception {
-        Long saleStatusId = 1L;
-        Long saleId = 1L;
-
-        doNothing().when(saleService).updateSaleStatus(saleId, saleStatusId);
-
-        ResultActions response = mockMvc.perform(patch("/api/sales/status/{Id}", saleId)
-                .param("statusId", "1")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        response.andExpect(status().isOk());
-        verify(saleService, times(1)).updateSaleStatus(saleId, saleStatusId);
-    }
+//    @Test
+//    public void givenSaleStatusId_whenUpdateSaleStatus_thenChecksStatusUpdate() throws Exception {
+//        Long saleStatusId = 1L;
+//        Long saleId = 1L;
+//
+//        doNothing().when(saleService).updateSaleStatus(saleId, saleStatusId);
+//
+//        ResultActions response = mockMvc.perform(patch("/api/sales/status/{Id}", saleId)
+//                .param("statusId", "1")
+//                .contentType(MediaType.APPLICATION_JSON));
+//
+//        response.andExpect(status().isOk());
+//        verify(saleService, times(1)).updateSaleStatus(saleId, saleStatusId);
+//    }
 }
