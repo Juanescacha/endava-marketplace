@@ -1,6 +1,6 @@
 package com.endava.marketplace.backend.controller;
 
-import com.endava.marketplace.backend.model.Endavan;
+import com.endava.marketplace.backend.dto.EndavanDTO;
 import com.endava.marketplace.backend.service.EndavanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -10,8 +10,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -33,7 +31,7 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @PostMapping("/post")
-    public Endavan createUser(){
+    public EndavanDTO createUser(){
         return endavanService.saveEndavan();
     }
 
@@ -43,9 +41,10 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @GetMapping("/get/{id}")
-    public Optional<Endavan> getEndavanById(@PathVariable Long id){
+    public EndavanDTO getEndavanById(@PathVariable Long id){
         return endavanService.findEndavanById(id);
     }
+
     @Operation(
             summary = "Delete user by id",
             description = "Deletes an user from the database that matches the id provided",

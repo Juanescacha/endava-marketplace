@@ -1,5 +1,9 @@
 package com.endava.marketplace.backend.service;
 
+import com.endava.marketplace.backend.dto.SaleByBuyerDTO;
+import com.endava.marketplace.backend.dto.SaleBySellerDTO;
+import com.endava.marketplace.backend.dto.SaleDTO;
+import com.endava.marketplace.backend.mapper.SaleMapper;
 import com.endava.marketplace.backend.model.Sale;
 import com.endava.marketplace.backend.model.SaleStatus;
 import com.endava.marketplace.backend.repository.SaleRepository;
@@ -16,10 +20,18 @@ public class SaleService {
 
     private final SaleStatusService saleStatusService;
 
-    public SaleService(SaleRepository saleRepository, ListingService listingService, SaleStatusService saleStatusService) {
+    private final SaleMapper saleMapper;
+
+    public SaleService(
+            SaleRepository saleRepository,
+            ListingService listingService,
+            SaleStatusService saleStatusService,
+            SaleMapper saleMapper
+    ) {
         this.saleRepository = saleRepository;
         this.listingService = listingService;
         this.saleStatusService = saleStatusService;
+        this.saleMapper = saleMapper;
     }
 
     public Sale saveSale(Sale sale) {
@@ -29,20 +41,21 @@ public class SaleService {
         return null;
     }
 
-    public Optional<Sale> findSaleById(Long saleId) {
-        return saleRepository.findById(saleId);
+    public SaleDTO findSaleById(Long saleId) {
+        return saleRepository.findById(saleId).map(saleMapper::toSaleDTO).orElse(null);
     }
 
-    public Optional<Set<Sale>> findSalesByBuyerId(Long buyerId) {
-        return saleRepository.findSalesByBuyer_Id(buyerId);
+    public Set<SaleByBuyerDTO> findSalesByBuyerId(Long buyerId) {
+        return saleMapper.toBuyerDTOSet(saleRepository.findSalesByBuyer_Id(buyerId));
     }
 
-    public Optional<Set<Sale>> findSalesBySellerId(Long sellerId) {
-        return saleRepository.findSalesByListing_Seller_Id(sellerId);
+    public Set<SaleBySellerDTO> findSalesBySellerId(Long sellerId) {
+        Set<Sale> sales = saleRepository.findSalesByListing_Seller_Id(sellerId);
+        return saleMapper.toSellerDTOSet(sales);
     }
 
     public void updateSaleStatus(Long saleId, String saleStatusName){
-        Optional<Sale> foundSale = findSaleById(saleId);
+        Optional<Sale> foundSale = saleRepository.findById(saleId);
         Optional<SaleStatus> foundSaleStatus = saleStatusService.findSaleStatusByName(saleStatusName);
 
         if(foundSale.isPresent() && foundSaleStatus.isPresent()) {

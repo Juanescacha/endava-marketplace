@@ -1,5 +1,8 @@
 package com.endava.marketplace.backend.controller;
 
+import com.endava.marketplace.backend.dto.SaleByBuyerDTO;
+import com.endava.marketplace.backend.dto.SaleBySellerDTO;
+import com.endava.marketplace.backend.dto.SaleDTO;
 import com.endava.marketplace.backend.model.Sale;
 import com.endava.marketplace.backend.service.SaleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +40,7 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/get/{id}")
-    public Optional<Sale> getSaleById(@PathVariable Long id) {
+    public SaleDTO getSaleById(@PathVariable Long id) {
         return saleService.findSaleById(id);
     }
 
@@ -47,7 +50,7 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/get/buyer/{id}")
-    public Optional<Set<Sale>> getSalesByBuyerId(@PathVariable Long id) {
+    public Set<SaleByBuyerDTO> getSalesByBuyerId(@PathVariable Long id) {
         return saleService.findSalesByBuyerId(id);
     }
 
@@ -57,7 +60,7 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/get/seller/{id}")
-    public Optional<Set<Sale>> getSalesBySellerId(@PathVariable Long id) {
+    public Set<SaleBySellerDTO> getSalesBySellerId(@PathVariable Long id) {
         return saleService.findSalesBySellerId(id);
     }
 

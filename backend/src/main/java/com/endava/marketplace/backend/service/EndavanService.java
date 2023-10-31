@@ -1,5 +1,7 @@
 package com.endava.marketplace.backend.service;
 
+import com.endava.marketplace.backend.dto.EndavanDTO;
+import com.endava.marketplace.backend.mapper.EndavanMapper;
 import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.repository.EndavanRepository;
 import org.springframework.security.core.Authentication;
@@ -20,21 +22,28 @@ public class EndavanService {
     private static final String GRAPH_PICTURE_ENDPOINT = "https://graph.microsoft.com/v1.0/me/photo/$value";
     private final EndavanRepository endavanRepository;
 
-    public EndavanService(EndavanRepository endavanRepository) {
+    private final EndavanMapper endavanMapper;
+
+    public EndavanService(EndavanRepository endavanRepository, EndavanMapper endavanMapper) {
         this.endavanRepository = endavanRepository;
+        this.endavanMapper = endavanMapper;
     }
 
-    public Endavan saveEndavan() {
+    public EndavanDTO saveEndavan() {
         Endavan endavan = getEndavanInfo();
         Optional<Endavan> savedEndavan = endavanRepository.findEndavanByEmailIgnoreCase(endavan.getEmail());
+
         if (savedEndavan.isEmpty()){
-            return endavanRepository.save(endavan);
+            return endavanMapper.toEndavanDTO(endavanRepository.save(endavan));
         }
+
         endavan = savedEndavan.get();
-        return endavan;
+        return endavanMapper.toEndavanDTO(endavan);
     }
 
-    public Optional<Endavan> findEndavanById(Long endavanId) {return endavanRepository.findById(endavanId);}
+    public EndavanDTO findEndavanById(Long endavanId) {
+        return endavanRepository.findById(endavanId).map(endavanMapper::toEndavanDTO).orElse(null);
+    }
 
     public void deleteEndavanById(Long endavanId) {endavanRepository.deleteById(endavanId);}
 

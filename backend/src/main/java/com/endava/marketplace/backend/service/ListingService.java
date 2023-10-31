@@ -1,6 +1,10 @@
 package com.endava.marketplace.backend.service;
 
 import com.endava.marketplace.backend.azure.StorageClient;
+import com.endava.marketplace.backend.dto.ListingQuickSearchDTO;
+import com.endava.marketplace.backend.dto.ListingWithImagesDTO;
+import com.endava.marketplace.backend.dto.ListingDTO;
+import com.endava.marketplace.backend.mapper.ListingMapper;
 import com.endava.marketplace.backend.model.Listing;
 import com.endava.marketplace.backend.model.ListingStatus;
 import com.endava.marketplace.backend.repository.ListingRepository;
@@ -24,20 +28,39 @@ public class ListingService {
 
     private final ListingStatusService listingStatusService;
 
+    private final ListingMapper listingMapper;
+
     private final StorageClient storageClient;
 
-    public ListingService(ListingRepository listingRepository, ListingStatusService listingStatusService, StorageClient storageClient) {
+    public ListingService(
+            ListingRepository listingRepository,
+            ListingStatusService listingStatusService,
+            StorageClient storageClient,
+            ListingMapper listingMapper
+    ) {
         this.listingRepository = listingRepository;
         this.listingStatusService = listingStatusService;
         this.storageClient = storageClient;
+        this.listingMapper = listingMapper;
     }
 
-    public Listing saveListing(Listing listing) {return listingRepository.save(listing);}
+    public ListingDTO saveListing(Listing listing) {
+        return listingMapper.toListingDTO(listingRepository.save(listing));
+    }
 
-    public Optional<Listing> findListingById(Long listingId) {return listingRepository.findById(listingId);}
+    public ListingWithImagesDTO findListingById(Long listingId) {
+        Optional<Listing> foundListing = listingRepository.findById(listingId);
+        if(foundListing.isPresent()) {
+            ListingWithImagesDTO listing = listingMapper.toListingWithImagesDTO(foundListing.get());
+            listing.setImages(storageClient.fetchImagesURLS(listingId));
+            listing.setThumbnail(storageClient.fetchThumbnailURL(listingId));
+            return listing;
+        }
+        return null;
+    }
 
-    public Set<Listing> findListingByName(String listingName) {
-        return listingRepository.findTop5ByNameContainsIgnoreCaseOrderByIdDesc(listingName);
+    public Set<ListingQuickSearchDTO> findListingByName(String listingName) {
+        return listingMapper.toListingQuickSearchDTOSet(listingRepository.findTop5ByNameContainsIgnoreCaseOrderByIdDesc(listingName));
     }
 
     public Page<Listing> findListings(Integer category, String name, Integer page) {
@@ -60,7 +83,7 @@ public class ListingService {
     public void deleteListingById(Long listingId) {listingRepository.deleteById(listingId);}
 
     public boolean updateListingAtSaleCreation(Long listingId, Integer saleQuantity) {
-        Optional<Listing> foundListing = findListingById(listingId);
+        Optional<Listing> foundListing = listingRepository.findById(listingId);
 
         if(foundListing.isPresent()) {
             Listing listing = foundListing.get();
@@ -88,7 +111,7 @@ public class ListingService {
     }
 
     public void updateListingAtSaleCancellation(Long listingId, Integer saleQuantity) {
-        Optional<Listing> foundListing = findListingById(listingId);
+        Optional<Listing> foundListing = listingRepository.findById(listingId);
 
         if(foundListing.isPresent()) {
             Listing listing = foundListing.get();

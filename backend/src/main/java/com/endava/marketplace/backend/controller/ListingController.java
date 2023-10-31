@@ -1,5 +1,8 @@
 package com.endava.marketplace.backend.controller;
 
+import com.endava.marketplace.backend.dto.ListingQuickSearchDTO;
+import com.endava.marketplace.backend.dto.ListingWithImagesDTO;
+import com.endava.marketplace.backend.dto.ListingDTO;
 import com.endava.marketplace.backend.model.Listing;
 import com.endava.marketplace.backend.service.ListingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -30,7 +32,9 @@ public class ListingController {
             tags = {"Listing"}
     )
     @PostMapping("/post")
-    public Listing postListing(@RequestBody Listing listing) {return listingService.saveListing(listing);}
+    public ListingDTO postListing(@RequestBody Listing listing) {
+        return listingService.saveListing(listing);
+    }
 
     @Operation(
             summary = "Get listing by id",
@@ -38,7 +42,7 @@ public class ListingController {
             tags = {"Listing"}
     )
     @GetMapping("/get/{id}")
-    public Optional<Listing> getListingById(@PathVariable Long id) {
+    public ListingWithImagesDTO getListingById(@PathVariable Long id) {
         return listingService.findListingById(id);
     }
 
@@ -48,7 +52,7 @@ public class ListingController {
             tags = {"Listing"}
     )
     @GetMapping("/search/quick")
-    public Set<Listing> getListingByName(@RequestParam String name){
+    public Set<ListingQuickSearchDTO> getListingByName(@RequestParam String name){
         return listingService.findListingByName(name);
     }
 
