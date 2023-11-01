@@ -31,7 +31,7 @@ public class ListingController {
             description = "Creates a new listing with all of their attributes. It will be associated to their owner by id",
             tags = {"Listing"}
     )
-    @PostMapping("/post")
+    @PostMapping()
     public ListingDTO postListing(@RequestBody Listing listing) {
         return listingService.saveListing(listing);
     }
@@ -41,7 +41,7 @@ public class ListingController {
             description = "Gets a listing from the database that matches the id provided",
             tags = {"Listing"}
     )
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ListingWithImagesDTO getListingById(@PathVariable Long id) {
         return listingService.findListingById(id);
     }
@@ -51,7 +51,7 @@ public class ListingController {
             description = "Gets the top 5 most recent listings that contain the name provided",
             tags = {"Listing"}
     )
-    @GetMapping("/search/quick")
+    @GetMapping("/suggestions")
     public Set<ListingQuickSearchDTO> getListingByName(@RequestParam String name){
         return listingService.findListingByName(name);
     }
@@ -63,7 +63,7 @@ public class ListingController {
                     "The search can also be done without parameters to get all the listings in the database.",
             tags = {"Listing"}
     )
-    @GetMapping("/search/get")
+    @GetMapping("/search")
     public Page<Listing> getListingByCategoryAndName(
             @RequestParam(required = false) Integer category,
             @RequestParam(required = false) String name,
@@ -76,7 +76,7 @@ public class ListingController {
             description = "Deletes a listing from the database that matches the id provided",
             tags = {"Listing"}
     )
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteListingById(@PathVariable Long id) {listingService.deleteListingById(id);}
 
     @Operation(
@@ -84,7 +84,7 @@ public class ListingController {
             description = "Save a list of MultipartFile type images related to the desired listing to the project's storage account",
             tags = {"Listing"}
     )
-    @PostMapping("/post/images/{id}")
+    @PostMapping("/images/{id}")
     public void postListingImages(@RequestParam("images") List<MultipartFile> images, @PathVariable Long id) throws IOException {
         listingService.saveListingImages(images, id);
     }
@@ -94,7 +94,7 @@ public class ListingController {
             description = "Get a list of URLS redirecting to the desired listing images saved in the project's storage account",
             tags = {"Listing"}
     )
-    @GetMapping("/get/images/{id}")
+    @GetMapping("/images/{id}")
     public List<String> getListingImages(@PathVariable Long id) {
         return listingService.retrieveListingImages(id);
     }
@@ -104,7 +104,7 @@ public class ListingController {
             description = "Gets an URL redirecting to the desired listing thumbnail saved in the project's storage account",
             tags = {"Listing"}
     )
-    @GetMapping("/get/images/thumb/{id}")
+    @GetMapping("/thumb/{id}")
     public String getListingThumbnail(@PathVariable Long id) {
         return listingService.retrieveListingThumbnail(id);
     }

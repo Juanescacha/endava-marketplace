@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/endavans")
 @Tag(name = "Endavan", description = "User management module")
 @SecurityRequirement(name = "Azure AD")
 public class EndavanController {
@@ -30,7 +30,7 @@ public class EndavanController {
                     "In case that specific user already exists, nothing happens.",
             tags = {"Endavan"}
     )
-    @PostMapping("/post")
+    @PostMapping()
     public EndavanDTO createUser(){
         return endavanService.saveEndavan();
     }
@@ -40,7 +40,7 @@ public class EndavanController {
             description = "Gets an user from the database that matches the id provided",
             tags = {"Endavan"}
     )
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public EndavanDTO getEndavanById(@PathVariable Long id){
         return endavanService.findEndavanById(id);
     }
@@ -50,7 +50,7 @@ public class EndavanController {
             description = "Deletes an user from the database that matches the id provided",
             tags = {"Endavan"}
     )
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteEndavanById(@PathVariable Long id){
         endavanService.deleteEndavanById(id);
     }
