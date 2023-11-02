@@ -69,19 +69,15 @@
 										}}
 									</span>
 								</p>
-								<p>Qty: {{ product.quantity }}</p>
+								<p>Qty: {{ product.quantity || 1 }}</p>
 								<p>
 									<span class="hidden sm:inline">
 										Date:
 									</span>
 									{{ product.date }}
 								</p>
-								<p
-									:class="
-										getSaleStatusColor(product.status.name)
-									"
-								>
-									{{ product.status.name }}
+								<p :class="getSaleStatusColor(product.status)">
+									{{ product.status }}
 								</p>
 							</div>
 							<h3>${{ product.listing.price }}</h3>

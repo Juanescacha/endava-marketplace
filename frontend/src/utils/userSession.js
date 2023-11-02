@@ -2,6 +2,7 @@ import { decodeJwt } from "jose";
 import { useUserStore } from "@/stores/user";
 import { createCookie, getCookie, deleteCookie } from "@/utils/cookies";
 import { postUser } from "@/utils/axios";
+import { addParamsToURL } from "./strings";
 
 const LOGIN_TOKEN_NAME = "access_token";
 const USER_COOKIE_NAME = "user";
@@ -14,25 +15,19 @@ const buildMicrosoftLoginURL = () => {
 	const microsoftURL2 = `/${
 		import.meta.env.VITE_MICROSOFT_LOGIN_URL_END
 	}/authorize`;
-	const clientId = `?client_id=${import.meta.env.VITE_CLIENT_ID}`;
-	const redirectURI = `&redirect_uri=${
-		import.meta.env.VITE_URL_REDIRECT_URI
-	}`;
+
+	let url = microsoftURL + tenantId + microsoftURL2;
+	const params = {
+		client_id: import.meta.env.VITE_CLIENT_ID,
+		redirect_uri: import.meta.env.VITE_URL_REDIRECT_URI,
+		state,
+		nonce: "12345",
+	};
+	url = addParamsToURL(url, params);
+
 	const otherParams = import.meta.env.VITE_MICROSOFT_LOGIN_PARAMS;
 
-	const stateParam = `&state=${state}`;
-	const nonce = `&nonce=12345`;
-
-	return (
-		microsoftURL +
-		tenantId +
-		microsoftURL2 +
-		clientId +
-		redirectURI +
-		otherParams +
-		stateParam +
-		nonce
-	);
+	return url + otherParams;
 };
 
 const redirectToMicrosoftLogin = () => {

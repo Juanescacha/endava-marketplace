@@ -107,18 +107,16 @@
 								<span class="hidden sm:inline">Date: </span>
 								{{ product.date }}
 							</p>
-							<p>Qty: {{ product.quantity }}</p>
-							<p :class="getSaleStatusColor(product.status.name)">
-								{{ product.status.name }}
+							<p>Qty: {{ product.quantity || 1 }}</p>
+							<p :class="getSaleStatusColor(product.status)">
+								{{ product.status }}
 							</p>
 						</div>
 
 						<basic-spinner
 							v-if="itemsBeingProcessed.includes(product.id)"
 						></basic-spinner>
-						<dropdown-menu
-							v-else-if="product.status.name === 'Pending'"
-						>
+						<dropdown-menu v-else-if="product.status === 'Pending'">
 							<template v-slot:menu-button>
 								<EllipsisHorizontalCircleIcon
 									class="h-8 w-8 text-endava-500"

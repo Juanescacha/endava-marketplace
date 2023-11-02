@@ -1,19 +1,16 @@
 <script setup>
 	import { ref, onMounted } from "vue";
-	import { makeGetRequest } from "../utils/axios";
-	import ProductCard from "../components/ProductCard.vue";
-	import SkeletonCard from "../components/SkeletonCard.vue";
-	import { useProductStore } from "../stores/products";
+	import { getListingsSearch } from "@/utils/axios";
+	import ProductCard from "@/components/ProductCard.vue";
+	import SkeletonCard from "@/components/SkeletonCard.vue";
+	import { useProductStore } from "@/stores/products";
 	const productsList = useProductStore();
 
 	const isLoading = ref(true);
 	const page = ref(1);
 
-	let Baseurl = `${import.meta.env.VITE_API_URL}/api/listings/search/get`;
-
 	onMounted(async () => {
-		const url = `${Baseurl}`;
-		const response = await makeGetRequest(url);
+		const response = await getListingsSearch();
 		if (response.error) {
 			// error
 		} else {
@@ -28,8 +25,7 @@
 
 	const handleLoadMore = async () => {
 		page.value += 1;
-		const url = `${Baseurl}${page.value}`;
-		const response = await makeGetRequest(url);
+		const response = await getListingsSearch(page.value);
 
 		// productCards.value = [...productCards.value, ...response.data.content];
 		productsList.update([

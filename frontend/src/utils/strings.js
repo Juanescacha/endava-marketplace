@@ -55,9 +55,27 @@ const getSaleStatusColor = status => {
 	}
 };
 
+const addParamsToURL = (baseUrl, params = {}) => {
+	if (typeof params !== "object" || params === null) {
+		return baseUrl;
+	}
+	let url = baseUrl;
+	const paramList = Object.keys(params);
+
+	if (paramList.length > 0) {
+		url += "?";
+		paramList.forEach(param => {
+			url += `${param}=${params[param]}&`;
+		});
+		url = url.slice(0, -1);
+	}
+	return url;
+};
+
 export {
 	capitalizeFirstLetter,
 	getArticleOfSentence,
 	extractFirstWordsFromText,
 	getSaleStatusColor,
+	addParamsToURL,
 };

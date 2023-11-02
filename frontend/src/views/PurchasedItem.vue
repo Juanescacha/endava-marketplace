@@ -2,7 +2,7 @@
 	import { onBeforeMount, reactive, ref } from "vue";
 	import { useRoute, useRouter } from "vue-router";
 	import { useUserStore } from "@/stores/user";
-	import { makeGetRequest } from "@/utils/axios";
+	import { getSaleById, getListingImages } from "@/utils/axios";
 	import { getSaleStatusColor } from "@/utils/strings";
 	import StarsInput from "@/components/Inputs/StarsInput.vue";
 	import ImageSelector from "@/components/Images/ImageSelector.vue";
@@ -22,27 +22,19 @@
 			return;
 		}
 		await getPurchaseData();
-		getListingImages();
+		getProductImages();
 	});
 
 	const getPurchaseData = async () => {
-		const url = `${import.meta.env.VITE_API_URL}/api/sales/get/${
-			route.params.id
-		}`;
-
-		const { data } = await makeGetRequest(url);
+		const { data } = await getSaleById(route.params.id);
 		const isValid = validateListingFetch(data);
 		if (!isValid) return;
 
 		purchase.value = data;
 	};
 
-	const getListingImages = () => {
-		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/images/${
-			purchase.value.listing.id
-		}`;
-
-		makeGetRequest(url).then(response => {
+	const getProductImages = () => {
+		getListingImages(purchase.value.listing.id).then(response => {
 			const { data } = response;
 			const isValid = validateListingFetch(data);
 			if (!isValid) return;
@@ -135,8 +127,8 @@
 					<p>Quantity: 1</p>
 					<p>
 						Status:
-						<span :class="getSaleStatusColor(purchase.status.name)">
-							{{ purchase.status.name }}
+						<span :class="getSaleStatusColor(purchase.status)">
+							{{ purchase.status }}
 						</span>
 					</p>
 				</div>

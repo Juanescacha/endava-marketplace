@@ -27,7 +27,7 @@
 </template>
 <script setup>
 	import { ref, onBeforeMount } from "vue";
-	import { makeGetRequest } from "../utils/axios";
+	import { getListingThumbanil } from "@/utils/axios";
 
 	const props = defineProps({
 		cardInfo: {
@@ -38,14 +38,10 @@
 		},
 	});
 
-	const url = `${
-		import.meta.env.VITE_API_URL
-	}/api/listings/get/images/thumb/${props.cardInfo.id}`;
-
 	const imageSrc = ref("#");
 
 	onBeforeMount(async () => {
-		const response = await makeGetRequest(url);
+		const response = await getListingThumbanil(props.cardInfo.id);
 		if (response.error) {
 			// error
 		} else {

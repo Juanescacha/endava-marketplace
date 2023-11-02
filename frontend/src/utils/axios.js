@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getCookie } from "./cookies";
+import { addParamsToURL } from "./strings";
 
 const getAPIURL = () => import.meta.env.VITE_API_URL;
 
@@ -31,10 +32,10 @@ const makeGetRequest = async route => {
 	}
 };
 
-const postNewListing = async data => {
+export const postNewListing = async data => {
 	try {
 		let url = getAPIURL();
-		url += "/api/listings/post";
+		url += "/api/listings";
 
 		const config = {
 			headers: getHeadersForRequest(),
@@ -53,9 +54,9 @@ const postNewListing = async data => {
 	}
 };
 
-const postImagesOfListing = async (listingId, images = []) => {
+export const postImagesOfListing = async (listingId, images = []) => {
 	try {
-		const url = `${getAPIURL()}/api/listings/post/images/${listingId}`;
+		const url = `${getAPIURL()}/api/listings/images/${listingId}`;
 
 		const form = new FormData();
 		images.forEach(image => {
@@ -84,9 +85,9 @@ const postImagesOfListing = async (listingId, images = []) => {
 	}
 };
 
-const postSale = async data => {
+export const postSale = async data => {
 	try {
-		const url = `${getAPIURL()}/api/sales/post`;
+		const url = `${getAPIURL()}/api/sales`;
 		const config = {
 			headers: getHeadersForRequest(),
 		};
@@ -105,9 +106,9 @@ const postSale = async data => {
 	}
 };
 
-const patchSaleStatus = async (saleId, operation) => {
+export const patchSaleStatus = async (saleId, operation) => {
 	try {
-		const url = `${getAPIURL()}/api/sales/status/${operation}/${saleId}`;
+		const url = `${getAPIURL()}/api/sales/${saleId}/${operation}`;
 		const config = {
 			headers: getHeadersForRequest(),
 		};
@@ -126,9 +127,9 @@ const patchSaleStatus = async (saleId, operation) => {
 	}
 };
 
-const deleteListing = async id => {
+export const deleteListing = async id => {
 	try {
-		const url = `${getAPIURL()}/api/listings/delete/${id}`;
+		const url = `${getAPIURL()}/api/listings/${id}`;
 		const config = {
 			headers: getHeadersForRequest(),
 		};
@@ -146,9 +147,9 @@ const deleteListing = async id => {
 	}
 };
 
-const postUser = async () => {
+export const postUser = async () => {
 	try {
-		const url = `${getAPIURL()}/api/user/post`;
+		const url = `${getAPIURL()}/api/endavans`;
 		const config = {
 			headers: getHeadersForRequest(),
 		};
@@ -159,9 +160,9 @@ const postUser = async () => {
 	}
 };
 
-const getSellerSales = async id => {
+export const getSellerSales = async id => {
 	try {
-		const url = `${getAPIURL()}/api/sales/get/seller/${id}`;
+		const url = `${getAPIURL()}/api/sales/seller/${id}`;
 		const config = {
 			headers: getHeadersForRequest(),
 		};
@@ -179,9 +180,9 @@ const getSellerSales = async id => {
 	}
 };
 
-const getUserPurchases = async id => {
+export const getUserPurchases = async id => {
 	try {
-		const url = `${getAPIURL()}/api/sales/get/buyer/${id}`;
+		const url = `${getAPIURL()}/api/sales/buyer/${id}`;
 		const config = {
 			headers: getHeadersForRequest(),
 		};
@@ -199,14 +200,33 @@ const getUserPurchases = async id => {
 	}
 };
 
-export {
-	makeGetRequest,
-	postNewListing,
-	postImagesOfListing,
-	deleteListing,
-	postUser,
-	postSale,
-	patchSaleStatus,
-	getSellerSales,
-	getUserPurchases,
+export const getListingById = async id => {
+	const url = `${getAPIURL()}/api/listings/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getListingImages = async id => {
+	const url = `${getAPIURL()}/api/listings/images/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getListingThumbanil = async id => {
+	const url = `${getAPIURL()}/api/listings/thumb/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getSaleById = async id => {
+	const url = `${getAPIURL()}/api/sales/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getListingsSearch = async (params = {}) => {
+	let url = `${getAPIURL()}/api/listings/search`;
+	url = addParamsToURL(url, params);
+	return await makeGetRequest(url);
+};
+
+export const getListingsSuggestions = async name => {
+	const url = `${getAPIURL()}/api/listings/suggestions?name=${name}`;
+	return await makeGetRequest(url);
 };

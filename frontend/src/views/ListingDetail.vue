@@ -1,11 +1,11 @@
 <script setup>
-	import { computed, onBeforeMount, reactive, ref, watch } from "vue";
+	import { computed, onBeforeMount, reactive, ref } from "vue";
 	import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-	import { useUserStore } from "../stores/user";
-	import StarsInput from "../components/Inputs/StarsInput.vue";
-	import ImageSelector from "../components/Images/ImageSelector.vue";
-	import GenericModal from "../components/GenericModal.vue";
-	import { makeGetRequest, postSale } from "../utils/axios";
+	import { useUserStore } from "@/stores/user";
+	import StarsInput from "@/components/Inputs/StarsInput.vue";
+	import ImageSelector from "@/components/Images/ImageSelector.vue";
+	import GenericModal from "@/components/GenericModal.vue";
+	import { getListingById, getListingImages, postSale } from "../utils/axios";
 	import { getArticleOfSentence } from "@/utils/strings";
 
 	const route = useRoute();
@@ -24,22 +24,18 @@
 			return;
 		}
 		getListingData();
-		getListingImages();
+		getProductImages();
 	});
 
 	onBeforeRouteUpdate((to, from, next) => {
 		listingId.value = to.params.id;
 		getListingData();
-		getListingImages();
+		getProductImages();
 		next();
 	});
 
 	const getListingData = () => {
-		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/${
-			listingId.value
-		}`;
-
-		makeGetRequest(url).then(response => {
+		getListingById(listingId.value).then(response => {
 			const { data } = response;
 			const isValid = validateListingFetch(data);
 			if (!isValid) return;
@@ -49,12 +45,8 @@
 		});
 	};
 
-	const getListingImages = () => {
-		const url = `${import.meta.env.VITE_API_URL}/api/listings/get/images/${
-			listingId.value
-		}`;
-
-		makeGetRequest(url).then(response => {
+	const getProductImages = () => {
+		getListingImages(listingId.value).then(response => {
 			const { data } = response;
 			const isValid = validateListingFetch(data);
 			if (!isValid || data.length === 0) listing.value.images = [];
@@ -117,7 +109,7 @@
 			status: {
 				id: 1, // TODO load dinamically
 			},
-			quantity: desiredQuantity,
+			quantity: desiredQuantity.value,
 		};
 		const result = await postSale(data);
 		if (result.error) {

@@ -3,6 +3,8 @@ import {
 	capitalizeFirstLetter,
 	getArticleOfSentence,
 	extractFirstWordsFromText,
+	getSaleStatusColor,
+	addParamsToURL,
 } from "@/utils/strings.js";
 
 const TEXT =
@@ -109,5 +111,79 @@ describe("function extractFirstWordsFromText", () => {
 	it("should return undefined if n is not a positive number", () => {
 		expect(extractFirstWordsFromText(TEXT, 0)).toBeUndefined();
 		expect(extractFirstWordsFromText(TEXT, -1)).toBeUndefined();
+	});
+});
+
+describe("function getSaleStatusColor", () => {
+	const fulfilled = "Fulfilled";
+	const canceled = "Cancelled";
+	const pending = "Pending";
+
+	it("should return an orange css color class when passed pending", () => {
+		expect(getSaleStatusColor(pending)).toContain("text");
+		expect(getSaleStatusColor(pending)).toContain("orange");
+	});
+
+	it("should return an green css color class when passed fulfilled", () => {
+		expect(getSaleStatusColor(fulfilled)).toContain("text");
+		expect(getSaleStatusColor(fulfilled)).toContain("green");
+	});
+
+	it("should return an red css color class when passed canceled", () => {
+		expect(getSaleStatusColor(canceled)).toContain("text");
+		expect(getSaleStatusColor(canceled)).toContain("red");
+	});
+
+	it("should return undefined if any other string or value is passed", () => {
+		expect(getSaleStatusColor("foo")).toBeUndefined();
+		expect(getSaleStatusColor(0)).toBeUndefined();
+		expect(getSaleStatusColor([])).toBeUndefined();
+		expect(getSaleStatusColor(null)).toBeUndefined();
+	});
+});
+
+describe("function addParamsToURL", () => {
+	const BASE_URL = "https://example.com/route";
+	const params = {
+		name: "foo",
+		index: 2,
+		foo: "bar",
+	};
+
+	it("should return the same string when no params are provided", () => {
+		expect(addParamsToURL(BASE_URL)).toBe(BASE_URL);
+	});
+
+	it("should return the same string when params are not an object", () => {
+		expect(addParamsToURL(BASE_URL, "foo")).toBe(BASE_URL);
+		expect(addParamsToURL(BASE_URL, 0)).toBe(BASE_URL);
+		expect(addParamsToURL(BASE_URL, true)).toBe(BASE_URL);
+		expect(addParamsToURL(BASE_URL, [])).toBe(BASE_URL);
+		expect(addParamsToURL(BASE_URL, null)).toBe(BASE_URL);
+	});
+
+	it("should return the url + the params in key=value format", () => {
+		const result = addParamsToURL(BASE_URL, params);
+		expect(result).toContain("name=foo");
+		expect(result).toContain("index=2");
+		expect(result).toContain("foo=bar");
+	});
+
+	it("should return a url with a '?' character", () => {
+		expect(addParamsToURL(BASE_URL, params)).toContain("?");
+	});
+
+	it("should return a url with at least one '&' when provided multiple params", () => {
+		expect(addParamsToURL(BASE_URL, params)).toContain("&");
+	});
+
+	it("should return a url with no '&' when provided a single param", () => {
+		const result = addParamsToURL(BASE_URL, { param: 0 });
+		expect(result.includes("&")).toBe(false);
+	});
+
+	it("should not return a url with a '&' at the end", () => {
+		const result = addParamsToURL(BASE_URL, params);
+		expect(result.slice(-1) === "&").toBe(false);
 	});
 });

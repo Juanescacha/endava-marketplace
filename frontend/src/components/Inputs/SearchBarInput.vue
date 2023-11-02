@@ -1,8 +1,8 @@
 <script setup>
 	import { ref, watch } from "vue";
 	import { RouterLink, useRouter } from "vue-router";
-	import { makeGetRequest } from "../../utils/axios";
-	import { useProductStore } from "../../stores/products";
+	import { getListingsSearch, getListingsSuggestions } from "@/utils/axios";
+	import { useProductStore } from "@/stores/products";
 
 	const productsList = useProductStore();
 	const router = useRouter();
@@ -25,10 +25,9 @@
 			searchInput.value = "";
 			router.push(`/listings/${suggestions.value[activeIndex.value].id}`);
 		} else {
-			const url = `${
-				import.meta.env.VITE_API_URL
-			}/api/listings/search/get?name=${searchInput.value}`;
-			const response = await makeGetRequest(url);
+			const response = await getListingsSearch({
+				name: searchInput.value,
+			});
 			searchInput.value = "";
 			if (response.error) {
 				// error
@@ -76,10 +75,7 @@
 	};
 
 	const getSuggestions = async query => {
-		const url = `${
-			import.meta.env.VITE_API_URL
-		}/api/listings/search/quick?name=${query}`;
-		const response = await makeGetRequest(url);
+		const response = await getListingsSuggestions(query);
 		if (response.error) {
 			// error
 		} else {
