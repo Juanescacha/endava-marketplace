@@ -77,4 +77,14 @@ public class EndavanController {
     public void updateAdminRole(@RequestParam Long endavanId, @RequestParam Boolean isAdmin){
         endavanService.updateAdminRole(endavanId, isAdmin);
     }
+
+    @Operation(
+            summary = "Check Admin role",
+            description = "Checks if the actual user has admin privileges",
+            tags = {"Endavan"}
+    )
+    @GetMapping("/isAdmin")
+    public Boolean checkAdminRole(){
+        return endavanService.checkAdminRole();
+    }
 }

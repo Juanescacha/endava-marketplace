@@ -58,6 +58,16 @@ public class EndavanService {
         }
     }
 
+    public Boolean checkAdminRole(){
+        Endavan userInfo = getEndavanInfo();
+        Optional<Endavan> user = endavanRepository.findEndavanByEmailIgnoreCase(userInfo.getEmail());
+
+        if (user.isPresent()){
+            return user.get().getAdmin();
+        }
+        return false;
+    }
+
     public byte[] getGraphPicture(OAuth2AuthorizedClient graph, WebClient webClient) {
         if (null != graph) {
             byte[] body = webClient
