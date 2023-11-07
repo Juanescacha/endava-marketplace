@@ -10,7 +10,7 @@
 
 <template>
 	<main
-		class="mt-20 min-w-[470px] lg:flex lg:h-[calc(100vh-4rem)] lg:gap-x-1 lg:rounded-br-xl lg:border lg:border-gray-100"
+		class="min-w-[470px] lg:flex lg:h-[calc(100vh-4rem)] lg:gap-x-1 lg:rounded-br-xl lg:border lg:border-gray-100"
 	>
 		<nav class="bg-gray-200 lg:w-[30vw] lg:rounded-r-2xl lg:border-l-0">
 			<ul class="mt-2">

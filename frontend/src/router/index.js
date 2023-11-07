@@ -1,23 +1,24 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import MainPage from "../views/MainPage.vue";
-import Login from "../views/LoginPage.vue";
-import ListingDetail from "../views/ListingDetail.vue";
-import NewListing from "../views/NewListing.vue";
-import UserDashboard from "../views/UserDashboard.vue";
-import UserProfile from "../views/UserProfile.vue";
-import SalesHistory from "../views/SalesHistory.vue";
+import MainPage from "@/views/MainPage.vue";
+import Login from "@/views/LoginPage.vue";
+import ListingDetail from "@/views/ListingDetail.vue";
+import NewListing from "@/views/NewListing.vue";
+import UserDashboard from "@/views/UserDashboard.vue";
+import UserProfile from "@/views/UserProfile.vue";
+import SalesHistory from "@/views/SalesHistory.vue";
 import PurchaseHistory from "@/views/PurchaseHistory.vue";
 import PurchasedItem from "@/views/PurchasedItem.vue";
-import NotFoundPage from "../views/NotFoundPage.vue";
+import AdminPanel from "@/views/AdminPanel.vue";
+import NotFoundPage from "@/views/NotFoundPage.vue";
 import {
 	userIsLogedIn,
 	saveUserInfoFromServerToStore,
 	saveUserInfoFromStoreToCookies,
 	saveUserInfoFromCookiesToStore,
 	userInfoIsInCookies,
-} from "../utils/userSession";
-import { useUserStore } from "../stores/user";
+} from "@/utils/userSession";
+import { useUserStore } from "@/stores/user";
 
 const routes = [
 	{
@@ -64,6 +65,28 @@ const routes = [
 				path: "purchase/:id",
 				component: PurchasedItem,
 				name: "Purchased Item",
+			},
+		],
+	},
+	{
+		path: "/admin-panel",
+		component: AdminPanel,
+		name: "Admin panel",
+		children: [
+			{
+				path: "general",
+				component: UserProfile,
+				name: "General settings",
+			},
+			{
+				path: "users",
+				component: UserProfile,
+				name: "Manage users",
+			},
+			{
+				path: "categories",
+				component: UserProfile,
+				name: "Manage categories",
 			},
 		],
 	},

@@ -1,22 +1,46 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
+import { createRouter, createWebHistory } from "vue-router";
 import { createTestingPinia } from "@pinia/testing";
 import UserProfile from "@/views/UserProfile.vue";
+import { routes } from "@/router";
 
 const thereIsAdminButton = buttons =>
 	buttons.find(btn => btn.html().includes("Admin"));
 
-it("UserProfile should mount", () => {
-	const wrapper = shallowMount(UserProfile);
-	expect(UserProfile).toBeTruthy();
-	expect(wrapper.exists()).toBe(true);
-	wrapper.unmount();
+const getRouterInstance = () =>
+	createRouter({
+		history: createWebHistory(),
+		routes,
+	});
+
+describe("UserProfile mount", () => {
+	let wrapper;
+	beforeEach(() => {
+		wrapper = shallowMount(UserProfile, {
+			global: { plugins: [getRouterInstance()] },
+		});
+	});
+	afterEach(() => wrapper.unmount());
+
+	it("UserProfile should mount", () => {
+		expect(UserProfile).toBeTruthy();
+		expect(wrapper.exists()).toBe(true);
+	});
+
+	it("UserProfile should call the useAdminUser composable", () => {
+		expect(wrapper.vm.userIsAdmin).toBe(false);
+		expect(wrapper.vm.setUserIsAdmin).toBeTruthy();
+	});
 });
 
 describe("UserProfile HTML elements", () => {
 	const wrapper = shallowMount(UserProfile, {
 		global: {
-			plugins: [createTestingPinia({ createSpy: vi.fn() })],
+			plugins: [
+				getRouterInstance(),
+				createTestingPinia({ createSpy: vi.fn() }),
+			],
 		},
 	});
 
@@ -43,6 +67,7 @@ describe("UserProfile contents", () => {
 	const wrapper = mount(UserProfile, {
 		global: {
 			plugins: [
+				getRouterInstance(),
 				createTestingPinia({
 					createSpy: vi.fn(),
 					initialState: {
@@ -50,7 +75,6 @@ describe("UserProfile contents", () => {
 							id: 1,
 							name: "John",
 							email: "Doe@email.com",
-							isAdmin: true,
 						},
 					},
 				}),
@@ -64,11 +88,6 @@ describe("UserProfile contents", () => {
 
 	it("should include the user email", () => {
 		expect(wrapper.html()).toContain(wrapper.vm.user.email);
-	});
-
-	it("should include a button that redirects to Admin panel if the user is admin", () => {
-		const buttons = wrapper.findAll("button");
-		expect(thereIsAdminButton(buttons)).toBeTruthy();
 	});
 	wrapper.unmount();
 });

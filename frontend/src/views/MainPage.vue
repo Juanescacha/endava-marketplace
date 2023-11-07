@@ -39,7 +39,7 @@
 	<main
 		id="content"
 		role="main"
-		class="mx-auto mt-28 w-fit"
+		class="mx-auto mt-8 w-fit"
 	>
 		<h1 class="py-2">Latest Products</h1>
 

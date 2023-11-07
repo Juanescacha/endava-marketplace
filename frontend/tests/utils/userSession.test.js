@@ -22,7 +22,6 @@ const mockUser = {
 	id: 1,
 	name: "John",
 	email: "John@email.com",
-	admin: true,
 };
 
 beforeEach(() => {
@@ -67,7 +66,6 @@ describe("saveUserInfoFromServerToStore", () => {
 		expect(user.id).toBe(mockUser.id);
 		expect(user.name).toBe(mockUser.name);
 		expect(user.email).toBe(mockUser.email);
-		expect(user.isAdmin).toBe(mockUser.admin);
 	});
 
 	it("should not throw error when server does not respond", async () => {

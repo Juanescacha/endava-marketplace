@@ -61,7 +61,6 @@ const saveUserInfoFromServerToStore = async () => {
 	user.id = response.id;
 	user.name = response.name;
 	user.email = response.email;
-	user.isAdmin = response.admin;
 };
 
 const saveUserInfoFromStoreToCookies = () => {
@@ -92,7 +91,6 @@ const saveUserInfoFromCookiesToStore = () => {
 		user.id = userObj.id;
 		user.name = userObj.name;
 		user.email = userObj.email;
-		user.isAdmin = userObj.isAdmin;
 	}
 };
 

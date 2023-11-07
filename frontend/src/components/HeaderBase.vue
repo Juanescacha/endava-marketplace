@@ -1,9 +1,11 @@
 <script setup>
 	import { RouterLink } from "vue-router";
-	import { logoutUser } from "../utils/userSession";
-	import { useUserStore } from "../stores/user";
+	import { logoutUser } from "@/utils/userSession";
+	import { useUserStore } from "@/stores/user";
 	import ListBox from "./Inputs/ListBox.vue";
 	import SearchBarInput from "./Inputs/SearchBarInput.vue";
+	import LinkListItem from "@/components/Menus/LinkListItem.vue";
+
 	import {
 		BellIcon,
 		MagnifyingGlassIcon,
@@ -12,6 +14,7 @@
 		UserIcon,
 		CurrencyDollarIcon,
 		ArrowLeftOnRectangleIcon,
+		ShoppingBagIcon,
 	} from "@heroicons/vue/24/outline";
 	import { CreditCardIcon } from "@heroicons/vue/24/solid";
 
@@ -21,7 +24,7 @@
 
 <template>
 	<header
-		class="fixed top-0 z-50 flex w-full flex-wrap border-b bg-white/70 py-2.5 text-sm backdrop-blur-md sm:flex-nowrap sm:justify-start sm:py-4"
+		class="sticky top-0 z-50 flex w-full flex-wrap border-b bg-white/70 py-2.5 text-sm backdrop-blur-md sm:flex-nowrap sm:justify-start sm:py-4"
 	>
 		<nav
 			class="mx-auto flex w-full max-w-7xl basis-full items-center px-4 sm:px-6 lg:px-8"
@@ -80,12 +83,14 @@
 				<div class="flex flex-row items-center justify-end gap-2">
 					<button
 						type="button"
+						title="Notifications"
 						class="inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white/5 align-middle text-xs font-medium text-gray-700 transition-all hover:bg-gray-100/50 hover:shadow-md active:bg-gray-200/50"
 					>
 						<BellIcon class="h-5 w-5 text-current" />
 					</button>
 					<button
 						type="button"
+						title="Listings"
 						class="inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white/5 align-middle text-xs font-medium text-gray-700 transition-all hover:bg-gray-100/50 hover:shadow-md active:bg-gray-200/50"
 						data-hs-offcanvas="#hs-offcanvas-right"
 					>
@@ -122,52 +127,64 @@
 									{{ user.name }}
 								</p>
 							</div>
-							<div class="mt-2 py-2 first:pt-0 last:pb-0">
-								<a
-									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-									href="#"
-								>
-									<BellIcon
-										class="h-5 w-5 flex-none text-current"
-									/>
-									Notifications
-								</a>
-								<router-link
-									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-									to="/users/me/sales-history"
-								>
-									<CurrencyDollarIcon
-										class="h-5 w-5 flex-none text-current"
-									/>
-									My sales history
-								</router-link>
-								<a
-									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-									href="#"
-								>
-									<ListBulletIcon
-										class="h-5 w-5 flex-none text-current"
-									/>
-									Publications
-								</a>
-								<router-link
-									class="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-									to="/users/me/profile"
-								>
-									<UserIcon class="h-5 w-5 flex-none" />
-									Profile
-								</router-link>
-								<button
-									class="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-									type="button"
-									@click="logoutUser()"
-								>
-									<ArrowLeftOnRectangleIcon
-										class="h-5 w-5 flex-none text-current"
-									/>
-									Logout
-								</button>
-							</div>
+							<ul class="mt-2 py-2 first:pt-0 last:pb-0">
+								<li>
+									<link-list-item redirects-to="">
+										<BellIcon
+											class="h-5 w-5 flex-none text-current"
+										/>
+										Notifications
+									</link-list-item>
+								</li>
+								<li>
+									<link-list-item
+										redirects-to="/users/me/profile"
+									>
+										<UserIcon class="h-5 w-5 flex-none" />
+										Profile
+									</link-list-item>
+								</li>
+								<li>
+									<link-list-item redirects-to="">
+										<ListBulletIcon
+											class="h-5 w-5 flex-none text-current"
+										/>
+										Publications
+									</link-list-item>
+								</li>
+								<li>
+									<link-list-item
+										redirects-to="/users/me/sales-history"
+									>
+										<CurrencyDollarIcon
+											class="h-5 w-5 flex-none text-current"
+										/>
+										My sales history
+									</link-list-item>
+								</li>
+								<li>
+									<link-list-item
+										redirects-to="/users/me/purchase-history"
+									>
+										<ShoppingBagIcon
+											class="h-5 w-5 flex-none text-current"
+										/>
+										My purchases
+									</link-list-item>
+								</li>
+								<li>
+									<button
+										class="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+										type="button"
+										@click="logoutUser()"
+									>
+										<ArrowLeftOnRectangleIcon
+											class="h-5 w-5 flex-none text-current"
+										/>
+										Logout
+									</button>
+								</li>
+							</ul>
 						</div>
 					</div>
 				</div>

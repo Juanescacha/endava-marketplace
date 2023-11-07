@@ -230,3 +230,8 @@ export const getListingsSuggestions = async name => {
 	const url = `${getAPIURL()}/api/listings/suggestions?name=${name}`;
 	return await makeGetRequest(url);
 };
+
+export const isLogedUserAdmin = async () => {
+	const url = `${getAPIURL()}/api/endavans/isAdmin`;
+	return await makeGetRequest(url);
+};

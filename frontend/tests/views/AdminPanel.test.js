@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 import { createRouter, createWebHistory } from "vue-router";
-import UserDashboard from "@/views/UserDashboard.vue";
-import LinkListItem from "@/components/Menus/LinkListItem.vue";
 import { routes } from "@/router";
+import AdminPanel from "@/views/AdminPanel.vue";
+import LinkListItem from "@/components/Menus/LinkListItem.vue";
 
 const getRouterInstance = () =>
 	createRouter({
@@ -11,17 +11,28 @@ const getRouterInstance = () =>
 		routes,
 	});
 
-it("UserDashboard should mount", () => {
-	const wrapper = shallowMount(UserDashboard, {
-		global: { plugins: [getRouterInstance()] },
+describe("AdminPanel mount", () => {
+	let wrapper;
+	beforeEach(() => {
+		wrapper = shallowMount(AdminPanel, {
+			global: { plugins: [getRouterInstance()] },
+		});
 	});
-	expect(UserDashboard).toBeTruthy();
-	expect(wrapper.exists()).toBe(true);
-	wrapper.unmount();
+	afterEach(() => wrapper.unmount());
+
+	it("AdminPanel should mount", () => {
+		expect(AdminPanel).toBeTruthy();
+		expect(wrapper.exists()).toBe(true);
+	});
+
+	it("AdminPanel should call the useAdminUser composable", () => {
+		expect(wrapper.vm.userIsAdmin).toBe(false);
+		expect(wrapper.vm.setUserIsAdmin).toBeTruthy();
+	});
 });
 
-describe("UserDashboard HTML elements", () => {
-	const wrapper = shallowMount(UserDashboard, {
+describe("AdminPanel HTML elements", () => {
+	const wrapper = shallowMount(AdminPanel, {
 		global: { plugins: [getRouterInstance()] },
 	});
 
@@ -48,8 +59,8 @@ describe("UserDashboard HTML elements", () => {
 	wrapper.unmount();
 });
 
-describe("UserDashboard components", () => {
-	const wrapper = mount(UserDashboard, {
+describe("AdminPanel components", () => {
+	const wrapper = mount(AdminPanel, {
 		global: { plugins: [getRouterInstance()] },
 	});
 
@@ -57,11 +68,6 @@ describe("UserDashboard components", () => {
 	it("should have LinkListItem components", () => {
 		const linkListItems = wrapper.findAllComponents(LinkListItem);
 		expect(linkListItems.length).toBe(lis.length);
-	});
-
-	it("should have svg's coming from heroicons components", () => {
-		const svgs = wrapper.findAll("svg");
-		expect(svgs.length).toBe(lis.length);
 	});
 	wrapper.unmount();
 });

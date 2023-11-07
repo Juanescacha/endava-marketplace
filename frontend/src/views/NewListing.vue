@@ -127,7 +127,7 @@
 </script>
 
 <template>
-	<main class="mb-10 ml-8 mt-24">
+	<main class="mb-10 ml-8 mt-6">
 		<h1>Publish new product</h1>
 		<form
 			class="mx-10 my-5 grid w-3/4 grid-cols-2 gap-2"
