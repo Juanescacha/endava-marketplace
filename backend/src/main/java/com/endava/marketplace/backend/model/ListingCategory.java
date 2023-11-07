@@ -26,7 +26,7 @@ public class ListingCategory {
 
     @Column(columnDefinition = "boolean default true", nullable = false)
     @NotNull
-    private Boolean active;
+    private Boolean active = Boolean.TRUE;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
     private Set<Listing> listings;
