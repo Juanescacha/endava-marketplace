@@ -1,14 +1,17 @@
 package com.endava.marketplace.backend.controller;
 
+import com.endava.marketplace.backend.dto.ListingCategoryDTO;
 import com.endava.marketplace.backend.exception.BlankListingCategoryName;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
 import com.endava.marketplace.backend.service.ListingCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -27,12 +30,22 @@ public class ListingCategoryController {
     )
     @PostMapping()
     public ResponseEntity<Map<String, String>> postListingCategory(@RequestParam String name) throws ListingCategoryAlreadyExists, BlankListingCategoryName {
-        return ResponseEntity.ok(listingCategoryService.saveListingCategory(name));
+        return new ResponseEntity<>(listingCategoryService.saveListingCategory(name), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Gets all active listing categories",
+            description = "Gets all active listing categories that are saved in the database in ascending order",
+            tags = {"Listing Category"}
+    )
+    @GetMapping("/active")
+    public ResponseEntity<Set<ListingCategoryDTO>> getAllActiveListingCategories() {
+        return ResponseEntity.ok(listingCategoryService.fetchAllActiveListingCategories());
     }
 
     @Operation(
             summary = "Updates a Listing Category",
-            description = "Saves a Listing Category to the database if its not blank and it doesn't already exists in the database",
+            description = "Updates the name of an existing Listing Category. The new name cannot be blank and it cannot be the same as the old one",
             tags = {"Listing Category"}
     )
     @PatchMapping("/{id}/rename")

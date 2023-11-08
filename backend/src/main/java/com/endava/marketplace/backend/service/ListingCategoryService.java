@@ -1,7 +1,9 @@
 package com.endava.marketplace.backend.service;
 
+import com.endava.marketplace.backend.dto.ListingCategoryDTO;
 import com.endava.marketplace.backend.exception.BlankListingCategoryName;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
+import com.endava.marketplace.backend.mapper.ListingCategoryMapper;
 import com.endava.marketplace.backend.model.ListingCategory;
 import com.endava.marketplace.backend.repository.ListingCategoryRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -15,10 +17,14 @@ import java.util.stream.Collectors;
 public class ListingCategoryService {
     private final ListingCategoryRepository listingCategoryRepository;
 
+    private final ListingCategoryMapper listingCategoryMapper;
+
     public ListingCategoryService(
-            ListingCategoryRepository listingCategoryRepository
+            ListingCategoryRepository listingCategoryRepository,
+            ListingCategoryMapper listingCategoryMapper
     ) {
         this.listingCategoryRepository = listingCategoryRepository;
+        this.listingCategoryMapper = listingCategoryMapper;
     }
 
     public Map<String, String> saveListingCategory(String name) throws ListingCategoryAlreadyExists, BlankListingCategoryName {
@@ -44,6 +50,10 @@ public class ListingCategoryService {
         else {
             throw new BlankListingCategoryName("Listing Category name cannot be blank");
         }
+    }
+
+    public Set<ListingCategoryDTO> fetchAllActiveListingCategories() {
+        return listingCategoryMapper.toListingCategoryDTOSet(listingCategoryRepository.findAllByActiveIsTrueOrderByNameAsc());
     }
 
     @Transactional

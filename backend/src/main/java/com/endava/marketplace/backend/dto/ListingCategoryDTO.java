@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ListingCategoryDTO {
     private Long id;
+
     private String name;
 }
