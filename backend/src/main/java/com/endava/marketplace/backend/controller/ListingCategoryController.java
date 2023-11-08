@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.dto.ListingCategoryDTO;
+import com.endava.marketplace.backend.dto.SimpleListingCategoryDTO;
 import com.endava.marketplace.backend.exception.BlankListingCategoryName;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
 import com.endava.marketplace.backend.service.ListingCategoryService;
@@ -10,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -34,12 +35,22 @@ public class ListingCategoryController {
     }
 
     @Operation(
+            summary = "Gets all listing categories",
+            description = "Gets all listing categories that are saved in the database in ascending order",
+            tags = {"Listing Category"}
+    )
+    @GetMapping()
+    public ResponseEntity<List<ListingCategoryDTO>> getAllListingCategories() {
+        return ResponseEntity.ok(listingCategoryService.fetchAllListingCategories());
+    }
+
+    @Operation(
             summary = "Gets all active listing categories",
             description = "Gets all active listing categories that are saved in the database in ascending order",
             tags = {"Listing Category"}
     )
     @GetMapping("/active")
-    public ResponseEntity<Set<ListingCategoryDTO>> getAllActiveListingCategories() {
+    public ResponseEntity<List<SimpleListingCategoryDTO>> getAllActiveListingCategories() {
         return ResponseEntity.ok(listingCategoryService.fetchAllActiveListingCategories());
     }
 

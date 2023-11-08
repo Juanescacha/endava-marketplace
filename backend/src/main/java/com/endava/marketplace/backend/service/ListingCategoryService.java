@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.service;
 
 import com.endava.marketplace.backend.dto.ListingCategoryDTO;
+import com.endava.marketplace.backend.dto.SimpleListingCategoryDTO;
 import com.endava.marketplace.backend.exception.BlankListingCategoryName;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
 import com.endava.marketplace.backend.mapper.ListingCategoryMapper;
@@ -52,8 +53,12 @@ public class ListingCategoryService {
         }
     }
 
-    public Set<ListingCategoryDTO> fetchAllActiveListingCategories() {
-        return listingCategoryMapper.toListingCategoryDTOSet(listingCategoryRepository.findAllByActiveIsTrueOrderByNameAsc());
+    public List<ListingCategoryDTO> fetchAllListingCategories() {
+        return listingCategoryMapper.toListingCategoryDTOList(listingCategoryRepository.findAllByOrderByNameAsc());
+    }
+
+    public List<SimpleListingCategoryDTO> fetchAllActiveListingCategories() {
+        return listingCategoryMapper.toSimpleListingCategoryDTOList(listingCategoryRepository.findAllByActiveIsTrueOrderByNameAsc());
     }
 
     @Transactional
@@ -62,14 +67,11 @@ public class ListingCategoryService {
 
         Optional<ListingCategory> foundListingCategory = listingCategoryRepository.findById(id);
 
-
         if(foundListingCategory.isPresent()) {
             ListingCategory listingCategory = foundListingCategory.get();
             String oldListingCategoryName = listingCategory.getName();
-
             if(!name.isEmpty()) {
                 String newListingCategoryName = capitalizeListingCategoryName(name);
-
                 if(listingCategoryRepository.findAll()
                         .stream()
                         .noneMatch(lc -> lc.getName().equals(newListingCategoryName))
@@ -77,7 +79,6 @@ public class ListingCategoryService {
                     if(!newListingCategoryName.equals(oldListingCategoryName)) {
                         listingCategory.setName(newListingCategoryName);
                         listingCategoryRepository.save(listingCategory);
-
                         Map<String, String> success = new HashMap<>();
                         success.put(
                                 "success",

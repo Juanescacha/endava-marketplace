@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListingCategoryDTO {
+public class SimpleListingCategoryDTO {
     private Long id;
 
     private String name;
-
-    private Boolean active;
 }
