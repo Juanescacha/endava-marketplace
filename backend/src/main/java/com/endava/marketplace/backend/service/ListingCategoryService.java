@@ -1,11 +1,12 @@
 package com.endava.marketplace.backend.service;
 
-import com.endava.marketplace.backend.exception.BlankListingCategory;
+import com.endava.marketplace.backend.exception.BlankListingCategoryName;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
 import com.endava.marketplace.backend.model.ListingCategory;
 import com.endava.marketplace.backend.repository.ListingCategoryRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,15 +21,13 @@ public class ListingCategoryService {
         this.listingCategoryRepository = listingCategoryRepository;
     }
 
-    public Map<String, String> saveListingCategory(String name) throws ListingCategoryAlreadyExists, BlankListingCategory {
+    public Map<String, String> saveListingCategory(String name) throws ListingCategoryAlreadyExists, BlankListingCategoryName {
         if(!name.isEmpty()) {
-            String categoryName = Arrays.stream(name.split("\\s+"))
-                    .map(StringUtils::capitalize)
-                    .collect(Collectors.joining(" "));
+            String categoryName = capitalizeListingCategoryName(name);
 
             if(listingCategoryRepository.findAll()
                     .stream()
-                    .noneMatch(lc -> lc.getName().equalsIgnoreCase(categoryName))
+                    .noneMatch(lc -> lc.getName().equals(categoryName))
             ) {
                 ListingCategory listingCategory = new ListingCategory();
                 listingCategory.setName((categoryName));
@@ -43,16 +42,50 @@ public class ListingCategoryService {
             }
         }
         else {
-            throw new BlankListingCategory("Listing Category name cannot be blank");
+            throw new BlankListingCategoryName("Listing Category name cannot be blank");
         }
     }
 
-    public Optional<ListingCategory> findListingCategoryById(Long listingCategoryId) {
-        return listingCategoryRepository.findById(listingCategoryId);
+    @Transactional
+    public Map<String, String> updateListingCategoryName(Long id, String name) throws
+            NullPointerException, BlankListingCategoryName, ListingCategoryAlreadyExists {
+
+        Optional<ListingCategory> foundListingCategory = listingCategoryRepository.findById(id);
+
+        if(foundListingCategory.isPresent()) {
+            ListingCategory listingCategory = foundListingCategory.get();
+            String oldListingCategoryName = listingCategory.getName();
+
+            if(!name.isEmpty()) {
+                String newListingCategoryName = capitalizeListingCategoryName(name);
+
+                if(!newListingCategoryName.equals(oldListingCategoryName)) {
+                    listingCategory.setName(newListingCategoryName);
+                    listingCategoryRepository.save(listingCategory);
+
+                    Map<String, String> success = new HashMap<>();
+                    success.put(
+                            "success",
+                            "Listing Category with name '" + oldListingCategoryName + "' was changed to '" + newListingCategoryName + "'"
+                    );
+                    return success;
+                }
+                else {
+                    throw new ListingCategoryAlreadyExists("Listing Category with id " + id + " is already named " + newListingCategoryName);
+                }
+            }
+            else {
+                throw new BlankListingCategoryName("New Listing Category name cannot be blank");
+            }
+        }
+        else {
+            throw new NullPointerException("Listing Category with id " + id + " wasn't found");
+        }
     }
 
-
-    public void deleteListingCategoryById(Long listingCategoryId) {
-        listingCategoryRepository.deleteById(listingCategoryId);
+    private String capitalizeListingCategoryName(String name) {
+        return Arrays.stream(name.toLowerCase().split("\\s+"))
+                .map(StringUtils::capitalize)
+                .collect(Collectors.joining(" "));
     }
 }

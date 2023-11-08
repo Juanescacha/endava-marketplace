@@ -1,5 +1,9 @@
 logging:
   level:
+    org:
+      springframework:
+        transaction:
+          interceptor: trace
     sql: debug
 
 server:
