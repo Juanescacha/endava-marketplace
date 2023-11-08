@@ -4,6 +4,12 @@ import com.endava.marketplace.backend.dto.EndavanDTO;
 import com.endava.marketplace.backend.mapper.EndavanMapper;
 import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.repository.EndavanRepository;
+import com.endava.marketplace.backend.specification.EndavanSpecification;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -80,6 +86,23 @@ public class EndavanService {
             return body;
         }
         else return null;
+    }
+
+    public Page<Endavan> findEndavans(String name, String email, Integer page) {
+        int actualPage = (page == null) ? 0: page - 1;
+        Sort.Order orderByName = new Sort.Order(Sort.Direction.ASC, "name");
+        Pageable pageWithFifteenElements = PageRequest.of(actualPage, 15, Sort.by(orderByName));
+
+        return endavanRepository.findAll((root, query, builder) -> {
+            Predicate predicate = builder.conjunction();
+            if (name != null && !name.isEmpty()) {
+                predicate = builder.and(predicate, EndavanSpecification.withName(name).toPredicate(root, query, builder));
+            }
+            if (email != null && !email.isEmpty()) {
+                predicate = builder.and(predicate, EndavanSpecification.withEmail(email).toPredicate(root, query, builder));
+            }
+            return predicate;
+        }, pageWithFifteenElements);
     }
 
     private Endavan getEndavanInfo(){

@@ -1,10 +1,12 @@
 package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.dto.EndavanDTO;
+import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.service.EndavanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
@@ -33,6 +35,21 @@ public class EndavanController {
     @PostMapping()
     public EndavanDTO createUser(){
         return endavanService.saveEndavan();
+    }
+
+    @Operation(
+            summary = "Filtered search for endavans",
+            description = "Gets all the lndavans according to the provided parameters. " +
+                    "The search can be done by name, email or both and contains multiple pages." +
+                    "The search can also be done without parameters to get all the listings in the database.",
+            tags = {"Endavan"}
+    )
+    @GetMapping("/search")
+    public Page<Endavan> getListingByCategoryAndName(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer page){
+        return endavanService.findEndavans(name, email, page);
     }
 
     @Operation(
