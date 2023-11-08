@@ -62,6 +62,7 @@ public class ListingCategoryService {
 
         Optional<ListingCategory> foundListingCategory = listingCategoryRepository.findById(id);
 
+
         if(foundListingCategory.isPresent()) {
             ListingCategory listingCategory = foundListingCategory.get();
             String oldListingCategoryName = listingCategory.getName();
@@ -69,19 +70,27 @@ public class ListingCategoryService {
             if(!name.isEmpty()) {
                 String newListingCategoryName = capitalizeListingCategoryName(name);
 
-                if(!newListingCategoryName.equals(oldListingCategoryName)) {
-                    listingCategory.setName(newListingCategoryName);
-                    listingCategoryRepository.save(listingCategory);
+                if(listingCategoryRepository.findAll()
+                        .stream()
+                        .noneMatch(lc -> lc.getName().equals(newListingCategoryName))
+                ) {
+                    if(!newListingCategoryName.equals(oldListingCategoryName)) {
+                        listingCategory.setName(newListingCategoryName);
+                        listingCategoryRepository.save(listingCategory);
 
-                    Map<String, String> success = new HashMap<>();
-                    success.put(
-                            "success",
-                            "Listing Category with name '" + oldListingCategoryName + "' was changed to '" + newListingCategoryName + "'"
-                    );
-                    return success;
+                        Map<String, String> success = new HashMap<>();
+                        success.put(
+                                "success",
+                                "Listing Category with name '" + oldListingCategoryName + "' was changed to '" + newListingCategoryName + "'"
+                        );
+                        return success;
+                    }
+                    else {
+                        throw new ListingCategoryAlreadyExists("Listing Category with id " + id + " is already named '" + newListingCategoryName + "'");
+                    }
                 }
                 else {
-                    throw new ListingCategoryAlreadyExists("Listing Category with id " + id + " is already named " + newListingCategoryName);
+                    throw new ListingCategoryAlreadyExists("There's already a Listing Category named '" + newListingCategoryName + "'");
                 }
             }
             else {
