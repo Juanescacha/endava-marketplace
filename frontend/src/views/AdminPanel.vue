@@ -16,10 +16,10 @@
 	});
 
 	const getColorsForLi = pageName => {
-		if (route.path.includes(pageName)) {
-			return "text-white bg-endava-500";
+		if (typeof pageName === "string" && route.path.includes(pageName)) {
+			return "text-white bg-endava-400";
 		}
-		return "text-gray-800 bg-gray-100 hover:bg-gray-200 active:bg-gray-300";
+		return "text-gray-800 bg-gray-200 hover:bg-gray-300 active:bg-gray-400";
 	};
 
 	const PAGES = [
@@ -36,7 +36,7 @@
 			<li
 				v-for="page in PAGES"
 				:key="page.name"
-				class="border-r-2"
+				class="border-r border-gray-400"
 			>
 				<link-list-item
 					:redirects-to="page.link"

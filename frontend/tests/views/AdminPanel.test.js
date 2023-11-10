@@ -71,3 +71,29 @@ describe("AdminPanel components", () => {
 	});
 	wrapper.unmount();
 });
+
+describe("AdminPanel getColorsForLi", () => {
+	const wrapper = mount(AdminPanel, {
+		global: { plugins: [getRouterInstance()] },
+	});
+
+	it("should return gray classes when the route doesn't include the passed page name", () => {
+		expect(wrapper.vm.getColorsForLi("foo")).toContain("gray");
+	});
+
+	it("should return gray classes when passed undefined", () => {
+		expect(wrapper.vm.getColorsForLi()).toContain("gray");
+	});
+
+	it("should return gray classes when passed other types of values", () => {
+		expect(wrapper.vm.getColorsForLi(null)).toContain("gray");
+		expect(wrapper.vm.getColorsForLi([])).toContain("gray");
+		expect(wrapper.vm.getColorsForLi({})).toContain("gray");
+		expect(wrapper.vm.getColorsForLi(true)).toContain("gray");
+	});
+
+	it("should return endava class when the route does include the passed page name", () => {
+		expect(wrapper.vm.getColorsForLi("/")).toContain("endava");
+	});
+	wrapper.unmount();
+});

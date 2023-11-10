@@ -10,6 +10,7 @@ import SalesHistory from "@/views/SalesHistory.vue";
 import PurchaseHistory from "@/views/PurchaseHistory.vue";
 import PurchasedItem from "@/views/PurchasedItem.vue";
 import AdminPanel from "@/views/AdminPanel.vue";
+import UserManagement from "@/views/UserManagement.vue";
 import NotFoundPage from "@/views/NotFoundPage.vue";
 import {
 	userIsLogedIn,
@@ -80,7 +81,7 @@ const routes = [
 			},
 			{
 				path: "users",
-				component: UserProfile,
+				component: UserManagement,
 				name: "Manage users",
 			},
 			{

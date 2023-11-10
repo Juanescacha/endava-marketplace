@@ -235,3 +235,34 @@ export const isLogedUserAdmin = async () => {
 	const url = `${getAPIURL()}/api/endavans/isAdmin`;
 	return await makeGetRequest(url);
 };
+
+export const patchAdminRole = async (id, isAdmin) => {
+	const numId = Number(id);
+	if (Number.isNaN(numId) || numId < 1 || typeof isAdmin !== "boolean") {
+		return { error: true };
+	}
+	const url = `${getAPIURL()}/api/endavans/admin?endavanId=${id}&isAdmin=${isAdmin}`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+
+	try {
+		const { status } = await axios.patch(url, {}, config);
+		if (status !== 200) {
+			return {
+				msg: "An internal error in the server has ocurred",
+				error: true,
+			};
+		}
+		return { msg: "Succesful operaton" };
+	} catch (error) {
+		handleCatch(error);
+	}
+};
+
+export const getUsers = async (page = 1, filters = {}) => {
+	let url = `${getAPIURL()}/api/endavans/search`;
+	const auxFilters = { page, ...filters };
+	url = addParamsToURL(url, auxFilters);
+	return await makeGetRequest(url);
+};

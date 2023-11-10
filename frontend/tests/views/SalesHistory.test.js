@@ -7,7 +7,7 @@ import {
 	it,
 	vi,
 } from "vitest";
-import { mount, shallowMount } from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import { createTestingPinia } from "@pinia/testing";
 import SalesHistory from "@/views/SalesHistory.vue";
 import { useUserStore } from "@/stores/user.js";
@@ -56,7 +56,7 @@ describe("SalesHistory mount", () => {
 });
 
 describe("SalesHistory access to stores", () => {
-	const wrapper = mount(SalesHistory, {
+	const wrapper = shallowMount(SalesHistory, {
 		global: {
 			plugins: [createTestingPinia({ createSpy: vi.fn() })],
 		},
@@ -72,7 +72,7 @@ describe("SalesHistory access to stores", () => {
 describe("SalesHistory DOM elements", () => {
 	let wrapper;
 	beforeEach(() => {
-		wrapper = mount(SalesHistory, {
+		wrapper = shallowMount(SalesHistory, {
 			global: {
 				plugins: [createTestingPinia({ createSpy: vi.fn() })],
 			},

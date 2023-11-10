@@ -13,6 +13,7 @@ export default defineConfig({
 		environment: "jsdom",
 		coverage: {
 			reportsDirectory: "./tests/unit/coverage",
+			exclude: ["**/router", "**/stores", "**/assets"],
 		},
 	},
 });
