@@ -3,6 +3,7 @@ package com.endava.marketplace.backend.controller;
 import com.endava.marketplace.backend.dto.ListingCategoryDTO;
 import com.endava.marketplace.backend.dto.SimpleListingCategoryDTO;
 import com.endava.marketplace.backend.exception.BlankListingCategoryName;
+import com.endava.marketplace.backend.exception.ListingCategoryAlreadyActive;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
 import com.endava.marketplace.backend.service.ListingCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,5 +64,27 @@ public class ListingCategoryController {
     public ResponseEntity<Map<String, String>> patchListingCategoryName(@PathVariable Long id, @RequestParam String name)
             throws NullPointerException, BlankListingCategoryName, ListingCategoryAlreadyExists {
         return ResponseEntity.ok(listingCategoryService.updateListingCategoryName(id, name));
+    }
+
+    @Operation(
+            summary = "Enables a Listing Category",
+            description = "Sets the active value of a given Listing Category to true. If a Listing has this Category, its Status is set to Available",
+            tags = {"Listing Category"}
+    )
+    @PatchMapping("/{id}/enable")
+    public ResponseEntity<Map<String, String>> enableListingCategory(@PathVariable Long id)
+            throws NullPointerException, ListingCategoryAlreadyActive {
+        return ResponseEntity.ok(listingCategoryService.updateListingCategoryActiveStatus(id, true));
+    }
+
+    @Operation(
+            summary = "Disables a Listing Category",
+            description = "Sets the active value of a given Listing Category to false. If a Listing has this Category, its Status is set to Blocked",
+            tags = {"Listing Category"}
+    )
+    @PatchMapping("/{id}/disable")
+    public ResponseEntity<Map<String, String>> disableListingCategory(@PathVariable Long id)
+            throws NullPointerException, ListingCategoryAlreadyActive {
+        return ResponseEntity.ok(listingCategoryService.updateListingCategoryActiveStatus(id, false));
     }
 }

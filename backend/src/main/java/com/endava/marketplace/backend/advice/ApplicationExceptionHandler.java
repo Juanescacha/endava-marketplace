@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.advice;
 
 import com.endava.marketplace.backend.exception.BlankListingCategoryName;
+import com.endava.marketplace.backend.exception.ListingCategoryAlreadyActive;
 import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,14 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ExceptionHandler(value = {ListingCategoryAlreadyExists.class})
     public Map<String, String> listingCategoryAlreadyExists(ListingCategoryAlreadyExists ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", ex.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {ListingCategoryAlreadyActive.class})
+    public Map<String, String> listingCategoryAlreadyActive(ListingCategoryAlreadyActive ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", ex.getMessage());
         return errorMap;

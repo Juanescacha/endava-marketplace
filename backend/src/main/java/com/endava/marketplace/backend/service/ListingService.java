@@ -6,10 +6,12 @@ import com.endava.marketplace.backend.dto.ListingWithImagesDTO;
 import com.endava.marketplace.backend.dto.ListingDTO;
 import com.endava.marketplace.backend.mapper.ListingMapper;
 import com.endava.marketplace.backend.model.Listing;
+import com.endava.marketplace.backend.model.ListingCategory;
 import com.endava.marketplace.backend.model.ListingStatus;
 import com.endava.marketplace.backend.repository.ListingRepository;
 import com.endava.marketplace.backend.specification.ListingSpecification;
 import jakarta.persistence.criteria.Predicate;
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import java.util.Set;
 public class ListingService {
     private final ListingRepository listingRepository;
 
+    @Getter
     private final ListingStatusService listingStatusService;
 
     private final ListingMapper listingMapper;
@@ -46,6 +49,14 @@ public class ListingService {
 
     public ListingDTO saveListing(Listing listing) {
         return listingMapper.toListingDTO(listingRepository.save(listing));
+    }
+
+    public void saveListing2(Listing listing) {
+        listingRepository.save(listing);
+    }
+
+    public List<Listing> findAllListingsByCategory(ListingCategory listingCategory) {
+        return listingRepository.findAllByCategory(listingCategory);
     }
 
     public ListingWithImagesDTO findListingById(Long listingId) {
