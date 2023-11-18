@@ -1,6 +1,7 @@
 <script setup>
+	import { onBeforeMount } from "vue";
 	import { RouterLink } from "vue-router";
-	import { logoutUser } from "@/utils/userSession";
+	import { getProfileImage } from "../utils/axios";
 	import { useUserStore } from "@/stores/user";
 	import ListBox from "./Inputs/ListBox.vue";
 	import SearchBarInput from "./Inputs/SearchBarInput.vue";
@@ -15,11 +16,29 @@
 		CurrencyDollarIcon,
 		ArrowLeftOnRectangleIcon,
 		ShoppingBagIcon,
+		AdjustmentsHorizontalIcon,
 	} from "@heroicons/vue/24/outline";
+
 	import { CreditCardIcon } from "@heroicons/vue/24/solid";
 
 	const user = useUserStore();
-	// const categoryInput = ref("");
+
+	onBeforeMount(async () => {
+		const response = await getProfileImage();
+		if (response.error) {
+			// error
+		} else {
+			let image = btoa(
+				new Uint8Array(response.data).reduce(
+					(data, byte) => data + String.fromCharCode(byte),
+					""
+				)
+			);
+			user.image = `data:${response.headers[
+				"content-type"
+			].toLowerCase()};base64,${image}`;
+		}
+	});
 </script>
 
 <template>
@@ -108,13 +127,13 @@
 						>
 							<img
 								class="inline-block h-[2.375rem] w-[2.375rem] rounded-full"
-								src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80"
+								:src="user.image"
 								alt="Image Description"
 							/>
 						</button>
 
 						<div
-							class="hs-dropdown-menu duration z-10 hidden min-w-[15rem] rounded-lg bg-white p-2 opacity-0 shadow-md transition-[opacity,margin] hs-dropdown-open:opacity-100"
+							class="hs-dropdown-menu duration z-10 hidden min-w-[15rem] rounded-lg bg-white p-2 opacity-0 shadow-xl transition-[opacity,margin] hs-dropdown-open:opacity-100"
 							aria-labelledby="hs-dropdown-with-header"
 						>
 							<div
@@ -173,16 +192,21 @@
 									</link-list-item>
 								</li>
 								<li>
-									<button
-										class="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-										type="button"
-										@click="logoutUser()"
+									<link-list-item
+										redirects-to="/admin-panel"
+										v-if="user.isAdmin"
 									>
+										<AdjustmentsHorizontalIcon
+											class="h-5 w-5 flex-none text-current"
+										/>
+										Admin Dashboard
+									</link-list-item>
+									<link-list-item redirects-to="/logout">
 										<ArrowLeftOnRectangleIcon
 											class="h-5 w-5 flex-none text-current"
 										/>
 										Logout
-									</button>
+									</link-list-item>
 								</li>
 							</ul>
 						</div>
@@ -192,3 +216,5 @@
 		</nav>
 	</header>
 </template>
+
+<!-- class="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200" -->

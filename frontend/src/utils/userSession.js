@@ -3,6 +3,9 @@ import { useUserStore } from "@/stores/user";
 import { createCookie, getCookie, deleteCookie } from "@/utils/cookies";
 import { postUser } from "@/utils/axios";
 import { addParamsToURL } from "./strings";
+import useAdminUser from "@/composables/useAdminUser";
+
+const { userIsAdmin, setUserIsAdmin } = useAdminUser();
 
 const LOGIN_TOKEN_NAME = "access_token";
 const USER_COOKIE_NAME = "user";
@@ -61,6 +64,9 @@ const saveUserInfoFromServerToStore = async () => {
 	user.id = response.id;
 	user.name = response.name;
 	user.email = response.email;
+
+	await setUserIsAdmin();
+	user.isAdmin = userIsAdmin.value;
 };
 
 const saveUserInfoFromStoreToCookies = () => {
@@ -91,6 +97,7 @@ const saveUserInfoFromCookiesToStore = () => {
 		user.id = userObj.id;
 		user.name = userObj.name;
 		user.email = userObj.email;
+		user.isAdmin = userObj.isAdmin;
 	}
 };
 
@@ -102,7 +109,6 @@ const logoutUser = () => {
 	const user = useUserStore();
 	user.$reset();
 	deleteCookie(LOGIN_TOKEN_NAME);
-	window.location.reload();
 };
 
 export {

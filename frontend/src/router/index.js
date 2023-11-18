@@ -6,18 +6,21 @@ import ListingDetail from "@/views/ListingDetail.vue";
 import NewListing from "@/views/NewListing.vue";
 import UserDashboard from "@/views/UserDashboard.vue";
 import UserProfile from "@/views/UserProfile.vue";
+import CategoriesManagement from "@/views/CategoriesManagement.vue";
 import SalesHistory from "@/views/SalesHistory.vue";
 import PurchaseHistory from "@/views/PurchaseHistory.vue";
 import PurchasedItem from "@/views/PurchasedItem.vue";
 import AdminPanel from "@/views/AdminPanel.vue";
 import UserManagement from "@/views/UserManagement.vue";
 import NotFoundPage from "@/views/NotFoundPage.vue";
+import LogoutPage from "@/views/LogoutPage.vue";
 import {
 	userIsLogedIn,
 	saveUserInfoFromServerToStore,
 	saveUserInfoFromStoreToCookies,
 	saveUserInfoFromCookiesToStore,
 	userInfoIsInCookies,
+	logoutUser,
 } from "@/utils/userSession";
 import { useUserStore } from "@/stores/user";
 
@@ -31,6 +34,14 @@ const routes = [
 		path: "/login",
 		component: Login,
 		name: "Login",
+	},
+	{
+		path: "/logout",
+		component: LogoutPage,
+		name: "Logout",
+		beforeEnter: (to, from) => {
+			logoutUser();
+		},
 	},
 	{
 		path: "/listings/:id",
@@ -86,7 +97,7 @@ const routes = [
 			},
 			{
 				path: "categories",
-				component: UserProfile,
+				component: CategoriesManagement,
 				name: "Manage categories",
 			},
 		],
@@ -114,7 +125,7 @@ router.beforeEach((to, from, next) => {
 		else saveUserInfoFromServerToStore();
 	}
 	const isAuthenticated = userIsLogedIn();
-	if (!isAuthenticated && to.name !== "Login") {
+	if (!isAuthenticated && to.name !== "Login" && to.name !== "Logout") {
 		next({ name: "Login" });
 	} else if (to.name == "Login" && isAuthenticated) {
 		next({ name: "MainPage" });

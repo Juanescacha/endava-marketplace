@@ -1,16 +1,16 @@
 <script setup>
 	import { onBeforeMount } from "vue";
 	import { useRoute, useRouter } from "vue-router";
-	import useAdminUser from "@/composables/useAdminUser";
 	import LinkListItem from "@/components/Menus/LinkListItem.vue";
+	import { useUserStore } from "@/stores/user";
 
 	const route = useRoute();
 	const router = useRouter();
-	const { userIsAdmin, setUserIsAdmin } = useAdminUser();
 
-	onBeforeMount(async () => {
-		await setUserIsAdmin();
-		if (!userIsAdmin.value) {
+	const user = useUserStore();
+
+	onBeforeMount(() => {
+		if (!user.isAdmin) {
 			router.push("/");
 		}
 	});
@@ -32,11 +32,10 @@
 <template>
 	<h1 class="my-4 text-center">Admin panel</h1>
 	<nav>
-		<ul class="grid grid-cols-3">
+		<ul class="mx-10 grid grid-cols-3 gap-3">
 			<li
 				v-for="page in PAGES"
 				:key="page.name"
-				class="border-r border-gray-400"
 			>
 				<link-list-item
 					:redirects-to="page.link"

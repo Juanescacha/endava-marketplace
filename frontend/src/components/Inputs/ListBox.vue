@@ -1,5 +1,7 @@
 <script setup>
-	import { ref } from "vue";
+	import { ref, watch } from "vue";
+	import { useProductStore } from "../../stores/products";
+	import { getListingsSuggestions } from "../../utils/axios";
 	import {
 		Listbox,
 		ListboxLabel,
@@ -9,13 +11,28 @@
 	} from "@headlessui/vue";
 	import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 
+	const productsList = useProductStore();
 	const options = [
-		{ name: "Categories" },
-		{ name: "Clothes" },
-		{ name: "Technology" },
-		{ name: "Vehicles" },
+		{ name: "Categories", id: 0 },
+		{ name: "Technology", id: 1 },
+		{ name: "Kids", id: 2 },
+		{ name: "Home Appliances", id: 3 },
+		{ name: "Events", id: 4 },
+		{ name: "Books", id: 5 },
 	];
 	const selectedOption = ref(options[0]);
+
+	const categorySearch = async () => {
+		const response = await getListingsSuggestions(selectedOption.value.id);
+		if (response.error) {
+		} else {
+			productsList.update(response.data.content);
+		}
+	};
+
+	watch(selectedOption, () => {
+		categorySearch();
+	});
 </script>
 
 <template>

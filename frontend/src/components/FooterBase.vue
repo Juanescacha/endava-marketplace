@@ -6,7 +6,7 @@
 </script>
 
 <template>
-	<footer class="bottom-0 mx-auto mt-20 w-full px-4 py-5 sm:px-6 lg:px-8">
+	<footer class="mx-auto mt-auto w-full px-4 py-5 sm:px-6 lg:px-8">
 		<div class="text-center">
 			<div class="mt-3">
 				<p class="text-gray-500">We're part of the Endava Family.</p>

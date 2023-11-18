@@ -8,13 +8,13 @@
 </script>
 
 <template>
-	<table class="w-full">
+	<table class="mx-auto table-auto">
 		<thead class="border-b-4 border-gray-900">
 			<tr>
 				<th
 					v-for="column in columns"
 					:key="column"
-					class="text-left"
+					class="px-4 py-2 text-center"
 				>
 					{{ column }}
 				</th>

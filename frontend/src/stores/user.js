@@ -5,5 +5,7 @@ export const useUserStore = defineStore("user", {
 		id: 0,
 		name: "",
 		email: "",
+		image: "",
+		isAdmin: false,
 	}),
 });

@@ -6,12 +6,17 @@
 
 	const $route = useRoute();
 	const show = computed(
-		() => $route.path !== "/login" && $route.path !== "/404"
+		() =>
+			$route.path !== "/login" &&
+			$route.path !== "/404" &&
+			$route.path !== "/logout"
 	);
 </script>
 
 <template>
-	<Header v-if="show" />
-	<RouterView />
-	<Footer v-if="show" />
+	<div class="flex min-h-screen flex-col">
+		<Header v-if="show" />
+		<RouterView />
+		<Footer v-if="show" />
+	</div>
 </template>

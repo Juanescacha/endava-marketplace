@@ -69,11 +69,10 @@
 			<tr
 				v-for="user in users"
 				:key="user.id"
-				class="h-12"
 			>
-				<td class="font-normal">{{ user.name }}</td>
-				<td class="font-normal">{{ user.email }}</td>
-				<td>
+				<td class="px-4 py-2 font-normal">{{ user.name }}</td>
+				<td class="px-4 py-2 font-normal">{{ user.email }}</td>
+				<td class="px-4 py-2">
 					<input
 						type="checkbox"
 						:id="`${user.email}-admin-checkbox`"

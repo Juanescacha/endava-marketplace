@@ -266,3 +266,87 @@ export const getUsers = async (page = 1, filters = {}) => {
 	url = addParamsToURL(url, auxFilters);
 	return await makeGetRequest(url);
 };
+
+export const getListingsByCategory = async id => {
+	const url = `${getAPIURL()}/api/listings/search/get?category=${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getProfileImage = async id => {
+	const url = `${getAPIURL()}/api/endavans/picture`;
+	try {
+		const config = {
+			headers: getHeadersForRequest(),
+			responseType: "arraybuffer",
+		};
+
+		const response = await axios.get(url, config);
+		return response;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+// CATEGORIES
+
+export const getAllCategories = async () => {
+	const url = `${getAPIURL()}/api/categories`;
+	return await makeGetRequest(url);
+};
+
+export const getActiveCategories = async () => {
+	const url = `${getAPIURL()}/api/categories/active`;
+	return await makeGetRequest(url);
+};
+
+export const postCategory = async name => {
+	const url = `${getAPIURL()}/api/categories?name=${name}`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+	try {
+		const response = await axios.post(url, {}, config);
+		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+export const patchCategoryName = async (id, name) => {
+	const url = `${getAPIURL()}/api/categories/${id}/rename?name=${name}`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+	try {
+		const response = await axios.patch(url, {}, config);
+		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+export const patchEnableCategory = async id => {
+	const url = `${getAPIURL()}/api/categories/${id}/enable`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+	try {
+		const response = await axios.patch(url, {}, config);
+		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+export const patchDisableCategory = async id => {
+	const url = `${getAPIURL()}/api/categories/${id}/disable`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+	try {
+		const response = await axios.patch(url, {}, config);
+		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
