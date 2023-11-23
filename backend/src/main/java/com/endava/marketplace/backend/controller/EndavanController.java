@@ -1,13 +1,14 @@
 package com.endava.marketplace.backend.controller;
 
+import com.endava.marketplace.backend.dto.EndavanAdminDTO;
 import com.endava.marketplace.backend.dto.EndavanDTO;
-import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.service.EndavanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.*;
@@ -33,23 +34,23 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @PostMapping()
-    public EndavanDTO createUser(){
-        return endavanService.saveEndavan();
+    public ResponseEntity<EndavanDTO> createUser(){
+        return ResponseEntity.ok(endavanService.saveEndavan());
     }
 
     @Operation(
             summary = "Filtered search for endavans",
-            description = "Gets all the lndavans according to the provided parameters. " +
+            description = "Gets all the endavans according to the provided parameters. " +
                     "The search can be done by name, email or both and contains multiple pages." +
                     "The search can also be done without parameters to get all the listings in the database.",
             tags = {"Endavan"}
     )
     @GetMapping("/search")
-    public Page<Endavan> getListingByCategoryAndName(
+    public ResponseEntity<Page<EndavanAdminDTO>> getEndavanByNameAndEmailDTO(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Integer page){
-        return endavanService.findEndavans(name, email, page);
+        return ResponseEntity.ok(endavanService.findEndavans(name, email, page));
     }
 
     @Operation(
@@ -58,8 +59,8 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @GetMapping("/{id}")
-    public EndavanDTO getEndavanById(@PathVariable Long id){
-        return endavanService.findEndavanById(id);
+    public ResponseEntity<EndavanDTO> getEndavanById(@PathVariable Long id) {
+        return ResponseEntity.ok(endavanService.findEndavanById(id));
     }
 
     @Operation(
@@ -91,8 +92,8 @@ public class EndavanController {
             tags = {"Endavan"}
     )
     @PatchMapping("/admin")
-    public void updateAdminRole(@RequestParam Long endavanId, @RequestParam Boolean isAdmin){
-        endavanService.updateAdminRole(endavanId, isAdmin);
+    public EndavanAdminDTO updateAdminRole(@RequestParam Long endavanId, @RequestParam  Boolean admin) {
+        return endavanService.updateAdminRole(endavanId, admin);
     }
 
     @Operation(
@@ -100,8 +101,8 @@ public class EndavanController {
             description = "Checks if the actual user has admin privileges",
             tags = {"Endavan"}
     )
-    @GetMapping("/isAdmin")
-    public Boolean checkAdminRole(){
-        return endavanService.checkAdminRole();
+    @GetMapping("/check-admin")
+    public ResponseEntity<Boolean> checkAdminRole(){
+        return ResponseEntity.ok(endavanService.checkAdminRole());
     }
 }

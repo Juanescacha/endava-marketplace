@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,15 +22,17 @@ public class Endavan {
     private Long id;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "Name can't be null")
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
     @Column(unique = true, nullable = false)
-    @NotNull
+    @NotNull(message = "Email can't be null")
+    @NotBlank(message = "Email is mandatory")
     private String email;
 
     @Column(columnDefinition = "boolean default false", nullable = false)
-    @NotNull
+    @NotNull(message = "Admin flag can't be null")
     private Boolean admin;
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)

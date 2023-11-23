@@ -5,22 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaleDTO {
+public class NewSaleRequestDTO {
     private Long id;
 
-    private EndavanDTO buyer;
+    private Long buyer_id;
 
-    private ListingDTO listing;
-
-    private String status;
-
-    private LocalDate date;
+    private Long listing_id;
 
     private Integer quantity;
 }

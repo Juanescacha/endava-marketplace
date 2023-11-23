@@ -8,6 +8,7 @@ import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import jakarta.annotation.PostConstruct;
+import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class StorageClient {
@@ -37,6 +37,8 @@ public class StorageClient {
     private BlobContainerClient imagesClient;
     private BlobContainerClient thumbsClient;
 
+    private final Set<String> VALID_EXTENSIONS = Set.of("jpg", "jpeg", "png");
+
     @PostConstruct
     public void postConstruct() {
         StorageSharedKeyCredential credential = new StorageSharedKeyCredential(storageAccountName, storageAccountKey);
@@ -50,9 +52,16 @@ public class StorageClient {
 
     public void uploadImages(List<MultipartFile> images, Long listingId) throws IOException {
         int count = 1;
-        for(MultipartFile image: images) {
+
+        for (MultipartFile image : images) {
             String contentType = image.getContentType();
+
+            assert contentType != null;
             String extension = contentType.split("/")[1];
+
+            if (!VALID_EXTENSIONS.contains(extension)) {
+                throw new InvalidContentTypeException("Image #" + count + " doesn't have a valid extension");
+            }
 
             InputStream data = image.getInputStream();
 
@@ -65,7 +74,7 @@ public class StorageClient {
             blob.upload(data, image.getSize(), true);
             blob.setHttpHeaders(imageHeaders);
 
-            if(count == 1) {
+            if (count == 1) {
                 data = createThumbnail(image, extension);
 
                 BlobClient thumbBlob = thumbsClient.getBlobClient(String.format("%d_thumb", listingId));

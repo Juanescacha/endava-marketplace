@@ -1,14 +1,17 @@
 package com.endava.marketplace.backend.service;
 
+import com.endava.marketplace.backend.dto.NewSaleRequestDTO;
 import com.endava.marketplace.backend.dto.SaleByBuyerDTO;
 import com.endava.marketplace.backend.dto.SaleBySellerDTO;
 import com.endava.marketplace.backend.dto.SaleDTO;
+import com.endava.marketplace.backend.exception.EntityNotFoundException;
 import com.endava.marketplace.backend.mapper.SaleMapper;
 import com.endava.marketplace.backend.model.Sale;
 import com.endava.marketplace.backend.model.SaleStatus;
 import com.endava.marketplace.backend.repository.SaleRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,41 +37,45 @@ public class SaleService {
         this.saleMapper = saleMapper;
     }
 
-    public Sale saveSale(Sale sale) {
-        if(listingService.updateListingAtSaleCreation(sale.getListing().getId(), sale.getQuantity())) {
-            return saleRepository.save(sale);
+    public SaleDTO saveSale(NewSaleRequestDTO newSaleRequestDTO) {
+        Sale sale = saleMapper.toSale(newSaleRequestDTO);
+        sale.setStatus(saleStatusService.getSaleStatuses().get("Pending"));
+        sale.setDate(LocalDate.now());
+        listingService.updateListingAtSaleCreation(sale.getListing().getId(), sale.getQuantity());
+        return saleMapper.toSaleDTO(saleRepository.save(sale));
+    }
+
+    public SaleDTO findSaleById(Long id) {
+        Optional<Sale> foundSale = saleRepository.findById(id);
+        if (foundSale.isEmpty()) {
+            throw new EntityNotFoundException("Sale with id " + id + " wasn't found");
         }
-        return null;
+        return saleMapper.toSaleDTO(foundSale.get());
     }
 
-    public SaleDTO findSaleById(Long saleId) {
-        return saleRepository.findById(saleId).map(saleMapper::toSaleDTO).orElse(null);
+    public Set<SaleByBuyerDTO> findSalesByBuyerId(Long id) {
+        return saleMapper.toBuyerDTOSet(saleRepository.findSalesByBuyer_Id(id));
     }
 
-    public Set<SaleByBuyerDTO> findSalesByBuyerId(Long buyerId) {
-        return saleMapper.toBuyerDTOSet(saleRepository.findSalesByBuyer_Id(buyerId));
+    public Set<SaleBySellerDTO> findSalesBySellerId(Long id) {
+        return saleMapper.toSellerDTOSet(saleRepository.findSalesByListing_Seller_Id(id));
     }
 
-    public Set<SaleBySellerDTO> findSalesBySellerId(Long sellerId) {
-        Set<Sale> sales = saleRepository.findSalesByListing_Seller_Id(sellerId);
-        return saleMapper.toSellerDTOSet(sales);
-    }
+    public SaleDTO updateSaleStatus(Long id, String newSaleStatus) {
+        Optional<Sale> foundSale = saleRepository.findById(id);
 
-    public void updateSaleStatus(Long saleId, String saleStatusName){
-        Optional<Sale> foundSale = saleRepository.findById(saleId);
-        Optional<SaleStatus> foundSaleStatus = saleStatusService.findSaleStatusByName(saleStatusName);
-
-        if(foundSale.isPresent() && foundSaleStatus.isPresent()) {
-            Sale sale = foundSale.get();
-            SaleStatus saleStatus = foundSaleStatus.get();
-
-            if(saleStatus.getName().equals("Cancelled")) {
-                listingService.updateListingAtSaleCancellation(sale.getListing().getId(), sale.getQuantity());
-            }
-
-            sale.setStatus(saleStatus);
-            saleRepository.save(sale);
+        if (foundSale.isEmpty()) {
+            throw new EntityNotFoundException("Sale with id " + id + " wasn't found");
         }
 
+        Sale sale = foundSale.get();
+        SaleStatus saleStatus = saleStatusService.getSaleStatuses().get(newSaleStatus);
+
+        if(newSaleStatus.equals("Cancelled")) {
+            listingService.updateListingAtSaleCancellation(sale.getListing().getId(), sale.getQuantity());
+        }
+
+        sale.setStatus(saleStatus);
+        return saleMapper.toSaleDTO(saleRepository.save(sale));
     }
 }

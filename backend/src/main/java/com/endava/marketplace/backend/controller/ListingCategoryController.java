@@ -1,22 +1,22 @@
 package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.dto.ListingCategoryDTO;
-import com.endava.marketplace.backend.dto.SimpleListingCategoryDTO;
-import com.endava.marketplace.backend.exception.BlankListingCategoryName;
-import com.endava.marketplace.backend.exception.ListingCategoryAlreadyActive;
-import com.endava.marketplace.backend.exception.ListingCategoryAlreadyExists;
+import com.endava.marketplace.backend.dto.ActiveListingCategoryDTO;
+import com.endava.marketplace.backend.exception.*;
 import com.endava.marketplace.backend.service.ListingCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/categories")
+@Validated
 @Tag(name = "Listing Category", description = "Listing categories management module")
 public class ListingCategoryController {
     private final ListingCategoryService listingCategoryService;
@@ -31,7 +31,8 @@ public class ListingCategoryController {
             tags = {"Listing Category"}
     )
     @PostMapping()
-    public ResponseEntity<Map<String, String>> postListingCategory(@RequestParam String name) throws ListingCategoryAlreadyExists, BlankListingCategoryName {
+    public ResponseEntity<ListingCategoryDTO> postListingCategory(
+            @RequestParam @NotEmpty(message = "Name cannot be empty") String name) {
         return new ResponseEntity<>(listingCategoryService.saveListingCategory(name), HttpStatus.CREATED);
     }
 
@@ -51,19 +52,8 @@ public class ListingCategoryController {
             tags = {"Listing Category"}
     )
     @GetMapping("/active")
-    public ResponseEntity<List<SimpleListingCategoryDTO>> getAllActiveListingCategories() {
+    public ResponseEntity<List<ActiveListingCategoryDTO>> getAllActiveListingCategories() {
         return ResponseEntity.ok(listingCategoryService.fetchAllActiveListingCategories());
-    }
-
-    @Operation(
-            summary = "Updates a Listing Category",
-            description = "Updates the name of an existing Listing Category. The new name cannot be blank and it cannot be the same as the old one",
-            tags = {"Listing Category"}
-    )
-    @PatchMapping("/{id}/rename")
-    public ResponseEntity<Map<String, String>> patchListingCategoryName(@PathVariable Long id, @RequestParam String name)
-            throws NullPointerException, BlankListingCategoryName, ListingCategoryAlreadyExists {
-        return ResponseEntity.ok(listingCategoryService.updateListingCategoryName(id, name));
     }
 
     @Operation(
@@ -72,8 +62,8 @@ public class ListingCategoryController {
             tags = {"Listing Category"}
     )
     @PatchMapping("/{id}/enable")
-    public ResponseEntity<Map<String, String>> enableListingCategory(@PathVariable Long id)
-            throws NullPointerException, ListingCategoryAlreadyActive {
+    public ResponseEntity<ListingCategoryDTO> enableListingCategory(@PathVariable Long id)
+            throws EntityNotFoundException, EntityAttributeAlreadySetException {
         return ResponseEntity.ok(listingCategoryService.updateListingCategoryActiveStatus(id, true));
     }
 
@@ -83,8 +73,19 @@ public class ListingCategoryController {
             tags = {"Listing Category"}
     )
     @PatchMapping("/{id}/disable")
-    public ResponseEntity<Map<String, String>> disableListingCategory(@PathVariable Long id)
-            throws NullPointerException, ListingCategoryAlreadyActive {
+    public ResponseEntity<ListingCategoryDTO> disableListingCategory(@PathVariable Long id) {
         return ResponseEntity.ok(listingCategoryService.updateListingCategoryActiveStatus(id, false));
+    }
+
+    @Operation(
+            summary = "Updates the name of a Listing Category",
+            description = "Updates the name of an existing Listing Category. The new name cannot be blank and it cannot be the same as the old one",
+            tags = {"Listing Category"}
+    )
+    @PatchMapping("/{id}/rename")
+    public ResponseEntity<ListingCategoryDTO> patchListingCategoryName(
+            @PathVariable Long id,
+            @RequestParam @NotEmpty(message = "Name cannot be empty") String name) {
+        return ResponseEntity.ok(listingCategoryService.updateListingCategoryName(id, name));
     }
 }

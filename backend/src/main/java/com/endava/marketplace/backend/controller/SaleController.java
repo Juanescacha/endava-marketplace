@@ -1,16 +1,16 @@
 package com.endava.marketplace.backend.controller;
 
+import com.endava.marketplace.backend.dto.NewSaleRequestDTO;
 import com.endava.marketplace.backend.dto.SaleByBuyerDTO;
 import com.endava.marketplace.backend.dto.SaleBySellerDTO;
 import com.endava.marketplace.backend.dto.SaleDTO;
-import com.endava.marketplace.backend.model.Sale;
 import com.endava.marketplace.backend.service.SaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -30,8 +30,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @PostMapping()
-    public Sale postSale(@RequestBody Sale sale) {
-        return saleService.saveSale(sale);
+    public ResponseEntity<SaleDTO> postSale(@RequestBody NewSaleRequestDTO sale) {
+        return ResponseEntity.ok(saleService.saveSale(sale));
     }
 
     @Operation(
@@ -40,8 +40,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/{id}")
-    public SaleDTO getSaleById(@PathVariable Long id) {
-        return saleService.findSaleById(id);
+    public ResponseEntity<SaleDTO> getSaleById(@PathVariable Long id) {
+        return ResponseEntity.ok(saleService.findSaleById(id));
     }
 
     @Operation(
@@ -70,8 +70,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @PatchMapping("/{id}/cancel")
-    public void cancelSale(@PathVariable Long id) {
-        saleService.updateSaleStatus(id, "Cancelled");
+    public ResponseEntity<SaleDTO> cancelSale(@PathVariable Long id) {
+        return ResponseEntity.ok(saleService.updateSaleStatus(id, "Cancelled"));
     }
 
     @Operation(
@@ -80,7 +80,7 @@ public class SaleController {
             tags = {"Sale"}
     )
     @PatchMapping("/{id}/fulfill")
-    public void fulfillSale(@PathVariable Long id) {
-        saleService.updateSaleStatus(id, "Fulfilled");
+    public ResponseEntity<SaleDTO> fulfillSale(@PathVariable Long id) {
+        return ResponseEntity.ok(saleService.updateSaleStatus(id, "Fulfilled"));
     }
 }

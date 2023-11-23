@@ -17,9 +17,10 @@ public class AuthController {
             tags = {"Test"}
     )
     @GetMapping("/public")
-    public String test(){
+    public String test() {
         return "This is a public test endpoint and its NOT protected by azure ad.";
     }
+
     @Operation(
             summary = "Get a response from a private test endpoint",
             description = "Get a response from the server if it's up and running. This endpoint requires a azure AD authentication via access token",
@@ -27,7 +28,7 @@ public class AuthController {
             security = @SecurityRequirement(name = "Azure AD")
     )
     @GetMapping("/private")
-    public String testPrivate(){
+    public String testPrivate() {
         return "This is a private test endpoint and is protected by azure ad";
     }
 }

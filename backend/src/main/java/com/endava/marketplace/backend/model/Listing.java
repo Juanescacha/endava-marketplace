@@ -17,7 +17,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class  Listing {
+public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,7 +57,7 @@ public class  Listing {
 
     @Column(nullable = false)
     @NotNull
-    private LocalDate date = LocalDate.now();
+    private LocalDate date;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     private Set<Question> questions;

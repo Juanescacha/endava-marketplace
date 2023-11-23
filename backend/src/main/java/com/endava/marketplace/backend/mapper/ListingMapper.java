@@ -1,9 +1,6 @@
 package com.endava.marketplace.backend.mapper;
 
-import com.endava.marketplace.backend.dto.ListingQuickSearchDTO;
-import com.endava.marketplace.backend.dto.ListingWithImagesDTO;
-import com.endava.marketplace.backend.dto.ListingDTO;
-import com.endava.marketplace.backend.dto.ListingWithoutSellerDTO;
+import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.model.Listing;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,4 +36,19 @@ public interface ListingMapper {
             @Mapping(source = "date", target = "date", dateFormat = "yyyy-MM-dd")
     })
     ListingWithoutSellerDTO toListingWithoutSellerDTO(Listing listing);
+
+    @Mappings({
+            @Mapping(source = "seller_id", target = "seller.id"),
+            @Mapping(source = "category_id", target = "category.id"),
+            @Mapping(target = "date", ignore = true),
+            @Mapping(target = "questions", ignore = true),
+            @Mapping(target = "sales", ignore = true),
+            @Mapping(target = "status", ignore = true)
+    })
+    Listing toListing(NewListingRequestDTO newListingRequestDTO);
+
+    @Mappings({
+            @Mapping(target = "thumbnail", ignore = true)
+    })
+    ListingPageDTO toListingPageDTO(Listing listing);
 }

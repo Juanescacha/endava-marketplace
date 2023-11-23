@@ -1,14 +1,13 @@
 package com.endava.marketplace.backend.controller;
 
-import com.endava.marketplace.backend.dto.ListingQuickSearchDTO;
-import com.endava.marketplace.backend.dto.ListingWithImagesDTO;
-import com.endava.marketplace.backend.dto.ListingDTO;
-import com.endava.marketplace.backend.model.Listing;
+import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.service.ListingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +17,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/listings")
+@Validated
 @Tag(name = "Listing", description = "Listings management module")
 @SecurityRequirement(name = "Azure AD")
 public class ListingController {
@@ -26,14 +26,15 @@ public class ListingController {
     public ListingController(ListingService listingService) {
         this.listingService = listingService;
     }
+
     @Operation(
             summary = "Creates a new Listing",
             description = "Creates a new listing with all of their attributes. It will be associated to their owner by id",
             tags = {"Listing"}
     )
     @PostMapping()
-    public ListingDTO postListing(@RequestBody Listing listing) {
-        return listingService.saveListing(listing);
+    public ResponseEntity<ListingDTO> postListing(@RequestBody NewListingRequestDTO newListingRequestDTO) {
+        return ResponseEntity.ok(listingService.saveListing(newListingRequestDTO));
     }
 
     @Operation(
@@ -52,7 +53,7 @@ public class ListingController {
             tags = {"Listing"}
     )
     @GetMapping("/suggestions")
-    public Set<ListingQuickSearchDTO> getListingByName(@RequestParam String name){
+    public Set<ListingQuickSearchDTO> getListingByName(@RequestParam String name) {
         return listingService.findListingByName(name);
     }
 
@@ -64,10 +65,10 @@ public class ListingController {
             tags = {"Listing"}
     )
     @GetMapping("/search")
-    public Page<Listing> getListingByCategoryAndName(
+    public Page<ListingPageDTO> getListingByCategoryAndName(
             @RequestParam(required = false) Integer category,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer page){
+            @RequestParam(required = false) Integer page) {
         return listingService.findListings(category, name, page);
     }
 
@@ -77,7 +78,9 @@ public class ListingController {
             tags = {"Listing"}
     )
     @DeleteMapping("/{id}")
-    public void deleteListingById(@PathVariable Long id) {listingService.deleteListingById(id);}
+    public void deleteListingById(@PathVariable Long id) {
+        listingService.deleteListingById(id);
+    }
 
     @Operation(
             summary = "Save listing images to storage account",

@@ -1,5 +1,6 @@
 package com.endava.marketplace.backend.mapper;
 
+import com.endava.marketplace.backend.dto.NewSaleRequestDTO;
 import com.endava.marketplace.backend.dto.SaleByBuyerDTO;
 import com.endava.marketplace.backend.dto.SaleBySellerDTO;
 import com.endava.marketplace.backend.dto.SaleDTO;
@@ -31,4 +32,12 @@ public interface SaleMapper {
     SaleBySellerDTO toSellerDTO(Sale sale);
 
     Set<SaleBySellerDTO> toSellerDTOSet(Set<Sale> sales);
+
+    @Mappings({
+            @Mapping(source = "buyer_id", target = "buyer.id"),
+            @Mapping(source = "listing_id", target = "listing.id"),
+            @Mapping(target = "date", ignore = true),
+            @Mapping(target = "status", ignore = true)
+    })
+    Sale toSale(NewSaleRequestDTO newSaleRequestDTO);
 }
