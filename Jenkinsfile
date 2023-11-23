@@ -15,7 +15,7 @@ pipeline {
               }
            }
            steps {
-               sh 'python3 -m pip install --user ansible'
+               sh 'python3 -m pip install ansible'
            }
        }
        stage('Backend') {
