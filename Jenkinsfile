@@ -1,37 +1,50 @@
 pipeline {
-    agent { label "Slave08" }
-    environment {
-        //Add envars here
-        backend_docker_args = '-u root'
-        frontend_docker_args = '-u root'
+    agent {
+        kubernetes {
+            yamlFile 'pod.yml'
+            defaultContainer 'python'
+        }
     }
+
     stages {
-        stage('Backend') {
+       stage('Install Ansible') {
+           when {
+              anyOf {
+                   branch 'development'
+                   branch 'main'
+              }
+           }
+           steps {
+               sh 'python3 -m pip install --user ansible'
+           }
+       }
+       stage('Backend') {
             when {
                 beforeAgent true
-                changeset '**/backend/**'
-            }
-            agent {
-                dockerfile {
-                    filename 'Dockerfile-BE'
-                    dir './devops/docker/'
-                    args backend_docker_args
-                    reuseNode true
+                anyOf {
+                      changeset '**/backend/**'
+                      changeset '**/Jenkinsfile'
+                      changeset '**/pod.yml'
                 }
             }
             stages {
                 stage('Build') {
                     steps {
-                        echo 'Building backend...'
-                        sh '''
-                            cd ./backend
-                            mvn -B -DskipTests -ntp clean package'''
+                        container('mvn') {
+                            echo 'Building backend...'
+                            sh '''
+                                cd ./backend
+                                mvn -B -DskipTests -ntp clean package
+                            '''
+                        }
                     }
                 }
                 stage('Test') {
                     steps {
-                        echo 'Testing backend...'
-                        echo 'Skipping for now, no tests configured yet'
+                        container('mvn') {
+                            echo 'Testing backend...'
+                            echo 'Skipping for now, no tests configured yet'
+                        }
                     }
                 }
                 stage('Deploy to development environment') {
@@ -57,14 +70,10 @@ pipeline {
         stage('Frontend') {
             when {
                 beforeAgent true
-                changeset '**/frontend/**'
-            }
-            agent {
-                dockerfile {
-                    filename 'Dockerfile-FE'
-                    dir './devops/docker/'
-                    args frontend_docker_args
-                    reuseNode true
+                anyOf {
+                    changeset '**/frontend/**'
+                    changeset '**/Jenkinsfile'
+                    changeset '**/pod.yml'
                 }
             }
             stages {
@@ -80,15 +89,15 @@ pipeline {
                         VITE_CLIENT_SECRET              = credentials('marketplace-client-secret')
                     }
                     steps {
-                        sh '''
-                            echo Building frontend...
-                            cd ./frontend
-                            rm -rf ./dist
-                            npm install
-                            npm run build
-                        '''
-                        echo 'Zipping resulting artifact'
-                        sh 'zip -r dist.zip ./frontend/dist'
+                        container('node') {
+                            sh '''
+                                echo Building frontend...
+                                cd ./frontend
+                                rm -rf ./dist
+                                npm install
+                                npm run build
+                            '''
+                        }
                     }
                 }
                 stage('Build for production') {
@@ -107,20 +116,27 @@ pipeline {
                         VITE_CLIENT_SECRET              = credentials('marketplace-client-secret')
                     }
                     steps {
-                        echo 'Building frontend...'
-                        sh '''
-                            cd ./frontend
-                            npm install
-                            npm run build
-                        '''
-                        echo 'Zipping resulting artifact'
-                        sh 'zip -r dist.zip ./frontend/dist'
+                        container('node') {
+                            echo 'Building frontend...'
+                            sh '''
+                                cd ./frontend
+                                npm install
+                                npm run build
+                            '''
+                        }
                     }
                 }
                 stage('Test') {
                     steps {
                         echo 'Testing frontend...'
                         echo 'Skipping for now, no tests configured yet'
+                    }
+                }
+                stage('Zip Artifact') {
+                    steps {
+                            sh 'apt update && apt install -y zip'
+                            echo 'Zipping resulting artifact'
+                            sh 'zip -r dist.zip ./frontend/dist'
                     }
                 }
                 stage('Deploy to development environment') {
