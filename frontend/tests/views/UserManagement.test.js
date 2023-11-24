@@ -2,13 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 import * as axios from "@/utils/axios";
 import UserManagement from "@/views/UserManagement.vue";
-
-const mockImplementationFactory = (property, value) => () =>
-	new Promise(resolve => {
-		const obj = {};
-		obj[property] = value;
-		resolve(obj);
-	});
+import { mockImplementationFactory } from "../helpers";
 
 describe("UserManagement mount", () => {
 	let wrapper;

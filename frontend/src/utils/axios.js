@@ -71,8 +71,7 @@ export const postImagesOfListing = async (listingId, images = []) => {
 		};
 
 		const response = await axios.post(url, form, config);
-
-		if (!response || response.status !== 200) {
+		if (!response || (response.status !== 200 && response.status !== 201)) {
 			return {
 				msg: "An internal error in the server has ocurred",
 				error: true,
@@ -94,7 +93,7 @@ export const postSale = async data => {
 
 		const { status } = await axios.post(url, data, config);
 
-		if (status !== 200) {
+		if (status !== 200 && status !== 201) {
 			return {
 				msg: "An internal error in the server has ocurred",
 				error: true,
@@ -154,6 +153,10 @@ export const postUser = async () => {
 			headers: getHeadersForRequest(),
 		};
 		const response = await axios.post(url, {}, config);
+
+		if (!response || !response.data) {
+			return { error: true };
+		}
 		return response.data;
 	} catch (error) {
 		return handleCatch(error);

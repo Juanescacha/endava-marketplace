@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import * as axios from "@/utils/axios";
 import useUserList from "@/composables/useUserList";
+import { mockImplementationFactory } from "../helpers";
 
 const {
 	users,
@@ -11,13 +12,6 @@ const {
 	updateFilters,
 	addToCurrentPageValue,
 } = useUserList();
-
-const mockImplementationFactory = (property, value) => () =>
-	new Promise(resolve => {
-		const obj = {};
-		obj[property] = value;
-		resolve(obj);
-	});
 
 beforeEach(() => {
 	users.value = [];

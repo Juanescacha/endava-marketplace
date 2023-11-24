@@ -1,18 +1,19 @@
 <script setup>
 	import { reactive, onMounted } from "vue";
-	import { useUserStore } from "../stores/user";
+	import { useUserStore } from "@/stores/user";
 	import {
 		postNewListing,
 		postImagesOfListing,
 		deleteListing,
-	} from "../utils/axios";
-	import useNotification from "../composables/useNotification";
-	import useForm from "../composables/useForm";
-	import SelectInput from "../components/Inputs/SelectInput.vue";
-	import StarsInput from "../components/Inputs/StarsInput.vue";
-	import ImageInputList from "../components/Inputs/ImageInputList.vue";
-	import FormButton from "../components/Inputs/FormButton.vue";
-	import NotificationBox from "../components/NotificationBox.vue";
+		getAllCategories,
+	} from "@/utils/axios";
+	import useNotification from "@/composables/useNotification";
+	import useForm from "@/composables/useForm";
+	import SelectInput from "@/components/Inputs/SelectInput.vue";
+	import StarsInput from "@/components/Inputs/StarsInput.vue";
+	import ImageInputList from "@/components/Inputs/ImageInputList.vue";
+	import FormButton from "@/components/Inputs/FormButton.vue";
+	import NotificationBox from "@/components/NotificationBox.vue";
 
 	const categories = reactive([]);
 	const formData = reactive({
@@ -40,11 +41,21 @@
 	} = useForm();
 
 	onMounted(() => {
-		// TODO load dinamically
-		categories.push({ id: 1, name: "technology" });
-		categories.push({ id: 1, name: "appliances" });
-		categories.push({ id: 1, name: "clothing" });
+		fetchCategories();
 	});
+
+	const fetchCategories = () => {
+		getAllCategories().then(response => {
+			const { data, error } = response;
+			if (error || !data) return;
+
+			data.forEach(category => {
+				if (category.active) {
+					categories.push(category);
+				}
+			});
+		});
+	};
 
 	const validateProductDetail = $event => {
 		if ($event.target.value.length > 500) {
@@ -98,15 +109,8 @@
 
 	const createNewListing = async () => {
 		const data = organizePostPetition();
-		if (!data.seller.id) {
-			return {
-				error: true,
-				msg: "There's an error in the session. Try later.",
-			};
-		}
 
 		const { response, error, msg } = await postNewListing(data);
-
 		if (error) return { msg, error };
 
 		return { newListingId: response.data.id };
@@ -114,7 +118,6 @@
 
 	const postImages = async id => {
 		const images = removeNullsFromImages(formData.media.value);
-
 		const { error, msg } = await postImagesOfListing(id, images);
 
 		if (error) {

@@ -1,15 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import * as axios from "@/utils/axios";
 import useAdminUser from "@/composables/useAdminUser";
+import { mockImplementationFactory } from "../helpers";
 
 const { userIsAdmin, setUserIsAdmin } = useAdminUser();
-
-const mockImplementationFactory = (property, value) => () =>
-	new Promise(resolve => {
-		const obj = {};
-		obj[property] = value;
-		resolve(obj);
-	});
 
 describe("setUserIsAdmin function", () => {
 	it("should call isLogedUserAdmin", () => {
