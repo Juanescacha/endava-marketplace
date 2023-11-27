@@ -89,15 +89,8 @@
 
 	const organizePostPetition = () => {
 		const postData = {
-			seller: {
-				id: user.id,
-			},
-			category: {
-				id: formData.category.value,
-			},
-			status: {
-				id: 1, // TODO load dinamically
-			},
+			seller_id: user.id,
+			category_id: formData.category.value,
 			name: formData.name.value,
 			detail: formData.detail.value,
 			condition: formData.condition.value,

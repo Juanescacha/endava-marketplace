@@ -31,7 +31,7 @@
 	const handleLoadMore = async () => {
 		if (page.value < totalPages.value) {
 			page.value += 1;
-			const response = await getListingsSearch(page.value);
+			const response = await getListingsSearch({ page: page.value });
 
 			productsList.update([
 				...productsList.productCards,

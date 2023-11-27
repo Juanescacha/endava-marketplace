@@ -6,6 +6,7 @@
 	import {
 		extractFirstWordsFromText,
 		getSaleStatusColor,
+		formatMoney,
 	} from "@/utils/strings";
 	import ProductListItem from "@/components/Menus/ProductListItem.vue";
 
@@ -80,7 +81,9 @@
 									{{ product.status }}
 								</p>
 							</div>
-							<h3>${{ product.listing.price }}</h3>
+							<h3>
+								{{ formatMoney(product.listing.price) }} COP
+							</h3>
 						</template>
 					</product-list-item>
 				</router-link>

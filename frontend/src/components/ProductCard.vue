@@ -28,6 +28,7 @@
 <script setup>
 	import { ref, onBeforeMount } from "vue";
 	import { getListingThumbanil } from "@/utils/axios";
+	import { formatMoney } from "@/utils/strings";
 
 	const props = defineProps({
 		cardInfo: {
@@ -50,15 +51,5 @@
 		}
 	});
 
-	const moneyFormat = value => {
-		const numeroFormateado = parseInt(value).toLocaleString("es-ES", {
-			style: "currency",
-			currency: "COP",
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0,
-		});
-		return `$${numeroFormateado.trim().slice(0, -3)}`;
-	};
-
-	const price = ref(moneyFormat(props.cardInfo.price));
+	const price = ref(formatMoney(props.cardInfo.price));
 </script>

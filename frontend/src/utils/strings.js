@@ -1,4 +1,4 @@
-const capitalizeFirstLetter = word => {
+export const capitalizeFirstLetter = word => {
 	if (typeof word !== "string" || word.length < 2) {
 		throw new Error("Not a valid word to capitalize");
 	}
@@ -9,7 +9,10 @@ const capitalizeFirstLetter = word => {
 	return firstLetter + remainingLetters;
 };
 
-const getArticleOfSentence = (numberOfElements, firstLetterOfNextWord) => {
+export const getArticleOfSentence = (
+	numberOfElements,
+	firstLetterOfNextWord
+) => {
 	const VOWELS = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"];
 	const num = Number(numberOfElements);
 
@@ -25,7 +28,7 @@ const getArticleOfSentence = (numberOfElements, firstLetterOfNextWord) => {
 	return num.toString();
 };
 
-const extractFirstWordsFromText = (text, n) => {
+export const extractFirstWordsFromText = (text, n) => {
 	if (typeof text !== "string" || typeof n !== "number" || n < 1) {
 		return;
 	}
@@ -40,7 +43,7 @@ const extractFirstWordsFromText = (text, n) => {
 	return textArray.join(" ");
 };
 
-const getSaleStatusColor = status => {
+export const getSaleStatusColor = status => {
 	switch (status) {
 		case "Pending":
 			return "text-orange-400";
@@ -55,7 +58,7 @@ const getSaleStatusColor = status => {
 	}
 };
 
-const addParamsToURL = (baseUrl, params = {}) => {
+export const addParamsToURL = (baseUrl, params = {}) => {
 	if (typeof params !== "object" || params === null) {
 		return baseUrl;
 	}
@@ -72,10 +75,12 @@ const addParamsToURL = (baseUrl, params = {}) => {
 	return url;
 };
 
-export {
-	capitalizeFirstLetter,
-	getArticleOfSentence,
-	extractFirstWordsFromText,
-	getSaleStatusColor,
-	addParamsToURL,
+export const formatMoney = value => {
+	const numeroFormateado = parseInt(value).toLocaleString("es-ES", {
+		style: "currency",
+		currency: "COP",
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0,
+	});
+	return `$${numeroFormateado.trim().slice(0, -3)}`;
 };

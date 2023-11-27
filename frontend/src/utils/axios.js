@@ -235,7 +235,7 @@ export const getListingsSuggestions = async name => {
 };
 
 export const isLogedUserAdmin = async () => {
-	const url = `${getAPIURL()}/api/endavans/isAdmin`;
+	const url = `${getAPIURL()}/api/endavans/check-admin`;
 	return await makeGetRequest(url);
 };
 
@@ -244,7 +244,7 @@ export const patchAdminRole = async (id, isAdmin) => {
 	if (Number.isNaN(numId) || numId < 1 || typeof isAdmin !== "boolean") {
 		return { error: true };
 	}
-	const url = `${getAPIURL()}/api/endavans/admin?endavanId=${id}&isAdmin=${isAdmin}`;
+	const url = `${getAPIURL()}/api/endavans/update-admin?endavanId=${id}&admin=${isAdmin}`;
 	const config = {
 		headers: getHeadersForRequest(),
 	};

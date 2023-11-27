@@ -100,15 +100,8 @@
 
 	const makePurchase = async () => {
 		const data = {
-			buyer: {
-				id: user.id,
-			},
-			listing: {
-				id: listing.value.id,
-			},
-			status: {
-				id: 1, // TODO load dinamically
-			},
+			buyer_id: user.id,
+			listing_id: listing.value.id,
 			quantity: desiredQuantity.value,
 		};
 		const result = await postSale(data);
@@ -203,27 +196,27 @@
 					isUserTheSeller ? "You" : listing.seller.name
 				}}</span>
 			</p>
-			<div
-				class="my-4"
-				v-if="!isUserTheSeller"
+			<form
+				v-if="!isUserTheSeller && listing.stock > 0"
+				@submit.prevent="modal.open = true"
 			>
-				<span class="mr-4">Quantity</span>
-				<input
-					type="number"
-					:value="desiredQuantity"
-					:disabled="listing.stock === 1"
-					class="h-8 w-12 pr-0"
-					@change="handleQuantityUpdate"
-				/>
-			</div>
-			<button
-				v-if="!isUserTheSeller"
-				type="button"
-				class="endava h-10 w-2/4"
-				@click="modal.open = true"
-			>
-				Purchase
-			</button>
+				<div class="my-4">
+					<span class="mr-4">Quantity</span>
+					<input
+						type="number"
+						:value="desiredQuantity"
+						:disabled="listing.stock === 1"
+						class="h-8 w-12 pr-0"
+						@change="handleQuantityUpdate"
+					/>
+				</div>
+				<button
+					type="submit"
+					class="endava h-10 w-2/4"
+				>
+					Purchase
+				</button>
+			</form>
 		</div>
 	</main>
 </template>
