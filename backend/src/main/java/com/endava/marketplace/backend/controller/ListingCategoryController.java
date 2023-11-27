@@ -2,9 +2,13 @@ package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.dto.ListingCategoryDTO;
 import com.endava.marketplace.backend.dto.ActiveListingCategoryDTO;
-import com.endava.marketplace.backend.exception.*;
 import com.endava.marketplace.backend.service.ListingCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.HttpStatus;
@@ -18,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/categories")
 @Validated
 @Tag(name = "Listing Category", description = "Listing categories management module")
+@SecurityRequirement(name = "Azure AD")
 public class ListingCategoryController {
     private final ListingCategoryService listingCategoryService;
 
@@ -30,6 +35,10 @@ public class ListingCategoryController {
             description = "Saves a Listing Category to the database if its not blank and it doesn't already exists in the database",
             tags = {"Listing Category"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingCategoryDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "409", description = "Listing category with that name already exists", content = { @Content(schema = @Schema()) })
+    })
     @PostMapping()
     public ResponseEntity<ListingCategoryDTO> postListingCategory(
             @RequestParam @NotEmpty(message = "Name cannot be empty") String name) {
@@ -61,9 +70,13 @@ public class ListingCategoryController {
             description = "Sets the active value of a given Listing Category to true. If a Listing has this Category, its Status is set to Available",
             tags = {"Listing Category"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingCategoryDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Listing Category with given Id was not found", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "409", description = "Target Listing Category has its status already set to that value", content = { @Content(schema = @Schema()) }),
+    })
     @PatchMapping("/{id}/enable")
-    public ResponseEntity<ListingCategoryDTO> enableListingCategory(@PathVariable Long id)
-            throws EntityNotFoundException, EntityAttributeAlreadySetException {
+    public ResponseEntity<ListingCategoryDTO> enableListingCategory(@PathVariable Long id) {
         return ResponseEntity.ok(listingCategoryService.updateListingCategoryActiveStatus(id, true));
     }
 
@@ -72,6 +85,11 @@ public class ListingCategoryController {
             description = "Sets the active value of a given Listing Category to false. If a Listing has this Category, its Status is set to Blocked",
             tags = {"Listing Category"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingCategoryDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Listing Category with given Id was not found", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "409", description = "Target Listing Category has its status already set to that value", content = { @Content(schema = @Schema()) }),
+    })
     @PatchMapping("/{id}/disable")
     public ResponseEntity<ListingCategoryDTO> disableListingCategory(@PathVariable Long id) {
         return ResponseEntity.ok(listingCategoryService.updateListingCategoryActiveStatus(id, false));
@@ -82,6 +100,11 @@ public class ListingCategoryController {
             description = "Updates the name of an existing Listing Category. The new name cannot be blank and it cannot be the same as the old one",
             tags = {"Listing Category"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingCategoryDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Listing Category with given Id was not found", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "409", description = "Target Listing Category has its name already set to that value or Listing category with that name already exists", content = { @Content(schema =  @Schema()) }),
+    })
     @PatchMapping("/{id}/rename")
     public ResponseEntity<ListingCategoryDTO> patchListingCategoryName(
             @PathVariable Long id,

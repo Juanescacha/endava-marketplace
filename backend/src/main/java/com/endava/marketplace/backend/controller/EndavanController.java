@@ -4,6 +4,10 @@ import com.endava.marketplace.backend.dto.EndavanAdminDTO;
 import com.endava.marketplace.backend.dto.EndavanDTO;
 import com.endava.marketplace.backend.service.EndavanService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -58,6 +62,10 @@ public class EndavanController {
             description = "Gets an user from the database that matches the id provided",
             tags = {"Endavan"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = EndavanDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Endavan with given Id was not found", content = { @Content(schema = @Schema()) })
+    })
     @GetMapping("/{id}")
     public ResponseEntity<EndavanDTO> getEndavanById(@PathVariable Long id) {
         return ResponseEntity.ok(endavanService.findEndavanById(id));
@@ -91,9 +99,15 @@ public class EndavanController {
             description = "Turns on or off the admin privileges for the other Endavans. Can't be used to turn off my own admin permissions",
             tags = {"Endavan"}
     )
-    @PatchMapping("/admin")
-    public EndavanAdminDTO updateAdminRole(@RequestParam Long endavanId, @RequestParam  Boolean admin) {
-        return endavanService.updateAdminRole(endavanId, admin);
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = EndavanAdminDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Endavan with given Id was not found", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "403", description = "Actual endavan doesn't have enough permissions to perform this action", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "409", description = "Target endavan has this property already set to that value", content = { @Content(schema = @Schema()) })
+    })
+    @PatchMapping("/update-admin")
+    public ResponseEntity<EndavanAdminDTO> updateAdminRole(@RequestParam Long endavanId, @RequestParam  Boolean admin) {
+        return ResponseEntity.ok(endavanService.updateAdminRole(endavanId, admin));
     }
 
     @Operation(

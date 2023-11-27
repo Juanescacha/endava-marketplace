@@ -3,6 +3,10 @@ package com.endava.marketplace.backend.controller;
 import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.service.ListingService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -32,6 +36,10 @@ public class ListingController {
             description = "Creates a new listing with all of their attributes. It will be associated to their owner by id",
             tags = {"Listing"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Listing Category with given Id was not found", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping()
     public ResponseEntity<ListingDTO> postListing(@RequestBody NewListingRequestDTO newListingRequestDTO) {
         return ResponseEntity.ok(listingService.saveListing(newListingRequestDTO));
@@ -42,6 +50,10 @@ public class ListingController {
             description = "Gets a listing from the database that matches the id provided",
             tags = {"Listing"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingWithImagesDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Listing with given Id was not found", content = { @Content(schema = @Schema()) }),
+    })
     @GetMapping("/{id}")
     public ListingWithImagesDTO getListingById(@PathVariable Long id) {
         return listingService.findListingById(id);
@@ -87,6 +99,7 @@ public class ListingController {
             description = "Save a list of MultipartFile type images related to the desired listing to the project's storage account",
             tags = {"Listing"}
     )
+
     @PostMapping("/images/{id}")
     public void postListingImages(@RequestParam("images") List<MultipartFile> images, @PathVariable Long id) throws IOException {
         listingService.saveListingImages(images, id);
@@ -97,6 +110,10 @@ public class ListingController {
             description = "Get a list of URLS redirecting to the desired listing images saved in the project's storage account",
             tags = {"Listing"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "400", description = "One or more images doesn't have a valid extension", content = { @Content(schema = @Schema()) }),
+    })
     @GetMapping("/images/{id}")
     public List<String> getListingImages(@PathVariable Long id) {
         return listingService.retrieveListingImages(id);

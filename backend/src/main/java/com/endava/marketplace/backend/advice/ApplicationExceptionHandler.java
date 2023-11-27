@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.advice;
 
 import com.endava.marketplace.backend.exception.*;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Hidden
 public class ApplicationExceptionHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ExceptionHandler(value = {EntityAlreadyExistsException.class})
