@@ -1,7 +1,7 @@
 <script setup>
-	import { ref, watch } from "vue";
-	import { useProductStore } from "../../stores/products";
-	import { getListingsSuggestions } from "../../utils/axios";
+	import { ref, computed, watch, onBeforeMount } from "vue";
+	import { useProductStore } from "@/stores/products";
+	import { getListingsSearch } from "@/utils/axios";
 	import {
 		Listbox,
 		ListboxLabel,
@@ -10,27 +10,43 @@
 		ListboxOption,
 	} from "@headlessui/vue";
 	import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
+	import { getAllCategories } from "@/utils/axios";
+	import { useProductsSearchStore } from "@/stores/productsSearch";
 
 	const productsList = useProductStore();
-	const options = [
-		{ name: "Categories", id: 0 },
-		{ name: "Technology", id: 1 },
-		{ name: "Kids", id: 2 },
-		{ name: "Home Appliances", id: 3 },
-		{ name: "Events", id: 4 },
-		{ name: "Books", id: 5 },
-	];
-	const selectedOption = ref(options[0]);
+	const productsSearch = useProductsSearchStore();
+
+	const options = ref([]);
+	const activeCategories = computed(() => {
+		return options.value.filter(category => category.active);
+	});
+	const selectedOption = ref({ name: "All Categories", id: 0 });
 
 	const categorySearch = async () => {
-		const response = await getListingsSuggestions(selectedOption.value.id);
+		const response = await getListingsSearch({
+			category: productsSearch.categoryId,
+		});
 		if (response.error) {
 		} else {
 			productsList.update(response.data.content);
 		}
 	};
 
+	const fetchCategories = async () => {
+		const response = await getAllCategories();
+		if (response.error) {
+			// error
+		} else {
+			options.value = response.data;
+		}
+	};
+
+	onBeforeMount(async () => {
+		await fetchCategories();
+	});
+
 	watch(selectedOption, () => {
+		productsSearch.categoryId = selectedOption.value.id;
 		categorySearch();
 	});
 </script>
@@ -65,9 +81,9 @@
 				>
 					<ListboxOption
 						v-slot="{ active, selected }"
-						v-for="option in options"
-						:key="option.name"
-						:value="option"
+						v-for="category in activeCategories"
+						:key="category.id"
+						:value="category"
 						as="template"
 					>
 						<li
@@ -85,7 +101,7 @@
 										: 'font-normal',
 									'block truncate',
 								]"
-								>{{ option.name }}</span
+								>{{ category.name }}</span
 							>
 							<span
 								v-if="selected"
@@ -102,27 +118,4 @@
 			</transition>
 		</div>
 	</Listbox>
-	<!-- <select
-		id="categories"
-		class="hidden w-52 rounded-md border-gray-200 py-2 pl-6 pr-11 text-sm font-light shadow-sm focus:z-10 focus:border-gray-200 focus:ring-gray-200 sm:block"
-		:class="{
-			'text-gray-500': categoryInput === '',
-			'bg-white/20': categoryInput === '',
-			'text-black': categoryInput !== '',
-			'bg-white': categoryInput !== '',
-		}"
-		v-model="categoryInput"
-	>
-		<option
-			value=""
-			disabled
-			selected
-			hidden
-		>
-			Categories
-		</option>
-		<option value="1">Clothes</option>
-		<option value="2">Technology</option>
-		<option value="3">Vehicles</option>
-	</select> -->
 </template>

@@ -4,22 +4,20 @@
 	import ProductCard from "@/components/ProductCard.vue";
 	import SkeletonCard from "@/components/SkeletonCard.vue";
 	import { useProductStore } from "@/stores/products";
+	import { useProductsSearchStore } from "@/stores/productsSearch";
 	const productsList = useProductStore();
+	const productsSearch = useProductsSearchStore();
 
 	const isLoading = ref(true);
 	const page = ref(1);
 	const totalPages = ref(1);
 	const noMoreProducts = ref(false);
 
-	let Baseurl = `${import.meta.env.VITE_API_URL}/api/listings/search/get`;
-
 	onMounted(async () => {
 		const response = await getListingsSearch();
 		if (response.error) {
 			// error
 		} else {
-			// ***
-			// productCards.value = response.data.content;
 			productsList.update(response.data.content);
 			totalPages.value = response.data.totalPages;
 			setTimeout(() => {
@@ -31,7 +29,10 @@
 	const handleLoadMore = async () => {
 		if (page.value < totalPages.value) {
 			page.value += 1;
-			const response = await getListingsSearch({ page: page.value });
+			const response = await getListingsSearch({
+				page: page.value,
+				category: productsSearch.categoryId,
+			});
 
 			productsList.update([
 				...productsList.productCards,

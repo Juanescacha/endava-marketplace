@@ -120,6 +120,7 @@
 			<tr
 				v-for="(category, index) in categories"
 				class="h-12"
+				:key="category.id"
 			>
 				<td class="px-4 py-2 font-normal">{{ category.id }}</td>
 				<td class="px-4 py-2 font-normal">

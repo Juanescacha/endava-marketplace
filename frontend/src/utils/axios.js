@@ -226,6 +226,7 @@ export const getSaleById = async id => {
 export const getListingsSearch = async (params = {}) => {
 	let url = `${getAPIURL()}/api/listings/search`;
 	url = addParamsToURL(url, params);
+	console.log(url);
 	return await makeGetRequest(url);
 };
 
