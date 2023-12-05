@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "question")
 @Data
@@ -32,4 +34,10 @@ public class Question {
 
     @Column()
     private String answer_detail;
+
+    @Column()
+    private LocalDate question_date;
+
+    @Column()
+    private LocalDate answer_date;
 }

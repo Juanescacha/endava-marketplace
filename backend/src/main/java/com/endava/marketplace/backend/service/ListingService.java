@@ -177,4 +177,12 @@ public class ListingService {
     public List<Listing> findAllListingsByCategory(ListingCategory listingCategory) {
         return listingRepository.findAllByCategory(listingCategory);
     }
+
+    public Listing loadListing(Long id) {
+        Optional<Listing> listing = listingRepository.findById(id);
+        if(listing.isEmpty()) {
+            throw new EntityNotFoundException("Listing with ID: " + id + "wasn't found");
+        }
+        return listing.get();
+    }
 }

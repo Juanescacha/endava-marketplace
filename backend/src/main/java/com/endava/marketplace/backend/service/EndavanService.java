@@ -141,7 +141,7 @@ public class EndavanService {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    protected Endavan loadEndavan(Long id) {
+    public Endavan loadEndavan(Long id) {
         Optional<Endavan> endavan = endavanRepository.findById(id);
         if(endavan.isEmpty()) {
             throw new EntityNotFoundException("Endavan with ID: " + id + " wasn't found");
