@@ -46,6 +46,8 @@ public class EndavanService {
         Endavan endavan = getEndavanInfo();
         Optional<Endavan> savedEndavan = endavanRepository.findEndavanByEmailIgnoreCase(endavan.getEmail());
         if (savedEndavan.isEmpty()){
+            Rating rating = new Rating(null, null, 0, endavan);
+            endavan.setRating(rating);
             return endavanMapper.toEndavanDTO(endavanRepository.save(endavan));
         }
         endavan = savedEndavan.get();
@@ -136,10 +138,7 @@ public class EndavanService {
             email = principal.getClaim("upn");
         }
 
-        Endavan endavan = new Endavan(null, name, email, false, null, null, null, null);
-        Rating rating = new Rating(null, null, 0, endavan);
-        endavan.setRating(rating);
-        return endavan;
+        return new Endavan(null, name, email, false, null, null, null, null);
     }
 
     protected Authentication getAuthentication(){
