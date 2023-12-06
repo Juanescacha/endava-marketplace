@@ -6,7 +6,7 @@ import com.endava.marketplace.backend.model.Endavan;
 import org.mapstruct.Mapper;
 
 
-@Mapper
+@Mapper(uses = {RatingMapper.class})
 public interface EndavanMapper {
     EndavanDTO toEndavanDTO(Endavan endavan);
 

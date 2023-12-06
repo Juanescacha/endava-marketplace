@@ -20,7 +20,9 @@ public class SaleDTO {
 
     private String status;
 
+    private Integer quantity;
+
     private LocalDate date;
 
-    private Integer quantity;
+    private Integer rating;
 }

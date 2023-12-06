@@ -37,7 +37,8 @@ public interface SaleMapper {
             @Mapping(source = "buyer_id", target = "buyer.id"),
             @Mapping(source = "listing_id", target = "listing.id"),
             @Mapping(target = "date", ignore = true),
-            @Mapping(target = "status", ignore = true)
+            @Mapping(target = "status", ignore = true),
+            @Mapping(target = "rating", ignore = true)
     })
     Sale toSale(NewSaleRequestDTO newSaleRequestDTO);
 }

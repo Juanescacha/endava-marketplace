@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EndavanDTO {
-    private Long id;
+public class RatingDTO {
+    private Double score;
 
-    private String name;
-
-    private String email;
-
-    private RatingDTO rating;
+    private Integer quantity;
 }

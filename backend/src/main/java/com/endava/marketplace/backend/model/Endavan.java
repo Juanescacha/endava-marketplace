@@ -35,6 +35,10 @@ public class Endavan {
     @NotNull(message = "Admin flag can't be null")
     private Boolean admin;
 
+    @OneToOne(mappedBy = "endavan", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Rating rating;
+
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
     private Set<Listing> listings;
 

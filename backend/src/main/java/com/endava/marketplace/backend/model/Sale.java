@@ -1,6 +1,8 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,4 +40,9 @@ public class Sale {
 
     @Column(nullable = false)
     private LocalDate date = LocalDate.now();
+
+    @Column
+    @Min(0)
+    @Max(5)
+    private Integer rating;
 }

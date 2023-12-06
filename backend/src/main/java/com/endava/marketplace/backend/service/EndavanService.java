@@ -7,6 +7,7 @@ import com.endava.marketplace.backend.exception.EntityNotFoundException;
 import com.endava.marketplace.backend.exception.NotEnoughPermissionsException;
 import com.endava.marketplace.backend.mapper.EndavanMapper;
 import com.endava.marketplace.backend.model.Endavan;
+import com.endava.marketplace.backend.model.Rating;
 import com.endava.marketplace.backend.repository.EndavanRepository;
 import com.endava.marketplace.backend.specification.EndavanSpecification;
 import jakarta.persistence.criteria.Predicate;
@@ -135,8 +136,12 @@ public class EndavanService {
             email = principal.getClaim("upn");
         }
 
-        return new Endavan(null, name, email, false, null, null, null);
+        Endavan endavan = new Endavan(null, name, email, false, null, null, null, null);
+        Rating rating = new Rating(null, null, 0, endavan);
+        endavan.setRating(rating);
+        return endavan;
     }
+
     protected Authentication getAuthentication(){
         return SecurityContextHolder.getContext().getAuthentication();
     }
