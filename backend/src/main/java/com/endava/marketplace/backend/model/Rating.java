@@ -1,10 +1,7 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "rating")
@@ -23,6 +20,7 @@ public class Rating {
     @Column(columnDefinition = "integer default 0")
     private Integer quantity;
 
+    @EqualsAndHashCode.Exclude
     @OneToOne
     @MapsId
     @JoinColumn(name = "endavan_id")
