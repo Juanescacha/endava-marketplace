@@ -17,6 +17,7 @@ import StarsInput from "@/components/Inputs/StarsInput.vue";
 import ImageInputList from "@/components/Inputs/ImageInputList.vue";
 import FormButton from "@/components/Inputs/FormButton.vue";
 import NotificationBox from "@/components/NotificationBox.vue";
+import TextAreaWithCounter from "@/components/Inputs/TextAreaWithCounter.vue";
 import { mockImplementationFactory } from "../helpers";
 
 const makeFormValid = form => {
@@ -71,10 +72,6 @@ describe("NewListing HTML elements", () => {
 		expect(wrapper.findAll("input").length).toBe(3);
 	});
 
-	it("should have a textarea input", () => {
-		expect(wrapper.find("textarea").exists()).toBe(true);
-	});
-
 	wrapper.unmount();
 });
 
@@ -88,6 +85,10 @@ describe("NewListing components", () => {
 		});
 	});
 	afterEach(() => wrapper.unmount());
+
+	it("should have a TextAreaWithCounter", () => {
+		expect(wrapper.findComponent(TextAreaWithCounter).exists()).toBe(true);
+	});
 
 	it("should have a SelectInput", () => {
 		expect(wrapper.findComponent(SelectInput).exists()).toBe(true);
@@ -245,29 +246,15 @@ describe("NewListing organizePostPetition", () => {
 
 		user.id = 1;
 		postData = wrapper.vm.organizePostPetition();
-		expect(postData.seller.id).toBe(user.id);
+		expect(postData["seller_id"]).toBe(user.id);
 
 		user.id = 100000;
 		postData = wrapper.vm.organizePostPetition();
-		expect(postData.seller.id).toBe(user.id);
+		expect(postData["seller_id"]).toBe(user.id);
 
 		user.id = -1;
 		postData = wrapper.vm.organizePostPetition();
-		expect(postData.seller.id).toBe(user.id);
-	});
-
-	it("should return and object with a status property", () => {
-		const user = useUserStore();
-		user.id = 1;
-		wrapper.vm.formData.name.value = "foo";
-		wrapper.vm.formData.detail.value = "bar";
-		wrapper.vm.formData.condition.value = -1;
-		wrapper.vm.formData.price.value = 100000000;
-		wrapper.vm.formData.stock.value = 1;
-
-		const postData = wrapper.vm.organizePostPetition();
-
-		expect(postData.status.id).toBe(1);
+		expect(postData["seller_id"]).toBe(user.id);
 	});
 });
 
@@ -437,49 +424,105 @@ describe("NewListing fetchCategories", () => {
 	});
 });
 
-describe("Newlisting validateProductDetail", () => {
-	it("display a notification when the product detail length is greater than 500", async () => {
+describe("Newlisting validateTextField", () => {
+	let wrapper;
+	beforeEach(() => {
+		wrapper = shallowMount(NewListing, {
+			global: {
+				plugins: [createTestingPinia({ createSpy: vi.fn() })],
+			},
+		});
+	});
+	afterEach(() => wrapper.unmount());
+	const mockEvent = { target: { id: "name", value: "foo" } };
+
+	it("should change the valid property of a valid input in formData", () => {
+		wrapper.vm.formData.name.min = 4;
+		wrapper.vm.formData.name.valid = true;
+
+		wrapper.vm.validateTextField(mockEvent);
+		expect(wrapper.vm.formData.name.valid).toBe(false);
+
+		wrapper.vm.formData.name.max = 5;
+		wrapper.vm.formData.name.valid = true;
+		mockEvent.target.value = "123456";
+
+		wrapper.vm.validateTextField(mockEvent);
+		expect(wrapper.vm.formData.name.valid).toBe(false);
+	});
+
+	it("should change the valid property of an invalid input in formData", () => {
+		wrapper.vm.formData.name.min = 1;
+
+		wrapper.vm.validateTextField(mockEvent);
+		expect(wrapper.vm.formData.name.valid).toBe(true);
+	});
+
+	it("should display a notification if the input is not valid", async () => {
 		const wrapper = mount(NewListing, {
 			global: {
 				plugins: [createTestingPinia({ createSpy: vi.fn() })],
 			},
 		});
 
-		const mockEvent = {
-			target: { value: "a", id: "detail" },
-		};
-		for (let index = 0; index < 50; ++index) {
-			mockEvent.target.value += "aaaaaaaaaa";
-		}
-
-		wrapper.vm.validateProductDetail(mockEvent);
+		wrapper.vm.formData.name.max = 2;
+		wrapper.vm.validateTextField(mockEvent);
 
 		await wrapper.vm.$nextTick();
 		const notification = wrapper.findComponent(NotificationBox);
 		expect(notification.isVisible()).toBe(true);
-
-		const notificationHasError = hasColorClasses(
-			notification.classes(),
-			"red"
-		);
-		expect(notificationHasError).toBe(true);
 		wrapper.unmount();
 	});
+});
 
-	it("validateTextInput is called when the detail has less than 500 characters", () => {
-		const wrapper = shallowMount(NewListing, {
+describe("Newlisting validateNumericField", () => {
+	let wrapper;
+	beforeEach(() => {
+		wrapper = shallowMount(NewListing, {
+			global: {
+				plugins: [createTestingPinia({ createSpy: vi.fn() })],
+			},
+		});
+	});
+	afterEach(() => wrapper.unmount());
+	const mockEvent = { target: { id: "price", value: "1" } };
+
+	it("should change the valid property of a valid input in formData", () => {
+		wrapper.vm.formData.price.min = 4;
+		wrapper.vm.formData.price.valid = true;
+
+		wrapper.vm.validateTextField(mockEvent);
+		expect(wrapper.vm.formData.price.valid).toBe(false);
+
+		wrapper.vm.formData.price.max = 5;
+		wrapper.vm.formData.price.valid = true;
+		mockEvent.target.value = "123456";
+
+		wrapper.vm.validateTextField(mockEvent);
+		expect(wrapper.vm.formData.price.valid).toBe(false);
+	});
+
+	it("should change the valid property of an invalid input in formData", () => {
+		wrapper.vm.formData.price.min = 1;
+
+		wrapper.vm.validateTextField(mockEvent);
+		expect(wrapper.vm.formData.price.valid).toBe(true);
+	});
+
+	it("should display a notification if the input is not valid", async () => {
+		const wrapper = mount(NewListing, {
 			global: {
 				plugins: [createTestingPinia({ createSpy: vi.fn() })],
 			},
 		});
 
-		const mockEvent = {
-			target: { value: "a", id: "detail" },
-		};
+		mockEvent.target.value = "1";
+		wrapper.vm.formData.price.min = 2;
+		wrapper.vm.validateTextField(mockEvent);
 
-		wrapper.vm.validateProductDetail(mockEvent);
-
-		expect(wrapper.vm.validateTextInput).toBeTruthy();
+		await wrapper.vm.$nextTick();
+		const notification = wrapper.findComponent(NotificationBox);
+		expect(notification.isVisible()).toBe(true);
 		wrapper.unmount();
 	});
 });

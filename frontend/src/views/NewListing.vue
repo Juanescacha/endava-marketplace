@@ -14,25 +14,18 @@
 	import ImageInputList from "@/components/Inputs/ImageInputList.vue";
 	import FormButton from "@/components/Inputs/FormButton.vue";
 	import NotificationBox from "@/components/NotificationBox.vue";
+	import TextAreaWithCounter from "@/components/Inputs/TextAreaWithCounter.vue";
 
 	const categories = reactive([]);
-	const formData = reactive({
-		name: { value: "", valid: false },
-		detail: { value: "", valid: false },
-		category: { value: "", valid: false },
-		price: { value: 0, valid: false },
-		condition: { value: 0, valid: false },
-		stock: { value: 0, valid: false },
-		media: { value: "", valid: false },
-	});
-
 	const user = useUserStore();
 	const { showMsg, msgColor, displayMsg } = useNotification();
 	const {
+		formData,
+		decorateFormData,
+		handleTextInput,
 		validateTextInput,
 		validateNumericInput,
-		handleInputUpdate,
-		handleNumericInputUpdate,
+		handleNumericInput,
 		handleMediaUpdate,
 		handleSelectUpdate,
 		handleConditionUpdate,
@@ -42,6 +35,21 @@
 
 	onMounted(() => {
 		fetchCategories();
+		decorateFormData([
+			"name",
+			"detail",
+			"category",
+			"price",
+			"condition",
+			"stock",
+			"media",
+		]);
+		formData.name.min = 1;
+		formData.detail.min = 1;
+		formData.detail.max = 500;
+		formData.price.min = 0;
+		formData.condition.min = 0;
+		formData.stock.min = 0;
 	});
 
 	const fetchCategories = () => {
@@ -57,16 +65,34 @@
 		});
 	};
 
-	const validateProductDetail = $event => {
-		if ($event.target.value.length > 500) {
-			displayMsg("The detail can't have more than 500 characters", "red");
-		} else {
-			validateTextInput($event, formData);
+	const validateTextField = $event => {
+		const isValid = validateTextInput(
+			$event.target.id,
+			$event.target.value
+		);
+		if (!isValid) {
+			displayMsg(
+				`The ${$event.target.id} doesn't have an appropriate length`,
+				"red"
+			);
+		}
+	};
+
+	const validateNumericField = $event => {
+		const isValid = validateNumericInput(
+			$event.target.id,
+			$event.target.value
+		);
+		if (!isValid) {
+			displayMsg(
+				`The ${$event.target.id} doesn't have an appropriate value`,
+				"red"
+			);
 		}
 	};
 
 	const handleFormSubmit = async () => {
-		if (!isValidForm(formData)) {
+		if (!isValidForm()) {
 			displayMsg("All fields are obligatory", "red");
 			return;
 		}
@@ -87,18 +113,15 @@
 		// TODO redirect to other page
 	};
 
-	const organizePostPetition = () => {
-		const postData = {
-			seller_id: user.id,
-			category_id: formData.category.value,
-			name: formData.name.value,
-			detail: formData.detail.value,
-			condition: formData.condition.value,
-			price: formData.price.value,
-			stock: formData.stock.value,
-		};
-		return postData;
-	};
+	const organizePostPetition = () => ({
+		seller_id: user.id,
+		category_id: formData.category.value,
+		name: formData.name.value,
+		detail: formData.detail.value,
+		condition: formData.condition.value,
+		price: formData.price.value,
+		stock: formData.stock.value,
+	});
 
 	const createNewListing = async () => {
 		const data = organizePostPetition();
@@ -135,22 +158,21 @@
 				title="Product name"
 				class="col-span-2 rounded border border-zinc-400 px-2 py-3"
 				autocomplete="off"
-				@input="handleInputUpdate($event, formData)"
-				@focusout="validateTextInput($event, formData)"
+				@input="handleTextInput"
+				@focusout="validateTextField"
 			/>
-			<textarea
-				id="detail"
+			<text-area-with-counter
+				name="detail"
 				placeholder="Product detail"
-				title="Product detail"
-				class="col-span-2 rounded border border-zinc-400 px-2 py-3"
-				@input="handleInputUpdate($event, formData)"
-				@focusout="validateProductDetail"
-			></textarea>
+				class="col-span-2"
+				@input-changed="handleTextInput"
+				@focusout="validateTextField"
+			/>
 			<select-input
 				id="category"
 				title="Category"
 				:options="categories"
-				@selection-changed="handleSelectUpdate($event, formData)"
+				@selection-changed="handleSelectUpdate"
 			/>
 			<input
 				id="price"
@@ -158,8 +180,8 @@
 				placeholder="Price"
 				title="Product price"
 				class="rounded border border-zinc-400 px-2 py-3"
-				@input="handleNumericInputUpdate($event, formData)"
-				@focusout="validateNumericInput($event, formData)"
+				@input="handleNumericInput"
+				@focusout="validateNumericField"
 			/>
 			<input
 				id="stock"
@@ -167,17 +189,17 @@
 				placeholder="Quantity"
 				title="Number of units"
 				class="col-span-1 rounded border border-zinc-400 px-2 py-3"
-				@input="handleNumericInputUpdate($event, formData)"
-				@focusout="validateNumericInput($event, formData)"
+				@input="handleNumericInput"
+				@focusout="validateNumericField"
 			/>
 			<stars-input
 				label="Condition"
 				:increment="0.5"
 				color="#DE411B"
-				@rating-updated="handleConditionUpdate($event, formData)"
+				@rating-updated="handleConditionUpdate"
 			/>
 			<image-input-list
-				@update-media-list="handleMediaUpdate($event, formData)"
+				@update-media-list="handleMediaUpdate"
 				@image-too-large-uploaded="
 					displayMsg('The file is too large', 'red')
 				"

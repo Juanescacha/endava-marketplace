@@ -1,6 +1,6 @@
 <script setup>
 	import { ref, reactive, onMounted } from "vue";
-	import StarSvg from "./StarSVG.vue";
+	import StarSvg from "@/components/Icons/StarSVG.vue";
 
 	const emit = defineEmits(["ratingUpdated"]);
 	const props = defineProps({

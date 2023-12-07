@@ -32,6 +32,25 @@ const makeGetRequest = async route => {
 	}
 };
 
+const makePostRequest = async (route, data) => {
+	try {
+		const config = {
+			headers: getHeadersForRequest(),
+		};
+
+		const response = await axios.post(route, data, config);
+		const { status } = response;
+
+		if (status === 201 || status === 200) {
+			return { data: response.data, msg: "Succesfull operation" };
+		} else {
+			return { error: true, msg: "Failed operation" };
+		}
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
 export const postNewListing = async data => {
 	try {
 		let url = getAPIURL();
@@ -350,6 +369,36 @@ export const patchDisableCategory = async id => {
 	try {
 		const response = await axios.patch(url, {}, config);
 		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+// QUESTIONS
+
+export const getListingQuestions = async id => {
+	const url = `${getAPIURL()}/api/questions/listing/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const postQuestion = async data => {
+	const url = `${getAPIURL()}/api/questions`;
+	return await makePostRequest(url, data);
+};
+
+export const postAnswer = async answerData => {
+	const url = `${getAPIURL()}/api/questions/answer`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+
+	try {
+		const { data, status } = await axios.patch(url, answerData, config);
+		if (status === 200 || status === 201) {
+			return { data };
+		}
+
+		return { error: true };
 	} catch (error) {
 		return handleCatch(error);
 	}

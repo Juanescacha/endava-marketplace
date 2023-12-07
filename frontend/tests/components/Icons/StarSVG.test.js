@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, test } from "vitest";
 import { mount } from "@vue/test-utils";
-import StarSVG from "@/components/Inputs/StarSVG.vue";
+import StarSVG from "@/components/Icons/StarSVG.vue";
 import fillings from "@/assets/starSVG";
 
 const minimalProps = {

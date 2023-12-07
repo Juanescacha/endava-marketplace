@@ -2,10 +2,12 @@ import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import useForm from "@/composables/useForm";
 
 const {
+	formData,
+	decorateFormData,
 	validateTextInput,
 	validateNumericInput,
-	handleInputUpdate,
-	handleNumericInputUpdate,
+	handleTextInput,
+	handleNumericInput,
 	handleMediaUpdate,
 	handleSelectUpdate,
 	handleConditionUpdate,
@@ -13,15 +15,13 @@ const {
 	isValidForm,
 } = useForm();
 
-const createFormData = () => {
+const clearFormData = () => {
 	const emptyProperty = { value: null, valid: false };
-	return {
-		textField: Object.create(emptyProperty),
-		numberField: Object.create(emptyProperty),
-		media: Object.create(emptyProperty),
-		selectField: Object.create(emptyProperty),
-		condition: Object.create(emptyProperty),
-	};
+	formData.textField = Object.create(emptyProperty);
+	formData.numberField = Object.create(emptyProperty);
+	formData.media = Object.create(emptyProperty);
+	formData.selectField = Object.create(emptyProperty);
+	formData.condition = Object.create(emptyProperty);
 };
 
 const mockDOMEvent = (id, value) => ({
@@ -31,135 +31,202 @@ const mockDOMEvent = (id, value) => ({
 	},
 });
 
-describe("validateTextInput", () => {
-	let mockFormData = null;
-	beforeEach(() => (mockFormData = createFormData()));
-
-	it("should change the valid property of a text in the formdata", () => {
-		const event = mockDOMEvent("textField", "foo");
-		expect(mockFormData.textField.valid).toBe(false);
-
-		validateTextInput(event, mockFormData);
-		expect(mockFormData.textField.valid).toBe(true);
+describe("decorateFormData", () => {
+	it("should throw an error if the parameter is not an array", () => {
+		expect(() => decorateFormData()).toThrowError();
+		expect(() => decorateFormData("foo")).toThrowError();
+		expect(() => decorateFormData(4)).toThrowError();
+		expect(() => decorateFormData(null)).toThrowError();
+		expect(() => decorateFormData({ foo: "bar" })).toThrowError();
 	});
 
-	it("should not change the valid property of a text when the event has an empty string", () => {
-		const event = mockDOMEvent("textField", "");
-		expect(mockFormData.textField.valid).toBe(false);
+	it("should throw an error if the passed array doesn't have only strings", () => {
+		expect(() => decorateFormData(["foo", 1])).toThrowError();
+		expect(() => decorateFormData([null, "foo"])).toThrowError();
+		expect(() => decorateFormData(["foo", {}])).toThrowError();
+		expect(() => decorateFormData(["foo", undefined])).toThrowError();
+		expect(() => decorateFormData(["foo", []])).toThrowError();
+	});
 
-		validateTextInput(event, mockFormData);
-		expect(mockFormData.textField.valid).toBe(false);
+	it("should throw an error if the strings can't be a proper object key", () => {
+		expect(() => decorateFormData(["1foo"])).toThrowError();
+		expect(() => decorateFormData(["foo bar"])).toThrowError();
+		expect(() => decorateFormData(["foo-bar"])).toThrowError();
+	});
+
+	it("should populate the formData with keys equivalent to the passed strings", () => {
+		const keys = ["foo", "bar"];
+		decorateFormData(keys);
+		expect(formData).toHaveProperty(keys[0]);
+		expect(formData).toHaveProperty(keys[1]);
+		expect(formData.foo).toHaveProperty("value");
+		expect(formData.foo).toHaveProperty("valid");
+	});
+});
+
+describe("validateTextInput", () => {
+	beforeEach(() => clearFormData());
+
+	it("should set the valid property to true when no min or max are set", () => {
+		validateTextInput("textField", "");
+		expect(formData.textField.valid).toBe(true);
+
+		validateTextInput("textField", "foo");
+		expect(formData.textField.valid).toBe(true);
+	});
+
+	it("should set the valid property to true when the input is within min and max", () => {
+		formData.textField.min = 1;
+		formData.textField.max = 3;
+
+		validateTextInput("textField", "f");
+		expect(formData.textField.valid).toBe(true);
+		validateTextInput("textField", "fo");
+		expect(formData.textField.valid).toBe(true);
+		validateTextInput("textField", "foo");
+		expect(formData.textField.valid).toBe(true);
+	});
+
+	it("should set valid property to false when the value doesn't have the correct length", () => {
+		formData.textField.valid = true;
+		formData.textField.min = 1;
+		validateTextInput("textField", "");
+		expect(formData.textField.valid).toBe(false);
+
+		formData.textField.valid = true;
+		formData.textField.max = 5;
+		validateTextInput("textField", "Sample");
+		expect(formData.textField.valid).toBe(false);
 	});
 });
 
 describe("validateNumericInput", () => {
-	let mockFormData = null;
-	beforeEach(() => (mockFormData = createFormData()));
+	beforeEach(() => clearFormData());
 
-	it("should change the valid property of a number in the formdata", () => {
-		const event = mockDOMEvent("numberField", "1");
-		expect(mockFormData.numberField.valid).toBe(false);
+	it("should set the valid property to true when no min or max are set", () => {
+		expect(formData.numberField.valid).toBe(false);
 
-		validateNumericInput(event, mockFormData);
-		expect(mockFormData.numberField.valid).toBe(true);
+		validateNumericInput("numberField", "1");
+		expect(formData.numberField.valid).toBe(true);
 	});
 
-	it("should not change the valid property of a number when the event has a zero or a negative", () => {
-		const event = mockDOMEvent("numberField", "0");
-		expect(mockFormData.numberField.valid).toBe(false);
+	it("should set the valid property to true when the input is within min and max", () => {
+		formData.numberField.min = 1;
+		formData.numberField.max = 3;
 
-		validateNumericInput(event, mockFormData);
-		expect(mockFormData.numberField.valid).toBe(false);
+		validateNumericInput("numberField", "1");
+		expect(formData.numberField.valid).toBe(true);
+		validateNumericInput("numberField", "2");
+		expect(formData.numberField.valid).toBe(true);
+		validateNumericInput("numberField", "3");
+		expect(formData.numberField.valid).toBe(true);
+	});
 
-		event.target.value = "-1";
-		validateNumericInput(event, mockFormData);
-		expect(mockFormData.numberField.valid).toBe(false);
+	it("should set valid property to false when the value doesn't have the correct length", () => {
+		formData.numberField.valid = true;
+		formData.numberField.min = 1;
+		validateNumericInput("numberField", "0");
+		expect(formData.numberField.valid).toBe(false);
+
+		formData.numberField.valid = true;
+		formData.numberField.max = 5;
+		validateNumericInput("numberField", "6");
+		expect(formData.numberField.valid).toBe(false);
 	});
 });
 
-describe("handleInputUpdate", () => {
+describe("handleTextInput", () => {
 	it("should change the value property of a text in the formdata", () => {
-		const mockFormData = createFormData();
+		clearFormData();
 		const event = mockDOMEvent("textField", "Foo");
-		expect(mockFormData.textField.value).toBeNull();
+		expect(formData.textField.value).toBeNull();
 
-		handleInputUpdate(event, mockFormData);
-		expect(mockFormData.textField.value).toBe(event.target.value);
+		handleTextInput(event);
+		expect(formData.textField.value).toBe(event.target.value);
+
+		event.target.value = "";
+		handleTextInput(event);
+		expect(formData.textField.value).toBe(event.target.value);
+
+		event.target.value = null;
+		handleTextInput(event);
+		expect(formData.textField.value).toBe(event.target.value);
 	});
 });
 
-describe("handleNumericInputUpdate", () => {
-	let mockFormData = null;
-	beforeEach(() => (mockFormData = createFormData()));
+describe("handleNumericInput", () => {
+	beforeEach(() => clearFormData());
 
 	it("should change the value property of a number in the formdata", () => {
 		const event = mockDOMEvent("numberField", "1");
-		expect(mockFormData.numberField.value).toBeNull();
+		expect(formData.numberField.value).toBeNull();
 
-		handleNumericInputUpdate(event, mockFormData);
-		expect(mockFormData.numberField.value).toBe(Number(event.target.value));
+		handleNumericInput(event);
+		expect(formData.numberField.value).toBe(Number(event.target.value));
 
 		event.target.value = "-1";
-		handleNumericInputUpdate(event, mockFormData);
-		expect(mockFormData.numberField.value).toBe(Number(event.target.value));
+		handleNumericInput(event);
+		expect(formData.numberField.value).toBe(Number(event.target.value));
 	});
 
 	it("should not change the value property of a number if an invalid number is provided", () => {
 		const event = mockDOMEvent("numberField", "foo");
-		expect(mockFormData.numberField.value).toBeNull();
+		expect(formData.numberField.value).toBeNull();
 
-		handleNumericInputUpdate(event, mockFormData);
-		expect(mockFormData.numberField.value).toBeNull();
+		handleNumericInput(event);
+		expect(formData.numberField.value).toBeNull();
 
 		event.target.value = "";
-		handleNumericInputUpdate(event, mockFormData);
-		expect(mockFormData.numberField.value).toBe(Number(event.target.value));
+		handleNumericInput(event);
+		expect(formData.numberField.value).toBe(Number(event.target.value));
+
+		event.target.value = null;
+		handleNumericInput(event);
+		expect(formData.numberField.value).toBe(Number(event.target.value));
 	});
 });
 
 describe("handleMediaUpdate", () => {
-	let mockFormData = null;
-	beforeEach(() => (mockFormData = createFormData()));
+	beforeEach(() => clearFormData());
 
 	it("should change the value of media list when passed an array with info", () => {
 		const media = ["1", "2"];
-		expect(mockFormData.media.value).toBeNull();
+		expect(formData.media.value).toBeNull();
 
-		handleMediaUpdate(media, mockFormData);
-		expectTypeOf(mockFormData.media.value).toBeArray();
-		expect(mockFormData.media.value.length).toBe(2);
+		handleMediaUpdate(media);
+		expectTypeOf(formData.media.value).toBeArray();
+		expect(formData.media.value.length).toBe(2);
 	});
 
 	it("should change the value of media list when passed an empty array", () => {
 		const media = [];
-		expect(mockFormData.media.value).toBeNull();
+		expect(formData.media.value).toBeNull();
 
-		handleMediaUpdate(media, mockFormData);
-		expectTypeOf(mockFormData.media.value).toBeArray();
-		expect(mockFormData.media.value.length).toBe(0);
+		handleMediaUpdate(media);
+		expectTypeOf(formData.media.value).toBeArray();
+		expect(formData.media.value.length).toBe(0);
 	});
 
 	it("should change the valid property of media to true if provided a non empty array", () => {
 		const media = ["1", "2"];
 
-		handleMediaUpdate(media, mockFormData);
-		expect(mockFormData.media.valid).toBe(true);
+		handleMediaUpdate(media);
+		expect(formData.media.valid).toBe(true);
 	});
 
 	it("should not change the valid property of media to true if provided an empty array", () => {
 		const media = [];
 
-		expect(mockFormData.media.valid).toBe(false);
-		handleMediaUpdate(media, mockFormData);
-		expect(mockFormData.media.valid).toBe(false);
+		expect(formData.media.valid).toBe(false);
+		handleMediaUpdate(media);
+		expect(formData.media.valid).toBe(false);
 	});
 });
 
 describe("handleSelectUpdate", () => {
-	let mockFormData = null;
 	let event = null;
 	beforeEach(() => {
-		mockFormData = createFormData();
+		clearFormData();
 		event = Object.create({
 			target: {
 				id: "selectField",
@@ -170,53 +237,52 @@ describe("handleSelectUpdate", () => {
 	});
 
 	it("should change the value property of a select in the formdata", () => {
-		expect(mockFormData.selectField.value).toBeNull();
+		expect(formData.selectField.value).toBeNull();
 
-		handleSelectUpdate(event, mockFormData);
-		expect(mockFormData.selectField.value).toBe(10);
+		handleSelectUpdate(event);
+		expect(formData.selectField.value).toBe(10);
 
 		event.target.selectedIndex = 1;
-		handleSelectUpdate(event, mockFormData);
-		expect(mockFormData.selectField.value).toBe(20);
+		handleSelectUpdate(event);
+		expect(formData.selectField.value).toBe(20);
 	});
 
 	it("should change the valid property of a select in the formdata", () => {
-		handleSelectUpdate(event, mockFormData);
-		expect(mockFormData.selectField.valid).toBe(true);
+		handleSelectUpdate(event);
+		expect(formData.selectField.valid).toBe(true);
 	});
 });
 
 describe("handleConditionUpdate", () => {
-	let mockFormData = null;
-	beforeEach(() => (mockFormData = createFormData()));
+	beforeEach(() => clearFormData());
 
 	it("should change the value and valid property of condition in the formdata", () => {
 		const event = { rating: 1 };
-		expect(mockFormData.condition.value).toBeNull();
-		expect(mockFormData.condition.valid).toBe(false);
+		expect(formData.condition.value).toBeNull();
+		expect(formData.condition.valid).toBe(false);
 
-		handleConditionUpdate(event, mockFormData);
+		handleConditionUpdate(event);
 
-		expect(mockFormData.condition.value).toBe(1);
-		expect(mockFormData.condition.valid).toBe(true);
+		expect(formData.condition.value).toBe(1);
+		expect(formData.condition.valid).toBe(true);
 	});
 
 	it("should not change the value and valid property of condition if negativ or invalid inputs are provided", () => {
 		const event = { rating: 0 };
-		expect(mockFormData.condition.value).toBeNull();
-		expect(mockFormData.condition.valid).toBe(false);
+		expect(formData.condition.value).toBeNull();
+		expect(formData.condition.valid).toBe(false);
 
-		handleConditionUpdate(event, mockFormData);
-		expect(mockFormData.condition.value).toBeNull();
-		expect(mockFormData.condition.valid).toBe(false);
+		handleConditionUpdate(event);
+		expect(formData.condition.value).toBeNull();
+		expect(formData.condition.valid).toBe(false);
 
 		event.rating = -1;
-		handleConditionUpdate(event, mockFormData);
-		expect(mockFormData.condition.value).toBeNull();
+		handleConditionUpdate(event);
+		expect(formData.condition.value).toBeNull();
 
 		event.rating = "foo";
-		handleConditionUpdate(event, mockFormData);
-		expect(mockFormData.condition.value).toBeNull();
+		handleConditionUpdate(event);
+		expect(formData.condition.value).toBeNull();
 	});
 });
 
@@ -247,25 +313,22 @@ describe("removeNullsFromImages", () => {
 });
 
 describe("isValidForm", () => {
-	let mockFormData = null;
-	beforeEach(() => (mockFormData = createFormData()));
+	beforeEach(() => clearFormData());
 
 	it("should return true all fields of the form are valid", () => {
-		const mockFormData = createFormData();
-		Object.keys(mockFormData).forEach(field => {
-			mockFormData[field].valid = true;
+		Object.keys(formData).forEach(field => {
+			formData[field].valid = true;
 		});
 
-		expect(isValidForm(mockFormData)).toBe(true);
+		expect(isValidForm()).toBe(true);
 	});
 
 	it("should return false if at least one field is invalid", () => {
-		const mockFormData = createFormData();
-		Object.keys(mockFormData).forEach(field => {
-			mockFormData[field].valid = true;
+		Object.keys(formData).forEach(field => {
+			formData[field].valid = true;
 		});
 
-		mockFormData.numberField.valid = false;
-		expect(isValidForm(mockFormData)).toBe(false);
+		formData.numberField.valid = false;
+		expect(isValidForm()).toBe(false);
 	});
 });
