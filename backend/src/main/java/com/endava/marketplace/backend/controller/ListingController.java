@@ -32,17 +32,33 @@ public class ListingController {
     }
 
     @Operation(
-            summary = "Creates a new Listing",
-            description = "Creates a new listing with all of their attributes. It will be associated to their owner by id",
+            summary = "Creates a new Listing or Listing Draft",
+            description = "Creates a new Listing or Listing Draft depending of the sent attributes. It will be associated to their owner by id",
             tags = {"Listing"}
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = NewListingRequestDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", description = "Listing Category with given Id was not found", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "409", description = "At least a Category has to be defined to save Listing as a draft", content = { @Content(schema = @Schema()) })
     })
     @PostMapping()
-    public ResponseEntity<ListingDTO> postListing(@RequestBody NewListingRequestDTO newListingRequestDTO) {
-        return ResponseEntity.ok(listingService.saveListing(newListingRequestDTO));
+    public ResponseEntity<ListingDTO> postListing(@RequestPart("data") NewListingRequestDTO newListingRequestDTO,
+                                                  @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        return ResponseEntity.ok(listingService.saveListing(newListingRequestDTO, images));
+    }
+
+
+    @Operation(
+            summary = "Lists the Listing Drafts of a seller",
+            description = "Lists the Listing Drafts of a seller. If the seller hasn't made any Listing Draft it will return an empty array",
+            tags = {"Listing"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = ListingDTO.class), mediaType = "application/json")})
+    })
+    @GetMapping("/seller/{id}/drafts")
+    public ResponseEntity<Set<ListingDraftBySellerDTO>> getListingDraftsBySellerId(@PathVariable Long id) {
+        return ResponseEntity.ok(listingService.findListingDraftsBySellerId(id));
     }
 
     @Operation(

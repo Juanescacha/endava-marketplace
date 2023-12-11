@@ -51,7 +51,7 @@ public class StorageClient {
     }
 
     public void uploadImages(List<MultipartFile> images, Long listingId) throws IOException {
-        int count = 1;
+        int count  = fetchImagesURLS(listingId).size() + 1;
 
         for (MultipartFile image : images) {
             String contentType = image.getContentType();

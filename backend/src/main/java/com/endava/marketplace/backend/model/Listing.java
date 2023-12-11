@@ -1,7 +1,6 @@
 package com.endava.marketplace.backend.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "listing")
@@ -34,29 +35,23 @@ public class Listing {
     @JoinColumn(name = "status_id")
     private ListingStatus status;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column()
     private String name;
 
-    @Column(length = 500, nullable = false)
+    @Column(length = 500)
     @Size(max = 500)
-    @NotNull
     private String detail;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column()
     private Double price;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column()
     private Integer stock;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column()
     private Integer condition;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column()
     private LocalDate date;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
@@ -64,4 +59,8 @@ public class Listing {
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.PERSIST)
     private Set<Sale> sales;
+
+    public boolean anyNull() {
+        return Stream.of(name, detail, price, stock, condition).anyMatch(Objects::isNull);
+    }
 }

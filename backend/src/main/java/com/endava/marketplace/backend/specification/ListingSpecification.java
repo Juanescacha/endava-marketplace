@@ -11,4 +11,8 @@ public class ListingSpecification {
     public static Specification<Listing> withCategoryId(Integer categoryId) {
         return (root, query, builder) -> builder.equal(root.get("category").get("id"), categoryId);
     }
+
+    public static Specification<Listing> withStatusId(Long statusId) {
+        return (root, query, builder) -> builder.equal(root.get("status").get("id"), statusId);
+    }
 }

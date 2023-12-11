@@ -4,8 +4,8 @@ import com.endava.marketplace.backend.azure.StorageClient;
 import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.exception.EntityNotFoundException;
 import com.endava.marketplace.backend.exception.InsufficientStockException;
+import com.endava.marketplace.backend.exception.InvalidStatusException;
 import com.endava.marketplace.backend.mapper.ListingMapper;
-import com.endava.marketplace.backend.model.Endavan;
 import com.endava.marketplace.backend.model.Listing;
 import com.endava.marketplace.backend.model.ListingCategory;
 import com.endava.marketplace.backend.model.ListingStatus;
@@ -58,18 +58,42 @@ public class ListingService {
         this.listingMapper = listingMapper;
     }
 
-    public ListingDTO saveListing(NewListingRequestDTO newListingRequestDTO) {
-        Endavan seller = endavanService.loadEndavan(newListingRequestDTO.getSeller_id());
-        ListingCategory category = listingCategoryService.loadListingCategory(newListingRequestDTO.getCategory_id());
-        ListingStatus status = listingStatusService.getListingStatuses().get("Available");
-
+    public ListingDTO saveListing(NewListingRequestDTO newListingRequestDTO, List<MultipartFile> images) throws IOException {
+        ListingStatus status = listingStatusService.getListingStatuses().get("Draft");
+        boolean hasImages = false;
         Listing listing = listingMapper.toListing(newListingRequestDTO);
-        listing.setSeller(seller);
-        listing.setCategory(category);
-        listing.setStatus(status);
-        listing.setDate(LocalDate.now());
 
-        return listingMapper.toListingDTO(listingRepository.save(listing));
+        if(listing.getCategory().getId() == null) {
+            throw new InvalidStatusException("At least a Category has to be defined to save Listing as a draft");
+        }
+
+        if(listing.getId() != null) {
+            hasImages = storageClient.fetchImagesURLS(listing.getId()).isEmpty();
+        }
+
+        if(!listing.anyNull()) {
+            if(images != null || hasImages) {
+                status = listingStatusService.getListingStatuses().get("Available");
+                listing.setDate(LocalDate.now());
+            }
+        }
+
+        listing.setSeller(endavanService.loadEndavan(listing.getSeller().getId()));
+        listing.setCategory(listingCategoryService.loadListingCategory(listing.getCategory().getId()));
+        listing.setStatus(status);
+
+        listing = listingRepository.save(listing);
+
+        if(images != null) {
+            storageClient.uploadImages(images, listing.getId());
+        }
+
+        return listingMapper.toListingDTO(listing);
+    }
+
+    public Set<ListingDraftBySellerDTO> findListingDraftsBySellerId(Long id) {
+        ListingStatus draft  = listingStatusService.getListingStatuses().get("Draft");
+        return listingMapper.toListingDraftBySellerDTOSet(listingRepository.findAllBySellerIdAndStatus(id, draft));
     }
 
     public ListingWithImagesDTO findListingById(Long listingId) {
@@ -86,10 +110,12 @@ public class ListingService {
     }
 
     public Set<ListingQuickSearchDTO> findListingByName(String listingName) {
-        return listingMapper.toListingQuickSearchDTOSet(listingRepository.findTop5ByNameContainsIgnoreCaseOrderByIdDesc(listingName));
+        ListingStatus available = listingStatusService.getListingStatuses().get("Available");
+        return listingMapper.toListingQuickSearchDTOSet(listingRepository.findTop5ByNameContainsIgnoreCaseAndStatusOrderByIdDesc(listingName, available));
     }
 
     public Page<ListingPageDTO> findListings(Integer category, String name, Integer page) {
+        Long availableStatusId = listingStatusService.getListingStatuses().get("Available").getId();
         int actualPage = (page == null) ? 0 : page - 1;
         Sort.Order orderById = new Sort.Order(Sort.Direction.DESC, "id");
         Pageable pageWithTenElements = PageRequest.of(actualPage, 10, Sort.by(orderById));
@@ -102,6 +128,7 @@ public class ListingService {
             if (name != null && !name.isEmpty()) {
                 predicate = builder.and(predicate, ListingSpecification.withName(name).toPredicate(root, query, builder));
             }
+            predicate = builder.and(predicate, ListingSpecification.withStatusId(availableStatusId).toPredicate(root, query, builder));
             return predicate;
         }, pageWithTenElements);
 

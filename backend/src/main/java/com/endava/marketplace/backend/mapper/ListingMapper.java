@@ -51,4 +51,12 @@ public interface ListingMapper {
             @Mapping(target = "thumbnail", ignore = true)
     })
     ListingPageDTO toListingPageDTO(Listing listing);
+
+    @Mappings({
+            @Mapping(source = "category.name", target = "category"),
+            @Mapping(source = "status.name", target = "status")
+    })
+    ListingDraftBySellerDTO toListingDraftBySellerDTO(Listing listing);
+
+    Set<ListingDraftBySellerDTO> toListingDraftBySellerDTOSet(Set<Listing> listings);
 }
