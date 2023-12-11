@@ -31,13 +31,6 @@ public interface ListingMapper {
     Set<ListingQuickSearchDTO> toListingQuickSearchDTOSet(Set<Listing> listings);
 
     @Mappings({
-            @Mapping(source = "category.name", target = "category"),
-            @Mapping(source = "status.name", target = "status"),
-            @Mapping(source = "date", target = "date", dateFormat = "yyyy-MM-dd")
-    })
-    ListingWithoutSellerDTO toListingWithoutSellerDTO(Listing listing);
-
-    @Mappings({
             @Mapping(source = "seller_id", target = "seller.id"),
             @Mapping(source = "category_id", target = "category.id"),
             @Mapping(target = "date", ignore = true),

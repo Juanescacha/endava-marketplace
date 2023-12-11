@@ -1,7 +1,6 @@
 package com.endava.marketplace.backend.controller;
 
 import com.endava.marketplace.backend.dto.*;
-import com.endava.marketplace.backend.model.Sale;
 import com.endava.marketplace.backend.service.SaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,8 +62,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/buyer/{id}")
-    public Set<SaleByBuyerDTO> getSalesByBuyerId(@PathVariable Long id) {
-        return saleService.findSalesByBuyerId(id);
+    public Set<ListedSaleDTO> getSalesByBuyerId(@PathVariable Long id) {
+        return saleService.findSales(id, false);
     }
 
     @Operation(
@@ -73,8 +72,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/seller/{id}")
-    public Set<SaleBySellerDTO> getSalesBySellerId(@PathVariable Long id) {
-        return saleService.findSalesBySellerId(id);
+    public Set<ListedSaleDTO> getSalesBySellerId(@PathVariable Long id) {
+        return saleService.findSales(id, true);
     }
 
     @Operation(

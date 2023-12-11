@@ -1,15 +1,11 @@
 package com.endava.marketplace.backend.service;
 
-import com.endava.marketplace.backend.dto.NewSaleRequestDTO;
-import com.endava.marketplace.backend.dto.SaleByBuyerDTO;
-import com.endava.marketplace.backend.dto.SaleBySellerDTO;
-import com.endava.marketplace.backend.dto.SaleDTO;
+import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.event.SaleRatedEvent;
 import com.endava.marketplace.backend.exception.EntityAttributeAlreadySetException;
 import com.endava.marketplace.backend.exception.EntityNotFoundException;
 import com.endava.marketplace.backend.exception.InvalidStatusException;
 import com.endava.marketplace.backend.mapper.SaleMapper;
-import com.endava.marketplace.backend.model.Rating;
 import com.endava.marketplace.backend.model.Sale;
 import com.endava.marketplace.backend.model.SaleStatus;
 import com.endava.marketplace.backend.repository.SaleRepository;
@@ -63,12 +59,11 @@ public class SaleService {
         return saleMapper.toSaleDTO(foundSale.get());
     }
 
-    public Set<SaleByBuyerDTO> findSalesByBuyerId(Long id) {
-        return saleMapper.toBuyerDTOSet(saleRepository.findSalesByBuyer_Id(id));
-    }
-
-    public Set<SaleBySellerDTO> findSalesBySellerId(Long id) {
-        return saleMapper.toSellerDTOSet(saleRepository.findSalesByListing_Seller_Id(id));
+    public Set<ListedSaleDTO> findSales(Long id, boolean isSeller) {
+        Set<ListedSaleDTO> sales;
+        sales = isSeller ? saleMapper.toListedSaleDTOSet(saleRepository.findSalesByListing_Seller_Id(id)) : saleMapper.toListedSaleDTOSet(saleRepository.findSalesByBuyer_Id(id));
+        sales.forEach(listedSaleDTO -> listedSaleDTO.setListing_thumbnail(listingService.retrieveListingThumbnail(listedSaleDTO.getListing_id())));
+        return sales;
     }
 
     @Transactional
