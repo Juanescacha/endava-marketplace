@@ -104,6 +104,12 @@ export default function useForms() {
 		return auxMedia;
 	};
 
+	const preventNegativeNumber = $event => {
+		if ($event.key && $event.key === "-") {
+			$event.preventDefault();
+		}
+	};
+
 	const isValidForm = () => {
 		const inputValues = Object.values(formData);
 		const invalidInput = inputValues.find(input => !input.valid);
@@ -122,6 +128,7 @@ export default function useForms() {
 		handleSelectUpdate,
 		handleConditionUpdate,
 		removeNullsFromImages,
+		preventNegativeNumber,
 		isValidForm,
 	};
 }

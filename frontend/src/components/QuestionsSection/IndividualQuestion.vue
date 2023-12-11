@@ -50,7 +50,6 @@
 		const isValidAnswer = validateAnswer();
 
 		if (!isValidAnswer) {
-			console.log("gets here");
 			return;
 		}
 
@@ -68,7 +67,6 @@
 				},
 			});
 		} else {
-			console.log(2);
 			error.value = "Failed connection to the server";
 			setTimeout(() => {
 				error.value = null;

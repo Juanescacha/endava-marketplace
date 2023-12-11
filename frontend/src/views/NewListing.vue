@@ -30,6 +30,7 @@
 		handleSelectUpdate,
 		handleConditionUpdate,
 		removeNullsFromImages,
+		preventNegativeNumber,
 		isValidForm,
 	} = useForm();
 
@@ -178,19 +179,23 @@
 				id="price"
 				type="number"
 				placeholder="Price"
+				min="0"
 				title="Product price"
 				class="rounded border border-zinc-400 px-2 py-3"
 				@input="handleNumericInput"
 				@focusout="validateNumericField"
+				@keydown="preventNegativeNumber"
 			/>
 			<input
 				id="stock"
 				type="number"
 				placeholder="Quantity"
 				title="Number of units"
+				min="0"
 				class="col-span-1 rounded border border-zinc-400 px-2 py-3"
 				@input="handleNumericInput"
 				@focusout="validateNumericField"
+				@keydown="preventNegativeNumber"
 			/>
 			<stars-input
 				label="Condition"

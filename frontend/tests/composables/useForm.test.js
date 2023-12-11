@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import useForm from "@/composables/useForm";
 
 const {
@@ -12,6 +12,7 @@ const {
 	handleSelectUpdate,
 	handleConditionUpdate,
 	removeNullsFromImages,
+	preventNegativeNumber,
 	isValidForm,
 } = useForm();
 
@@ -309,6 +310,47 @@ describe("removeNullsFromImages", () => {
 		removeNullsFromImages(mocks);
 		expect(mocks.length).toBe(3);
 		expect(mocks[2]).toBeNull();
+	});
+});
+
+describe("preventNegativeNumber", () => {
+	const getMockDOMEvent = () => ({
+		key: "-",
+		preventDefault: vi.fn(),
+	});
+
+	it("should call the event.preventDefault function when the key is a '-'", () => {
+		const event = getMockDOMEvent();
+		const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+		preventNegativeNumber(event);
+
+		expect(preventDefaultSpy).toHaveBeenCalled();
+	});
+	it("should not call the event.preventDefault function when the key is different from '-'", () => {
+		const event = getMockDOMEvent();
+		const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+		event.key = "a";
+		preventNegativeNumber(event);
+
+		event.key = "+";
+		preventNegativeNumber(event);
+
+		event.key = "1";
+		preventNegativeNumber(event);
+
+		expect(preventDefaultSpy).not.toHaveBeenCalled();
+	});
+
+	it("should not call the event.preventDefault function when the event doesn't have a 'key' property", () => {
+		const event = getMockDOMEvent();
+		const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+		delete event.key;
+		preventNegativeNumber(event);
+
+		expect(preventDefaultSpy).not.toHaveBeenCalled();
 	});
 });
 

@@ -45,7 +45,6 @@
 		const response = await getListingThumbanil(props.cardInfo.id);
 		if (response.error) {
 			// error
-			console.log(response.error);
 		} else {
 			imageSrc.value = response.data;
 		}

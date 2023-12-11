@@ -4,11 +4,12 @@
 	import { useUserStore } from "@/stores/user";
 	import { useQuestionSection } from "@/stores/questionSection";
 	import StarsInput from "@/components/Inputs/StarsInput.vue";
+	import QuantitySelect from "@/components/Inputs/QuantitySelect.vue";
 	import ImageSelector from "@/components/Images/ImageSelector.vue";
 	import QuestionsSection from "@/components/QuestionsSection/BaseLayout.vue";
 	import GenericModal from "@/components/GenericModal.vue";
-	import { getListingById, getListingImages, postSale } from "../utils/axios";
-	import { getArticleOfSentence } from "@/utils/strings";
+	import { getListingById, getListingImages, postSale } from "@/utils/axios";
+	import { getArticleOfSentence, formatMoney } from "@/utils/strings";
 
 	const route = useRoute();
 	const router = useRouter();
@@ -94,16 +95,8 @@
 		isUserSure.value = false;
 	};
 
-	const handleQuantityUpdate = $event => {
-		const userInput = Number($event.target.value);
-		desiredQuantity.value = userInput;
-
-		if (userInput < 1) {
-			desiredQuantity.value = 1;
-		}
-		if (userInput > listing.value.stock) {
-			desiredQuantity.value = listing.value.stock;
-		}
+	const handleQuantityUpdate = payload => {
+		desiredQuantity.value = payload;
 	};
 
 	const makePurchase = async () => {
@@ -180,7 +173,7 @@
 		>
 			<h1>{{ listing.name }}</h1>
 			<div class="text-lg font-semibold text-endava-600">
-				${{ listing.price }}
+				{{ formatMoney(listing.price) }}
 			</div>
 			<div class="flex gap-2">
 				<span>
@@ -211,13 +204,10 @@
 			>
 				<div class="my-4">
 					<span class="mr-4">Quantity</span>
-					<input
-						type="number"
-						:value="desiredQuantity"
-						:disabled="listing.stock === 1"
-						class="h-8 w-12 pr-0"
-						@change="handleQuantityUpdate"
-					/>
+					<quantity-select
+						:stock="listing.stock"
+						@quantity-selected="handleQuantityUpdate"
+					></quantity-select>
 				</div>
 				<button
 					type="submit"
