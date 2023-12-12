@@ -62,11 +62,12 @@ public class ListingService {
     public ListingWithImagesDTO saveListing(NewListingRequestDTO newListingRequestDTO, List<MultipartFile> images) throws IOException {
         ListingStatus status = listingStatusService.getListingStatuses().get("Draft");
         List<String> imagesUrls = new ArrayList<>();
-        Listing listing = listingMapper.toListing(newListingRequestDTO);
 
-        if(listing.getCategory().getId() == null) {
+        if(newListingRequestDTO.getCategory_id() == null) {
             throw new InvalidStatusException("At least a Category has to be defined to save Listing as a draft");
         }
+
+        Listing listing = listingMapper.toListing(newListingRequestDTO);
 
         if(listing.getId() != null) {
             imagesUrls = storageClient.fetchImagesURLS(listing.getId());
