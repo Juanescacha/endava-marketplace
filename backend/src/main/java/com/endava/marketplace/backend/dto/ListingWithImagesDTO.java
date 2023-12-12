@@ -14,26 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 public class ListingWithImagesDTO {
     private Long id;
-
     private EndavanDTO seller;
-
     private String category;
-
     private String status;
-
     private String name;
-
     private String detail;
-
     private Double price;
-
     private Integer stock;
-
     private Integer condition;
-
     private LocalDate date;
-
     private List<String> images;
-
     private String thumbnail;
 }

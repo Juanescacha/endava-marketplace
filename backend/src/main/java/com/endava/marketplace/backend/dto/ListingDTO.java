@@ -13,22 +13,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ListingDTO {
     private Long id;
-
     private EndavanDTO seller;
-
     private String category;
-
     private String status;
-
     private String name;
-
     private String detail;
-
     private Double price;
-
     private Integer stock;
-
     private Integer condition;
-
     private LocalDate date;
 }

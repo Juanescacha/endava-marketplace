@@ -42,7 +42,7 @@ public class ListingController {
             @ApiResponse(responseCode = "409", description = "At least a Category has to be defined to save Listing as a draft", content = { @Content(schema = @Schema()) })
     })
     @PostMapping()
-    public ResponseEntity<ListingDTO> postListing(@RequestPart("data") NewListingRequestDTO newListingRequestDTO,
+    public ResponseEntity<ListingWithImagesDTO> postListing(@RequestPart("data") NewListingRequestDTO newListingRequestDTO,
                                                   @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         return ResponseEntity.ok(listingService.saveListing(newListingRequestDTO, images));
     }

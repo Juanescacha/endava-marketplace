@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -58,9 +59,9 @@ public class ListingService {
         this.listingMapper = listingMapper;
     }
 
-    public ListingDTO saveListing(NewListingRequestDTO newListingRequestDTO, List<MultipartFile> images) throws IOException {
+    public ListingWithImagesDTO saveListing(NewListingRequestDTO newListingRequestDTO, List<MultipartFile> images) throws IOException {
         ListingStatus status = listingStatusService.getListingStatuses().get("Draft");
-        boolean hasImages = false;
+        List<String> imagesUrls = new ArrayList<>();
         Listing listing = listingMapper.toListing(newListingRequestDTO);
 
         if(listing.getCategory().getId() == null) {
@@ -68,11 +69,11 @@ public class ListingService {
         }
 
         if(listing.getId() != null) {
-            hasImages = storageClient.fetchImagesURLS(listing.getId()).isEmpty();
+            imagesUrls = storageClient.fetchImagesURLS(listing.getId());
         }
 
         if(!listing.anyNull()) {
-            if(images != null || hasImages) {
+            if(images != null || !imagesUrls.isEmpty()) {
                 status = listingStatusService.getListingStatuses().get("Available");
                 listing.setDate(LocalDate.now());
             }
@@ -86,9 +87,14 @@ public class ListingService {
 
         if(images != null) {
             storageClient.uploadImages(images, listing.getId());
+            imagesUrls = storageClient.fetchImagesURLS(listing.getId());
         }
 
-        return listingMapper.toListingDTO(listing);
+        ListingWithImagesDTO responseListing = listingMapper.toListingWithImagesDTO(listing);
+        responseListing.setImages(imagesUrls);
+        responseListing.setThumbnail(storageClient.fetchThumbnailURL(responseListing.getId()));
+
+        return responseListing;
     }
 
     public Set<ListingDraftBySellerDTO> findListingDraftsBySellerId(Long id) {
