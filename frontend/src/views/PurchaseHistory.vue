@@ -9,6 +9,7 @@
 		formatMoney,
 	} from "@/utils/strings";
 	import ProductListItem from "@/components/Menus/ProductListItem.vue";
+	import missingImage from "@/assets/no-image.png";
 
 	const user = useUserStore();
 	const boughtProducts = ref([]);
@@ -41,30 +42,30 @@
 					<product-list-item>
 						<template v-slot:left-side>
 							<img
-								src="https://ps.w.org/replace-broken-images/assets/icon-256x256.png?rev=2561727"
+								:src="product.listing_thumbnail || missingImage"
 								:alt="`${extractFirstWordsFromText(
-									product.listing.name,
+									product.listing_name,
 									2
 								)} thumbnail`"
-								class="h-auto w-12 rounded-xl"
+								class="h-12 w-12 rounded-xl object-cover"
 							/>
 							<h2
-								:title="product.listing.name"
+								:title="product.listing_name"
 								class="line-clamp-2 max-w-[70%] text-ellipsis text-lg"
 							>
-								{{ product.listing.name }}
+								{{ product.listing_name }}
 							</h2>
 						</template>
 						<template v-slot:right-side>
 							<div class="grid grid-cols-2 gap-x-4 gap-y-2">
-								<p :title="product.listing.seller.name">
+								<p :title="product.seller_name">
 									<span class="hidden sm:inline">
 										Seller:
 									</span>
 									<span class="font-bold">
 										{{
 											extractFirstWordsFromText(
-												product.listing.seller.name,
+												product.seller_name,
 												2
 											)
 										}}
@@ -82,7 +83,7 @@
 								</p>
 							</div>
 							<h3>
-								{{ formatMoney(product.listing.price) }} COP
+								{{ formatMoney(product.listing_price) }} COP
 							</h3>
 						</template>
 					</product-list-item>
