@@ -1,9 +1,10 @@
 package com.endava.marketplace.backend.service;
 
-import com.endava.marketplace.backend.dto.EndavanDTO;
-import com.endava.marketplace.backend.dto.ListingDTO;
-import com.endava.marketplace.backend.dto.SaleDTO;
+import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.event.SaleRatedEvent;
+import com.endava.marketplace.backend.exception.EntityAttributeAlreadySetException;
+import com.endava.marketplace.backend.exception.EntityNotFoundException;
+import com.endava.marketplace.backend.exception.InvalidStatusException;
 import com.endava.marketplace.backend.mapper.SaleMapper;
 import com.endava.marketplace.backend.model.*;
 import com.endava.marketplace.backend.repository.SaleRepository;
@@ -19,7 +20,7 @@ import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -120,6 +121,143 @@ public class SaleServiceTests {
     }
 
     @Test
+    public void givenSaleInfo_whenSaveSale_thenReturnSavedSale(){
+        // Given
+        Long saleId = 1L;
+        SaleDTO saleDto = SaleDTO.builder()
+                .id(saleId)
+                .quantity(1)
+                .date(LocalDate.now())
+                .build();
+
+        Sale sale = Sale.builder()
+                .id(saleId)
+                .listing(listing)
+                .buyer(buyer)
+                .quantity(1)
+                .date(LocalDate.now())
+                .build();
+
+        NewSaleRequestDTO saleRequestDto = NewSaleRequestDTO.builder()
+                .id(1L)
+                .listing_id(listing.getId())
+                .buyer_id(buyer.getId())
+                .quantity(1)
+                .build();
+
+        SaleStatus pending = SaleStatus.builder()
+                .id(1L)
+                .name("Pending")
+                .build();
+
+        Map<String, SaleStatus> statuses = new HashMap<>();
+        statuses.put("Pending", pending);
+
+        when(saleMapper.toSale(saleRequestDto)).thenReturn(sale);
+        when(saleStatusService.getSaleStatuses()).thenReturn(statuses);
+        when(saleRepository.save(sale)).thenReturn(sale);
+        when(saleMapper.toSaleDTO(sale)).thenReturn(saleDto);
+
+        // When
+        SaleDTO savedSale = saleService.saveSale(saleRequestDto);
+
+        // Then
+        verify(listingService, times(1)).updateListingAtSaleCreation(sale.getListing().getId(), sale.getQuantity());
+        Assertions.assertThat(savedSale).isEqualTo(saleDto);
+    }
+
+    @Test
+    public void givenSaleId_whenFindSaleById_thenReturnsSaleDTO(){
+        // Given
+        Long saleId = 1L;
+        Sale sale = Sale.builder()
+                .id(saleId)
+                .buyer(buyer)
+                .listing(listing)
+                .quantity(0)
+                .build();
+
+        SaleDTO saleDto = SaleDTO.builder()
+                .id(saleId)
+                .buyer(buyerDTO)
+                .listing(listingDTO)
+                .quantity(0)
+                .build();
+
+        when(saleRepository.findById(saleId)).thenReturn(Optional.ofNullable(sale));
+        when(saleMapper.toSaleDTO(sale)).thenReturn(saleDto);
+
+        // When
+        SaleDTO foundSale = saleService.findSaleById(saleId);
+
+        // Then
+        Assertions.assertThat(foundSale).isNotNull();
+        Assertions.assertThat(foundSale).isEqualTo(saleDto);
+    }
+
+    @Test
+    public void givenWrongSaleId_whenFindSaleById_thenReturnsEntityNotFoundException(){
+        // Given
+        Long saleId = 1L;
+
+        when(saleRepository.findById(saleId)).thenReturn(Optional.empty());
+
+        // When - Then
+        Assertions.assertThatThrownBy(
+                        () -> saleService.findSaleById(saleId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Sale with id " + saleId + " wasn't found");
+    }
+
+    @Test
+    public void givenEndavanIdAndSellerFlag_whenFindSales_thenReturnsSales(){
+        Long id = 1L;
+        boolean isSeller = false;
+
+        Sale saleOne = Sale.builder()
+               .id(1L)
+               .buyer(buyer)
+               .listing(listing)
+               .quantity(1)
+               .build();
+
+       Sale saleTwo = Sale.builder()
+               .id(2L)
+               .buyer(buyer)
+               .listing(listing)
+               .quantity(1)
+               .build();
+       Set<Sale> data = new HashSet<>(List.of(saleOne, saleTwo));
+
+       ListedSaleDTO saleOneDto = ListedSaleDTO.builder()
+                .id(1L)
+                .seller_name(listing.getSeller().getName())
+                .buyer_name(buyer.getName())
+                .quantity(1)
+                .build();
+
+       ListedSaleDTO saleTwoDto = ListedSaleDTO.builder()
+               .id(2L)
+               .seller_name(listing.getSeller().getName())
+               .buyer_name(buyer.getName())
+               .quantity(1)
+               .build();
+
+       Set<ListedSaleDTO> expectedResults = new HashSet<>(List.of(saleOneDto, saleTwoDto));
+
+       when(saleRepository.findSalesByBuyer_Id(buyer.getId())).thenReturn(data);
+       when(saleMapper.toListedSaleDTOSet(data)).thenReturn(expectedResults);
+
+       //When
+       Set<ListedSaleDTO> foundSales = saleService.findSales(buyer.getId(), isSeller);
+
+       // Then
+       verify(saleRepository, times(1)).findSalesByBuyer_Id(buyer.getId());
+       Assertions.assertThat(foundSales).isEqualTo(expectedResults);
+
+    }
+
+    @Test
     public void givenSaleIdAndScore_whenRatingSale_thenReturnRatedSaleDTO() {
         //given
         Long id = 1L;
@@ -164,10 +302,126 @@ public class SaleServiceTests {
 
         //then
         Assertions.assertThat(test.getRating()).isNotNull();
-        //verify(saleRepository, times(1)).findById(id);
         verify(saleService, times(1)).loadSale(id);
         verify(saleRepository, times(1)).save((sale1));
         verify(eventPublisher, times(1)).publishEvent(captor.capture());
+    }
+
+    @Test
+    public void givenSaleIdAndScore_whenRatingSale_andSaleAlreadyRated_thenReturnEntityAttributeAlreadySetException() {
+        //given
+        Long saleId = 1L;
+        Integer score = 5;
+
+        Sale sale = Sale.builder()
+                .id(saleId)
+                .buyer(buyer)
+                .listing(listing)
+                .status(saleStatus)
+                .rating(score)
+                .quantity(1)
+                .date(LocalDate.now())
+                .build();
+
+        when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+        when(saleService.loadSale(saleId)).thenReturn(sale);
+
+        // When - Then
+        Assertions.assertThatThrownBy(
+                ()-> saleService.rateSale(saleId, score))
+                .isInstanceOf(EntityAttributeAlreadySetException.class)
+                .hasMessageContaining("Sale with ID: " + saleId + " was already rated");
+    }
+
+    @Test
+    public void givenSaleIdAndScore_whenRatingSale_andSaleIsPending_thenReturnInvalidStatusException() {
+        //given
+        Long saleId = 1L;
+        Integer score = 5;
+
+        SaleStatus pending = SaleStatus.builder()
+                .id(1L)
+                .name("Pending")
+                .build();
+
+        Map<String, SaleStatus> statuses = new HashMap<>();
+        statuses.put("Pending", pending);
+
+        Sale sale = Sale.builder()
+                .id(saleId)
+                .buyer(buyer)
+                .listing(listing)
+                .status(pending)
+                .quantity(1)
+                .date(LocalDate.now())
+                .build();
+
+        when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+        when(saleService.loadSale(saleId)).thenReturn(sale);
+        when(saleStatusService.getSaleStatuses()).thenReturn(statuses);
+
+        // When - Then
+        Assertions.assertThatThrownBy(
+                        ()-> saleService.rateSale(saleId, score))
+                .isInstanceOf(InvalidStatusException.class)
+                .hasMessageContaining("Sale with ID: " + saleId + " is pending and cannot be rated");
+    }
+
+    @Test
+    public void givenSaleIdAndStatus_whenUpdateSaleStatus_thenReturnsUpdatedSaleDTO(){
+        // Given
+        Long saleId = 1L;
+        String saleStatus = "Cancelled";
+
+        SaleStatus pending = SaleStatus.builder()
+                .id(1L)
+                .name("Pending")
+                .build();
+
+        SaleStatus cancelled = SaleStatus.builder()
+                .id(2L)
+                .name("Cancelled")
+                .build();
+        Map<String, SaleStatus> statuses = new HashMap<>();
+        statuses.put("Pending", pending);
+        statuses.put("Cancelled", cancelled);
+
+        Sale sale = Sale.builder()
+                .id(saleId)
+                .status(pending)
+                .buyer(buyer)
+                .listing(listing)
+                .quantity(1)
+                .build();
+
+        Sale sale2 = Sale.builder()
+                .id(saleId)
+                .status(cancelled)
+                .buyer(buyer)
+                .listing(listing)
+                .quantity(1)
+                .build();
+
+        SaleDTO saleDto = SaleDTO.builder()
+                .id(saleId)
+                .status("Fulfilled")
+                .listing(listingDTO)
+                .quantity(1)
+                .build();
+
+        when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+        when(saleService.loadSale(saleId)).thenReturn(sale);
+        when(saleStatusService.getSaleStatuses()).thenReturn(statuses);
+        when(saleRepository.save(sale)).thenReturn(sale2);
+        when(saleMapper.toSaleDTO(sale2)).thenReturn(saleDto);
+
+        // When
+        SaleDTO updatedSale = saleService.updateSaleStatus(saleId, saleStatus);
+
+        // Then
+        Assertions.assertThat(updatedSale).isNotNull();
+        Assertions.assertThat(updatedSale).isEqualTo(saleDto);
+        verify(listingService, times(1)).updateListingAtSaleCancellation(sale.getListing().getId(), sale.getQuantity());
     }
 
     @Test
@@ -192,5 +446,18 @@ public class SaleServiceTests {
         //then
         Assertions.assertThat(test).isNotNull();
         verify(saleRepository, times(1)).findById(id);
+    }
+    @Test
+    public void givenWrongSaleId_whenLoadingSale_thenReturnEntityNotFoundException() {
+        // Given
+        Long saleId = 1L;
+
+        when(saleRepository.findById(saleId)).thenReturn(Optional.empty());
+
+        // When - Then
+        Assertions.assertThatThrownBy(
+                        () -> saleService.loadSale(saleId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Sale with id " + saleId + " wasn't found");
     }
 }

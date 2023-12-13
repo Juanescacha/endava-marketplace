@@ -1,8 +1,6 @@
 package com.endava.marketplace.backend.controller;
 
-import com.endava.marketplace.backend.dto.EndavanDTO;
-import com.endava.marketplace.backend.dto.ListingDTO;
-import com.endava.marketplace.backend.dto.SaleDTO;
+import com.endava.marketplace.backend.dto.*;
 import com.endava.marketplace.backend.model.*;
 import com.endava.marketplace.backend.service.SaleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -112,8 +114,173 @@ public class SaleControllerTests {
     }
 
     @Test
+    public void givenSaleInfo_whenPostSale_thenReturnsSavedSaleDTO() throws Exception {
+        // Given
+        NewSaleRequestDTO saleRequest = NewSaleRequestDTO.builder()
+                .id(1L)
+                .buyer_id(buyer.getId())
+                .listing_id(listing.getId())
+                .quantity(1)
+                .build();
+
+        SaleDTO saleDTO = SaleDTO.builder()
+                .id(1L)
+                .buyer(buyerDTO)
+                .listing(listingDTO)
+                .status("Pending")
+                .quantity(1)
+                .build();
+
+        given(saleService.saveSale(saleRequest)).willReturn((saleDTO));
+
+        // When
+        ResultActions response = mockMvc.perform(post("/api/sales")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saleRequest)));
+
+        // Then
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(saleDTO.getId()))
+                .andExpect(jsonPath("$.status").value(saleDTO.getStatus()));
+        verify(saleService, times(1)).saveSale(saleRequest);
+    }
+
+    @Test
+    public void givenSaleId_whenGetSaleById_ReturnsSaleDTO() throws Exception {
+        // Given
+        Long saleId = 1L;
+
+        SaleDTO saleDTO = SaleDTO.builder()
+                .id(1L)
+                .buyer(buyerDTO)
+                .listing(listingDTO)
+                .status("Pending")
+                .quantity(1)
+                .build();
+
+        given(saleService.findSaleById(saleId)).willReturn(saleDTO);
+
+        //When
+        ResultActions response = mockMvc.perform(get("/api/sales/{saleId}", saleId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saleDTO)));
+
+        // Then
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(saleDTO.getId()))
+                .andExpect(jsonPath("$.status").value(saleDTO.getStatus()))
+                .andExpect(jsonPath("$.quantity").value(saleDTO.getQuantity()));
+    }
+
+    @Test
+    public void givenBuyerId_whenGetSalesByBuyerId_thenReturnListOfSaleDTO() throws Exception {
+        // Given
+        Long buyerId = 1L;
+        boolean sellerFlag = false;
+
+        ListedSaleDTO saleDTO = ListedSaleDTO.builder()
+                .id(1L)
+                .quantity(1)
+                .status("Pending")
+                .buyer_name(buyerDTO.getName())
+                .build();
+
+        Set<ListedSaleDTO> data = new HashSet<>(List.of(saleDTO));
+
+        given(saleService.findSales(buyerId, sellerFlag)).willReturn(data);
+
+        // When
+        ResultActions response = mockMvc.perform(get("/api/sales/buyer/{buyerId}", buyerId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(data)));
+
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("[0].id").value(saleDTO.getId()))
+                .andExpect(jsonPath("[0].buyer_name").value(saleDTO.getBuyer_name()));
+    }
+
+    @Test
+    public void givenSellerId_whenGetSalesBySellerId_thenReturnListOfSaleDTO() throws Exception {
+        // Given
+        Long sellerId = 1L;
+        boolean sellerFlag = true;
+
+        ListedSaleDTO saleDTO = ListedSaleDTO.builder()
+                .id(1L)
+                .quantity(1)
+                .status("Pending")
+                .seller_name(buyerDTO.getName())
+                .build();
+
+        Set<ListedSaleDTO> data = new HashSet<>(List.of(saleDTO));
+
+        given(saleService.findSales(sellerId, sellerFlag)).willReturn(data);
+
+        // When
+        ResultActions response = mockMvc.perform(get("/api/sales/seller/{sellerId}", sellerId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(data)));
+
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("[0].id").value(saleDTO.getId()))
+                .andExpect(jsonPath("[0].seller_name").value(saleDTO.getSeller_name()));
+    }
+
+    @Test
+    public void givenSaleId_whenCancelSale_thenReturnsSaleDTO() throws Exception {
+        // Given
+        Long saleId = 1L;
+        String saleStatus = "Cancelled";
+
+        SaleDTO saleDTO = SaleDTO.builder()
+                .id(saleId)
+                .quantity(1)
+                .status(saleStatus)
+                .buyer(buyerDTO)
+                .build();
+
+        given(saleService.updateSaleStatus(saleId, saleStatus)).willReturn(saleDTO);
+
+        // When
+        ResultActions response = mockMvc.perform(patch("/api/sales/{saleId}/cancel", saleId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saleDTO)));
+
+        // Then
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(saleId))
+                .andExpect(jsonPath("$.status").value(saleStatus));
+    }
+
+    @Test
+    public void givenSaleId_whenFulfillSale_thenReturnsSaleDTO() throws Exception {
+        // Given
+        Long saleId = 1L;
+        String saleStatus = "Fulfilled";
+
+        SaleDTO saleDTO = SaleDTO.builder()
+                .id(saleId)
+                .quantity(1)
+                .status(saleStatus)
+                .buyer(buyerDTO)
+                .build();
+
+        given(saleService.updateSaleStatus(saleId, saleStatus)).willReturn(saleDTO);
+
+        // When
+        ResultActions response = mockMvc.perform(patch("/api/sales/{saleId}/fulfill", saleId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saleDTO)));
+
+        // Then
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(saleId))
+                .andExpect(jsonPath("$.status").value(saleStatus));
+    }
+
+    @Test
     public void givenSaleIdAndScore_whenRatingSale_thenReturnRatedSaleDTO() throws Exception {
-        //given
+        // Given
         Long id = 1L;
         Integer score = 5;
 
@@ -140,10 +307,10 @@ public class SaleControllerTests {
 
         given(saleService.rateSale(id, score)).willReturn(saleDTO);
 
-        //when
+        // When
         ResultActions response = mockMvc.perform(patch("/api/sales/{id}/rate/{rating}", id, score));
 
-        //then
+        // Then
         response.andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.rating").value(score));

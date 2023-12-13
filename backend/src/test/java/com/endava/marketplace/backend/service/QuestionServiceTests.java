@@ -1,6 +1,7 @@
 package com.endava.marketplace.backend.service;
 
 import com.endava.marketplace.backend.dto.*;
+import com.endava.marketplace.backend.exception.EntityNotFoundException;
 import com.endava.marketplace.backend.mapper.QuestionMapper;
 import com.endava.marketplace.backend.model.*;
 import com.endava.marketplace.backend.repository.QuestionRepository;
@@ -248,5 +249,22 @@ public class QuestionServiceTests {
 
         verify(questionRepository, times(1)).findById(questionAnswer.getId());
         verify(questionMapper, times(1)).toQuestionDTO(answeredQuestion);
+    }
+
+    @Test
+    public void givenQuestionAnswer_whenAnsweringQuestion_andQuestionNotFound_thenReturnEntityNotFoundException() {
+        // Given
+        QuestionAnswerDTO questionAnswer = QuestionAnswerDTO.builder()
+                .id(1L)
+                .answer_detail("Answer of Question #1")
+                .build();
+
+        when(questionRepository.findById(questionAnswer.getId())).thenReturn(Optional.empty());
+
+        // When - Then
+        Assertions.assertThatThrownBy(() -> questionService.answerQuestion(questionAnswer))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Question with ID: " + questionAnswer.getId() + "wasn't found");
+
     }
 }

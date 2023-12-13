@@ -39,7 +39,7 @@ public class ListingCategoryService {
         if (listingCategoryRepository
                 .findAll()
                 .stream()
-                .anyMatch(lc -> lc.getName().equals(categoryName))
+                .anyMatch(lc -> lc.getName().equalsIgnoreCase(categoryName))
         ) {
             throw new EntityAlreadyExistsException("Listing Category '" + categoryName + "' already exists");
         }
