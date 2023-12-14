@@ -16,7 +16,7 @@
 	let searchTimeout;
 
 	const handleEsc = () => {
-		// suggestionListBox.value = false;
+		suggestionListBox.value = false;
 		refInput.value.blur();
 	};
 
@@ -112,6 +112,7 @@
 		@keydown.esc="handleEsc"
 		@keydown.enter="handleEnter"
 		@focusin="suggestionListBox = true"
+		@focusout="suggestionListBox = false"
 		v-model="searchInput"
 		autocomplete="off"
 	/>
