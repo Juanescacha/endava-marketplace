@@ -1,14 +1,7 @@
 <script setup>
-	import { onBeforeMount } from "vue";
 	import { useUserStore } from "@/stores/user";
-	import useAdminUser from "@/composables/useAdminUser";
 
-	const { userIsAdmin, setUserIsAdmin } = useAdminUser();
 	const user = useUserStore();
-
-	onBeforeMount(() => {
-		setUserIsAdmin();
-	});
 </script>
 
 <template>
@@ -26,11 +19,12 @@
 				{{ user.email }}
 			</p>
 			<router-link
-				v-if="userIsAdmin"
+				v-if="user.isAdmin"
 				to="/admin-panel"
 				class="endava mt-4 block w-full p-2 text-center"
-				>Admin Panel</router-link
 			>
+				Admin Panel
+			</router-link>
 		</div>
 	</div>
 </template>
