@@ -299,7 +299,6 @@ export const getProfileImage = async id => {
 	try {
 		const config = {
 			headers: getHeadersForRequest(),
-			responseType: "arraybuffer",
 		};
 
 		const response = await axios.get(url, config);

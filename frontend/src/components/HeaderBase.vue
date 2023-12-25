@@ -28,15 +28,7 @@
 		if (response.error) {
 			// error
 		} else {
-			let image = btoa(
-				new Uint8Array(response.data).reduce(
-					(data, byte) => data + String.fromCharCode(byte),
-					""
-				)
-			);
-			user.image = `data:${response.headers[
-				"content-type"
-			].toLowerCase()};base64,${image}`;
+			user.image = response.data;
 		}
 	});
 </script>
