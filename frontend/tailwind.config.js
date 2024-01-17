@@ -4,12 +4,14 @@ const preline = require("preline/plugin");
 const headlessui = require("@headlessui/tailwindcss");
 const twforms = require("@tailwindcss/forms");
 const typography = require("@tailwindcss/typography");
+const flowbite = require("flowbite/plugin");
 
 export default {
 	content: [
 		"index.html",
 		"./src/**/*.{js,jsx,ts,tsx,vue,html}",
 		"node_modules/preline/dist/*.js",
+		"./node_modules/flowbite/**/*.js",
 	],
 	darkMode: "class",
 	theme: {
@@ -36,5 +38,11 @@ export default {
 			},
 		},
 	},
-	plugins: [twforms, preline, headlessui({ prefix: "ui" }), typography],
+	plugins: [
+		twforms,
+		preline,
+		headlessui({ prefix: "ui" }),
+		typography,
+		flowbite,
+	],
 };
