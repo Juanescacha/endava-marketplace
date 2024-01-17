@@ -32,11 +32,11 @@
 <template>
 	<h1 class="my-4 text-center">Admin panel</h1>
 	<nav>
-		<ul class="grid grid-cols-3">
+		<ul class="grid grid-cols-3 space-x-4 px-28">
 			<li
 				v-for="page in PAGES"
 				:key="page.name"
-				class="border-r border-gray-400"
+				class=""
 			>
 				<link-list-item
 					:redirects-to="page.link"

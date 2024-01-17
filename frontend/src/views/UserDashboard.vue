@@ -5,31 +5,39 @@
 		ListBulletIcon,
 		CurrencyDollarIcon,
 		UserIcon,
-	} from "@heroicons/vue/24/outline";
+	} from "@heroicons/vue/24/solid";
 </script>
 
 <template>
-	<main
-		class="min-w-[470px] lg:flex lg:h-[calc(100vh-4rem)] lg:gap-x-1 lg:rounded-br-xl lg:border lg:border-gray-100"
-	>
-		<nav class="bg-gray-200 lg:w-[30vw] lg:rounded-r-2xl lg:border-l-0">
-			<ul class="mt-2">
+	<main class="min-w-[470px] lg:flex lg:min-h-[calc(100vh-5rem)] lg:gap-x-1">
+		<nav class="border-b lg:w-[30vw] lg:border-l-0 lg:border-r">
+			<ul class="space-y-1 p-4">
 				<li class="h-12">
 					<link-list-item
 						redirects-to="/users/me/profile"
-						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
+						color-classes="px-4 rounded-xl text-[1.125rem] font-medium hover:bg-gray-100 text-gray-900 group"
+						:class="{
+							'active pointer-events-none bg-gray-200':
+								$route.path.includes('profile'),
+						}"
 					>
-						<UserIcon class="h-5 w-5 flex-none" />
+						<UserIcon
+							class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-800 group-[.active]:text-gray-800"
+						/>
 						Profile
 					</link-list-item>
 				</li>
 				<li class="h-12">
 					<link-list-item
-						redirects-to=""
-						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
+						redirects-to="/users/me/publications"
+						color-classes="px-4 rounded-xl text-[1.125rem] font-medium hover:bg-gray-100 text-gray-900 group"
+						:class="{
+							'active pointer-events-none bg-gray-200':
+								$route.path.includes('publications'),
+						}"
 					>
 						<ListBulletIcon
-							class="h-5 w-5 flex-none text-current"
+							class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-800 group-[.active]:text-gray-800"
 						/>
 						Publications
 					</link-list-item>
@@ -37,23 +45,31 @@
 				<li class="h-12">
 					<link-list-item
 						redirects-to="/users/me/sales-history"
-						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
+						color-classes="px-4 rounded-xl text-[1.125rem] font-medium hover:bg-gray-100 text-gray-900 group"
+						:class="{
+							'active pointer-events-none bg-gray-200':
+								$route.path.includes('sales-history'),
+						}"
 					>
 						<CurrencyDollarIcon
-							class="h-5 w-5 flex-none text-current"
+							class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-800 group-[.active]:text-gray-800"
 						/>
-						Sales history
+						Sales
 					</link-list-item>
 				</li>
 				<li class="h-12">
 					<link-list-item
 						redirects-to="/users/me/purchase-history"
-						color-classes="hover:bg-endava-300 active:bg-endava-400 text-gray-800"
+						color-classes="px-4 rounded-xl text-[1.125rem] font-medium hover:bg-gray-100 text-gray-900 group"
+						:class="{
+							'active pointer-events-none bg-gray-200':
+								$route.path.includes('purchase-history'),
+						}"
 					>
 						<ShoppingBagIcon
-							class="h-5 w-5 flex-none text-current"
+							class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-800 group-[.active]:text-gray-800"
 						/>
-						Purchase history
+						Purchases
 					</link-list-item>
 				</li>
 			</ul>
