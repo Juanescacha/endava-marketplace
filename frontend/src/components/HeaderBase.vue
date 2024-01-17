@@ -35,22 +35,22 @@
 
 <template>
 	<header
-		class="sticky top-0 z-50 flex w-full flex-wrap border-b bg-white/70 py-2.5 text-sm backdrop-blur-md sm:flex-nowrap sm:justify-start sm:py-4"
+		class="sticky top-0 z-50 flex w-full flex-wrap border-b bg-white/90 py-2.5 text-sm backdrop-blur-md sm:flex-nowrap sm:justify-start sm:py-4"
 	>
 		<nav
 			class="mx-auto flex w-full max-w-7xl basis-full items-center px-4 sm:px-6 lg:px-8"
 			aria-label="Global"
 		>
 			<div class="mr-5 md:mr-8">
-				<a
-					class="flex-none text-xl font-semibold"
-					href="/"
+				<router-link
+					class="flex-none text-xl font-semibold focus:outline-offset-8 focus:outline-blue-500"
+					to="/"
 					aria-label="Brand"
 					><img
 						src="../assets/endava-logo.png"
 						alt="logo"
 						class="w-32"
-				/></a>
+				/></router-link>
 			</div>
 			<div
 				class="ml-auto flex w-full items-center justify-end sm:order-3 sm:justify-end sm:gap-x-3"
@@ -95,18 +95,18 @@
 					<button
 						type="button"
 						title="Notifications"
-						class="inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white/5 align-middle text-xs font-medium text-gray-700 transition-all hover:bg-gray-100/50 hover:shadow-md active:bg-gray-200/50"
+						class="inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white/5 align-middle text-xs font-medium text-gray-700 hover:bg-gray-100/50 hover:shadow-md focus:outline-blue-500 active:bg-gray-200/50"
 					>
 						<BellIcon class="h-5 w-5 text-current" />
 					</button>
-					<button
-						type="button"
+					<router-link
+						to="/users/me/publications"
 						title="Listings"
-						class="inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white/5 align-middle text-xs font-medium text-gray-700 transition-all hover:bg-gray-100/50 hover:shadow-md active:bg-gray-200/50"
+						class="inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white/5 align-middle text-xs font-medium text-gray-700 hover:bg-gray-100/50 hover:shadow-md focus:outline-blue-500 active:bg-gray-200/50"
 						data-hs-offcanvas="#hs-offcanvas-right"
 					>
 						<BookOpenIcon class="h-5 w-5 text-current" />
-					</button>
+					</router-link>
 
 					<div
 						class="hs-dropdown relative inline-flex"
@@ -115,7 +115,7 @@
 						<button
 							id="hs-dropdown-with-header"
 							type="button"
-							class="hs-dropdown-toggle inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white align-middle text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-endava-400 focus:ring-offset-2 focus:ring-offset-white active:brightness-75"
+							class="hs-dropdown-toggle inline-flex h-[2.375rem] w-[2.375rem] flex-shrink-0 items-center justify-center gap-2 rounded-full bg-white align-middle text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white active:brightness-75"
 						>
 							<img
 								class="inline-block h-[2.375rem] w-[2.375rem] rounded-full"
@@ -156,8 +156,10 @@
 									</link-list-item>
 								</li>
 								<li>
-									<link-list-item redirects-to="">
-										<ListBulletIcon
+									<link-list-item
+										redirects-to="/users/me/publications"
+									>
+										<BookOpenIcon
 											class="h-5 w-5 flex-none text-current"
 										/>
 										Publications
@@ -170,7 +172,7 @@
 										<CurrencyDollarIcon
 											class="h-5 w-5 flex-none text-current"
 										/>
-										My sales history
+										Sales
 									</link-list-item>
 								</li>
 								<li>
@@ -180,18 +182,18 @@
 										<ShoppingBagIcon
 											class="h-5 w-5 flex-none text-current"
 										/>
-										My purchases
+										Purchases
 									</link-list-item>
 								</li>
 								<li>
 									<link-list-item
-										redirects-to="/admin-panel"
+										redirects-to="/admin-panel/general"
 										v-if="user.isAdmin"
 									>
 										<AdjustmentsHorizontalIcon
 											class="h-5 w-5 flex-none text-current"
 										/>
-										Admin Dashboard
+										Dashboard
 									</link-list-item>
 									<link-list-item redirects-to="/logout">
 										<ArrowLeftOnRectangleIcon
