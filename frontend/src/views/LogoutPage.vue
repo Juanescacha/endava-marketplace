@@ -35,7 +35,7 @@
 			>
 				<router-link
 					class="endava flex w-full items-center justify-center gap-x-3 rounded-md border border-transparent px-4 py-3 text-center text-sm font-medium text-white transition focus:outline-none focus:ring-2 focus:ring-endava-600 focus:ring-offset-2 focus:ring-offset-white sm:w-auto"
-					to="/"
+					to="/login"
 					><ArrowRightOnRectangleIcon class="w-5" />
 					Log in
 				</router-link>
