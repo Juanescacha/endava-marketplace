@@ -78,7 +78,7 @@
 		v-if="page < totalPages && !isLoading"
 		type="button"
 		@click="handleLoadMore"
-		class="endava mx-auto block items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all"
+		class="endava mx-auto block items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all focus:outline-blue-500"
 	>
 		Load More
 	</button>

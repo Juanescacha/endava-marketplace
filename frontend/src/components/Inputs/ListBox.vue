@@ -54,11 +54,11 @@
 <template>
 	<Listbox
 		v-model="selectedOption"
-		class="w-52 shadow-sm"
+		class="w-52"
 	>
 		<div class="relative">
 			<ListboxButton
-				class="relative w-full cursor-default rounded-lg border border-gray-200 bg-white py-2 pl-3 pr-10 text-left text-gray-500 focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm"
+				class="relative w-full cursor-default rounded-lg border border-gray-200 bg-white py-2 pl-3 pr-10 text-left text-gray-500 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 active:border-blue-500 active:ring-1 active:ring-blue-500 sm:text-sm"
 			>
 				<span class="block truncate">{{ selectedOption.name }}</span>
 				<span

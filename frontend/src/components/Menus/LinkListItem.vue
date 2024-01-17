@@ -14,7 +14,7 @@
 <template>
 	<router-link
 		:to="redirectsTo"
-		class="flex h-full w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm"
+		class="flex h-full w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-sm focus:outline-blue-500"
 		:class="colorClasses"
 	>
 		<slot></slot>
