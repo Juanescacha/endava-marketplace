@@ -10,6 +10,7 @@ import CategoriesManagement from "@/views/CategoriesManagement.vue";
 import SalesHistory from "@/views/SalesHistory.vue";
 import PurchaseHistory from "@/views/PurchaseHistory.vue";
 import PurchasedItem from "@/views/PurchasedItem.vue";
+import UserPublications from "@/views/UserPublications.vue";
 import AdminPanel from "@/views/AdminPanel.vue";
 import UserManagement from "@/views/UserManagement.vue";
 import NotFoundPage from "@/views/NotFoundPage.vue";
@@ -77,6 +78,11 @@ const routes = [
 				path: "purchase/:id",
 				component: PurchasedItem,
 				name: "Purchased Item",
+			},
+			{
+				path: "publications",
+				component: UserPublications,
+				name: "User Publications",
 			},
 		],
 	},
