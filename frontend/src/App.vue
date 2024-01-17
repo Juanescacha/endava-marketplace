@@ -17,6 +17,6 @@
 	<div class="flex min-h-screen flex-col">
 		<Header v-if="show" />
 		<RouterView />
-		<Footer v-if="show" />
+		<Footer v-if="show && !$route.path.startsWith('/users/me')" />
 	</div>
 </template>
