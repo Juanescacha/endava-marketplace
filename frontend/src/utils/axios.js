@@ -182,6 +182,12 @@ export const postUser = async () => {
 	}
 };
 
+export const getMySales = async (params = {}) => {
+	let url = `${getAPIURL()}/api/sales/my-sales`;
+	url = addParamsToURL(url, params);
+	return await makeGetRequest(url);
+};
+
 export const getSellerSales = async id => {
 	try {
 		const url = `${getAPIURL()}/api/sales/seller/${id}`;
@@ -224,6 +230,12 @@ export const getUserPurchases = async id => {
 
 export const getListingById = async id => {
 	const url = `${getAPIURL()}/api/listings/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getUserListings = async (params = {}) => {
+	let url = `${getAPIURL()}/api/listings/my-listings`;
+	url = addParamsToURL(url, params);
 	return await makeGetRequest(url);
 };
 
@@ -317,6 +329,11 @@ export const getAllCategories = async () => {
 
 export const getActiveCategories = async () => {
 	const url = `${getAPIURL()}/api/categories/active`;
+	return await makeGetRequest(url);
+};
+
+export const getActiveTags = async () => {
+	const url = `${getAPIURL()}/api/tags`;
 	return await makeGetRequest(url);
 };
 
